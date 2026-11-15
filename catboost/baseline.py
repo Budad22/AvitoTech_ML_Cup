@@ -10,6 +10,7 @@ import platform
 import subprocess
 import sys
 import time
+import resource
 
 import catboost
 from catboost import CatBoostRanker, Pool
@@ -21,6 +22,7 @@ import pyarrow.parquet as pq
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from recsys_data import PreparedSplit
+from history_categories import add_history_categories, feature_names
 
 FEATURES = ["f1", "f2", "f3", "f4", "f5", "category_id"]
 KEY_SCHEMA = pa.schema([("feed_id", pa.int32()), ("item_id", pa.int32()), ("score", pa.float32())])
@@ -34,18 +36,20 @@ def sha256(path):
     return digest.hexdigest()
 
 
-def frame(table):
-    data = table.select(FEATURES).to_pandas()
+def frame(table, features=FEATURES):
+    data = table.select(features).to_pandas()
     data["category_id"] = data["category_id"].astype(np.int32)
     return data
 
 
-def labeled_data(root, split):
+def labeled_data(root, split, windows=()):
     dataset = PreparedSplit(root, split)
-    tables = [batch.candidate_table(include_target=True).select(["feed_id", "item_id", *FEATURES, "target"])
+    features = FEATURES + feature_names(windows)
+    tables = [add_history_categories(batch, batch.candidate_table(include_target=True), windows)
+              .select(["feed_id", "item_id", *features, "target"])
               for batch in dataset.iter_batches(include_labels=True)]
     table = pa.concat_tables(tables)
-    pool = Pool(frame(table), label=table["target"].to_numpy(),
+    pool = Pool(frame(table, features), label=table["target"].to_numpy(),
                 cat_features=["category_id"], group_id=table["feed_id"].to_numpy())
     return table, pool
 
@@ -107,23 +111,34 @@ def validate_submission(path, template):
             "finite_float32_scores": True, "sha256": sha256(path), "bytes": Path(path).stat().st_size}
 
 
-def run(data, output, config_path):
+def run(data, output, config_path, feature_config_path=None, *, make_submission=False):
     started = time.perf_counter()
+    feature_config = json.loads(feature_config_path.read_text()) if feature_config_path else {}
+    if set(feature_config) - {"history_category_windows"}:
+        raise ValueError("Unknown feature configuration key")
+    windows = feature_config.get("history_category_windows", [])
+    if (not isinstance(windows, list) or any(type(w) is not int or w < 1 or w > 256 for w in windows)
+            or len(set(windows)) != len(windows)):
+        raise ValueError("History windows must be distinct integers in [1, 256]")
+    features = FEATURES + feature_names(windows)
     if output.exists():
         raise FileExistsError(f"Choose a new run directory: {output}")
     output.mkdir(parents=True)
     config = json.loads(config_path.read_text())
     (output / "config.json").write_text(json.dumps(config, indent=2))
+    (output / "feature_config.json").write_text(json.dumps(feature_config, indent=2))
     provenance = {"started_at_utc": datetime.now(timezone.utc).isoformat(), "status": "running",
-                  "features": FEATURES, "categorical_features": ["category_id"], "config": config,
+                  "features": features, "feature_config": feature_config,
+                  "feature_script_sha256": sha256(Path(__file__).with_name("history_categories.py")),
+                  "categorical_features": ["category_id"], "config": config,
                   "script_sha256": sha256(__file__), "prepared_manifest_sha256": sha256(data / "manifest.json"),
                   "git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
                   "versions": {"catboost": catboost.__version__, "numpy": np.__version__, "pandas": pd.__version__, "pyarrow": pa.__version__},
                   "platform": platform.platform()}
     (output / "result.json").write_text(json.dumps(provenance, indent=2))
     print("Loading train and complete val", flush=True)
-    train_table, train_pool = labeled_data(data, "train")
-    val_table, val_pool = labeled_data(data, "val")
+    train_table, train_pool = labeled_data(data, "train", windows)
+    val_table, val_pool = labeled_data(data, "val", windows)
     provenance["load_seconds"] = time.perf_counter() - started
     provenance["train"] = {"feeds": len(np.unique(train_table["feed_id"].to_numpy())), "rows": len(train_table),
                            "complete": PreparedSplit(data, "train").info["complete_impressions"]}
@@ -143,22 +158,29 @@ def run(data, output, config_path):
     print("Validation: " + json.dumps(provenance["validation"]), flush=True)
     provenance["delta_ndcg_vs_f1"] = provenance["validation"]["ndcg"] - provenance["f1_control"]["ndcg"]
     del train_pool, val_pool, train_table, val_table
-    before_predict = time.perf_counter()
-    with pq.ParquetWriter(output / "submission.parquet", KEY_SCHEMA, compression="zstd") as writer:
-        for batch in PreparedSplit(data, "test").iter_batches():
-            table = batch.candidate_table()
-            pool = Pool(frame(table), cat_features=["category_id"])
-            writer.write_table(prediction_table(table, model.predict(pool, thread_count=8)))
-    provenance["test_predict_seconds"] = time.perf_counter() - before_predict
-    manifest = json.loads((data / "manifest.json").read_text())
-    source = (data / manifest["source_relative_path"]).resolve()
-    provenance["submission"] = validate_submission(output / "submission.parquet", source / "sample_submission.parquet")
+    provenance["submission_requested"] = make_submission
+    artifact_names = ["model.cbm", "val_predictions.parquet"]
+    if make_submission:
+        before_predict = time.perf_counter()
+        with pq.ParquetWriter(output / "submission.parquet", KEY_SCHEMA, compression="zstd") as writer:
+            for batch in PreparedSplit(data, "test").iter_batches():
+                table = add_history_categories(batch, batch.candidate_table(), windows)
+                pool = Pool(frame(table, features), cat_features=["category_id"])
+                writer.write_table(prediction_table(table, model.predict(pool, thread_count=8)))
+        provenance["test_predict_seconds"] = time.perf_counter() - before_predict
+        manifest = json.loads((data / "manifest.json").read_text())
+        source = (data / manifest["source_relative_path"]).resolve()
+        provenance["submission"] = validate_submission(output / "submission.parquet", source / "sample_submission.parquet")
+        artifact_names.append("submission.parquet")
     provenance["status"] = "complete"
     provenance["total_seconds"] = time.perf_counter() - started
+    # macOS reports bytes, Linux reports KiB; includes loading, fitting and submission checks.
+    peak_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    provenance["peak_rss_bytes"] = peak_rss if sys.platform == "darwin" else peak_rss * 1024
     provenance["finished_at_utc"] = datetime.now(timezone.utc).isoformat()
-    provenance["artifacts"] = {name: sha256(output / name) for name in ("model.cbm", "val_predictions.parquet", "submission.parquet")}
+    provenance["artifacts"] = {name: sha256(output / name) for name in artifact_names}
     (output / "result.json").write_text(json.dumps(provenance, indent=2))
-    print(json.dumps({"validation": provenance["validation"], "submission": str(output / "submission.parquet"), "seconds": provenance["total_seconds"]}), flush=True)
+    print(json.dumps({"validation": provenance["validation"], "submission": str(output / "submission.parquet") if make_submission else None, "seconds": provenance["total_seconds"]}), flush=True)
 
 
 def main():
@@ -166,8 +188,11 @@ def main():
     parser.add_argument("--data", type=Path, default=Path("artifacts/prepared-v1"))
     parser.add_argument("--output", type=Path, default=Path("runs/catboost/EXP-015-r01"))
     parser.add_argument("--config", type=Path, default=Path(__file__).parent / "configs/baseline.json")
+    parser.add_argument("--feature-config", type=Path, help="Optional feature configuration; absent keeps the baseline inputs")
+    parser.add_argument("--make-submission", action="store_true", help="Generate test predictions only when explicitly requested by the owner")
     args = parser.parse_args()
-    run(args.data.resolve(), args.output.resolve(), args.config.resolve())
+    run(args.data.resolve(), args.output.resolve(), args.config.resolve(),
+        args.feature_config.resolve() if args.feature_config else None, make_submission=args.make_submission)
 
 
 if __name__ == "__main__":

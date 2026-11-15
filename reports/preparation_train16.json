@@ -1,0 +1,62 @@
+{
+  "source": "data/train16/competition",
+  "output": "artifacts/prepared-train16-v1",
+  "manifest_sha256": "f0f6e14a7d440c3717a5c0bdcac9939d3f1025fc32fdff08e2d3597c8fb5bf04",
+  "original_train_shards_unchanged": true,
+  "val_test_manifest_entries_unchanged": true,
+  "selection": {
+    "source": "data/initial_audit",
+    "shards": 16,
+    "selection": "round(i*(N-1)/(shards-1))",
+    "archive_etag": "\"d3288eba5c8598d86d984dc211832c84-1836\"",
+    "selected_members": [
+      "competition/train/impressions/part-00000-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00034-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00068-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00102-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00136-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00170-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00204-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00238-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00273-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00307-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00341-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00375-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00409-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00443-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00477-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "competition/train/impressions/part-00511-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet"
+    ],
+    "downloaded_bytes": 229818007
+  },
+  "splits": {
+    "train": {
+      "feeds": 98428,
+      "candidates": 7706340,
+      "history_events": 18284924,
+      "complete_impressions": false,
+      "embedding_available": false
+    },
+    "val": {
+      "feeds": 14423,
+      "candidates": 1389971,
+      "history_events": 2499547,
+      "complete_impressions": true,
+      "embedding_available": true
+    },
+    "test": {
+      "feeds": 28595,
+      "candidates": 2904806,
+      "history_events": 4973106,
+      "complete_impressions": true,
+      "embedding_available": false
+    }
+  },
+  "started_at_utc": "2026-11-15T13:27:41.371581+00:00",
+  "finished_at_utc": "2026-11-15T13:27:48.156690+00:00",
+  "all_original_columns_equal_shards": {
+    "train": 16,
+    "val": 64,
+    "test": 64
+  }
+}
