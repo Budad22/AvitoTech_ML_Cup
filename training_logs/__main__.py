@@ -4,6 +4,7 @@ from collections import deque
 from contextlib import ExitStack
 from datetime import datetime, timezone
 import json
+import math
 from pathlib import Path
 import time
 import sys
@@ -12,7 +13,8 @@ from rich.live import Live
 
 from .dashboard import dashboard
 from .view import build_view, plain_view
-from .terminal import create_console
+from .terminal import create_console, add_refresh_options, refresh_interval
+from .animation import AnimatedDashboard
 
 
 def demo_view():
@@ -29,23 +31,29 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-dir', type=Path)
     parser.add_argument('--demo', action='store_true', help='Preview with explicitly fictional values')
-    parser.add_argument('--watch', type=float, nargs='?', const=10, default=0)
+    add_refresh_options(parser)
     parser.add_argument('--format', choices=['auto', 'rich', 'plain'], default='auto')
     parser.add_argument('--json', action='store_true')
     parser.add_argument('--logs', type=int, default=0)
     args = parser.parse_args()
     if not args.demo and not args.run_dir:
         parser.error('--run-dir is required unless --demo is used')
-    if args.watch < 0 or args.logs < 0 or 0 < args.watch < 2:
-        parser.error('--watch must be >=2 and --logs nonnegative')
+    interval = refresh_interval(args)
+    if interval < 0 or args.logs < 0 or 0 < interval < 1:
+        parser.error('refresh interval must be >=1 and --logs nonnegative')
     console = create_console(args.format)
     pretty = not args.json and (args.format == 'rich' or args.format == 'auto' and console.is_terminal)
+    animated = AnimatedDashboard(enabled=not args.no_animation)
     try:
         with ExitStack() as stack:
-            live = stack.enter_context(Live(console=console, auto_refresh=False)) if pretty and args.watch else None
+            live = stack.enter_context(Live(animated, console=console, auto_refresh=True,
+                                           refresh_per_second=12 if not args.no_animation else 1)) if pretty and interval else None
             while True:
+                poll_started = time.monotonic()
                 if args.demo:
                     view, state = demo_view(), {'demo': True}
+                    if interval:
+                        view['gpu']['utilization'] = 50 + 35 * math.sin(time.monotonic() * .8)
                 else:
                     path = args.run_dir / 'progress.json'
                     if not path.exists():
@@ -66,14 +74,14 @@ def main():
                     print(json.dumps(dict(state=state, view=view), ensure_ascii=False), flush=True)
                 elif pretty:
                     panel = dashboard(view, width=console.width, height=console.height, details=details)
-                    live.update(panel, refresh=True) if live else console.print(panel)
+                    animated.update(view, details) if live else console.print(panel)
                 else:
                     print(plain_view(view), flush=True)
                     if details:
                         print(details)
-                if not args.watch:
+                if not interval:
                     break
-                time.sleep(args.watch)
+                time.sleep(max(0, interval - (time.monotonic() - poll_started)))
     except KeyboardInterrupt:
         pass
 

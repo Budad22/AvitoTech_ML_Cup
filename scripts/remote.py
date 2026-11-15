@@ -105,11 +105,13 @@ def main():
     parser.add_argument('-v', '--verbose', action='store_true', help='Show task, paths and process details')
     parser.add_argument('--logs', type=int, nargs='?', const=20, default=0, metavar='N', help='Show the last N log lines (default: 20)')
     parser.add_argument('--json', action='store_true', help='Print the status snapshot as JSON')
-    parser.add_argument('--watch', type=float, nargs='?', const=10, default=0, metavar='SECONDS', help='Refresh status (default: every 10 seconds); Ctrl+C exits only the viewer')
+    from training_logs.terminal import add_refresh_options, refresh_interval
+    add_refresh_options(parser)
     parser.add_argument('--format', choices=['auto', 'rich', 'plain'], default='auto', help='Terminal dashboard or plain text; auto uses Rich only for a TTY')
     args = parser.parse_args()
-    if args.logs < 0 or args.watch < 0 or 0 < args.watch < 2:
-        parser.error('logs must be nonnegative; watch must be at least 2 seconds')
+    interval = refresh_interval(args)
+    if args.logs < 0 or interval < 0 or 0 < interval < 1:
+        parser.error('logs must be nonnegative; refresh interval must be at least 1 second')
     client = paramiko.SSHClient()
     client.load_system_host_keys()
     client.load_host_keys(str(Path.home() / '.ssh' / 'known_hosts'))
@@ -123,17 +125,25 @@ def main():
             from mlp_status import read_snapshot, render, stage, progress_events
             from training_logs.view import build_view
             from training_logs.dashboard import dashboard
+            from training_logs.animation import AnimatedDashboard
             from training_logs.terminal import create_console
             from rich.live import Live
             from contextlib import ExitStack
             console = create_console(args.format)
             pretty = not args.json and (args.format == 'rich' or args.format == 'auto' and console.is_terminal)
             previous = None
+            full_at = 0.
+            animated = AnimatedDashboard(enabled=not args.no_animation)
             try:
                 with ExitStack() as stack:
-                    live = stack.enter_context(Live(console=console, auto_refresh=False)) if pretty and args.watch else None
+                    live = stack.enter_context(Live(animated, console=console, auto_refresh=True,
+                                                   refresh_per_second=12 if not args.no_animation else 1)) if pretty and interval else None
                     while True:
-                        snapshot = read_snapshot(client, ROOT)
+                        poll_started = time.monotonic()
+                        fast = bool(pretty and interval and previous and not args.verbose and not args.logs and poll_started - full_at < 10)
+                        snapshot = read_snapshot(client, ROOT, fast=fast, previous=previous)
+                        if not fast:
+                            full_at = poll_started
                         phase, label = stage(snapshot)
                         view = build_view(snapshot, host=args.host, phase=phase, label=label,
                                           legacy_events=progress_events(snapshot))
@@ -144,7 +154,7 @@ def main():
                             details = render(snapshot, args.host, args.verbose, args.logs, previous) if args.verbose or args.logs else None
                             panel = dashboard(view, width=console.width, height=console.height, details=details)
                             if live:
-                                live.update(panel, refresh=True)
+                                animated.update(view, details)
                             elif pretty:
                                 console.print(panel)
                             else:
@@ -153,9 +163,9 @@ def main():
                                 if details:
                                     print(details, flush=True)
                         previous = snapshot
-                        if not args.watch:
+                        if not interval:
                             break
-                        time.sleep(args.watch)
+                        time.sleep(max(0, interval - (time.monotonic() - poll_started)))
             except KeyboardInterrupt:
                 if not args.json:
                     print('\nПросмотр завершён. Серверная задача продолжает работать.')

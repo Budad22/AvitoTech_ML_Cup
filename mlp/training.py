@@ -127,6 +127,10 @@ def inspect(root, batch_size):
 
 
 def train(args, logger):
+    args.learning_rate = getattr(args, 'learning_rate', .001)
+    args.init_from = getattr(args, 'init_from', None)
+    if args.resume and args.init_from:
+        raise ValueError('Choose resume or weights-only initialization')
     output = args.output
     output.mkdir(parents=True, exist_ok=True)
     if (output / 'last.pt').exists() and not args.resume:
@@ -140,17 +144,25 @@ def train(args, logger):
     if args.device == 'cuda' and not torch.cuda.is_available():
         raise RuntimeError('CUDA requested but unavailable')
     state = torch.load(args.resume, map_location='cpu', weights_only=False) if args.resume else None
+    initial = torch.load(args.init_from, map_location='cpu', weights_only=False) if args.init_from else None
     fingerprint = hashlib.sha256((args.data / 'manifest.json').read_bytes()).hexdigest()
-    if state:
-        if state['fingerprint'] != fingerprint:
+    reference = state or initial
+    if reference:
+        if reference['fingerprint'] != fingerprint:
             raise ValueError('Prepared data manifest changed')
-        for key in ('batch_size', 'seed', 'epochs', 'hours'):
-            setattr(args, key, state['config'][key])
-        categories, boundary, sizes = state['categories'], state['boundary'], state['sizes']
+        categories, boundary, sizes = reference['categories'], reference['boundary'], reference['sizes']
     else:
         categories, boundary, sizes = inspect(args.data, args.batch_size)
+    if state:
+        for key in ('batch_size', 'seed', 'epochs', 'hours'):
+            setattr(args, key, state['config'][key])
+        args.learning_rate = state['optimizer']['param_groups'][0]['lr']
     model = Ranker(len(categories)).to(args.device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=.001, weight_decay=.0001)
+    if initial:
+        model.load_state_dict(initial['model'])
+        logger.emit('weights_initialized', phase='initialize', source_checkpoint=str(args.init_from),
+                    optimizer_reset=True, counters_reset=True)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate, weight_decay=.0001)
     epoch, cursor, elapsed, best, stale, history = 0, 0, 0., -1., 0, []
     if state:
         model.load_state_dict(state['model'])
@@ -166,6 +178,13 @@ def train(args, logger):
                              'numpy': np.__version__, 'gpu': torch.cuda.get_device_name() if args.device == 'cuda' else None}
     config['code_sha256'] = {path.name: hashlib.sha256(path.read_bytes()).hexdigest()
                              for path in Path(__file__).parent.glob('*.py')}
+    if args.init_from:
+        config['initial_checkpoint_sha256'] = hashlib.sha256(args.init_from.read_bytes()).hexdigest()
+        config['initial_weights_source'] = str(args.init_from)
+    elif state:
+        for key in ('initial_checkpoint_sha256', 'initial_weights_source'):
+            if key in state['config']:
+                config[key] = state['config'][key]
     write_json(output / 'config.json', dict(config, boundary=boundary, partitions=sizes))
     started = last_save = time.monotonic()
 
@@ -290,11 +309,14 @@ def main():
     parser.add_argument('--data', type=Path, required=True, help='Prepared dataset root')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--model', type=Path)
-    parser.add_argument('--resume', type=Path)
+    initialization = parser.add_mutually_exclusive_group()
+    initialization.add_argument('--resume', type=Path, help='Restore the complete run and its original budget')
+    initialization.add_argument('--init-from', type=Path, help='Load only weights into a fresh run with a new optimizer/budget')
     parser.add_argument('--device', default='cuda', choices=['cuda', 'cpu'])
     parser.add_argument('--batch-size', type=int, default=64)
     parser.add_argument('--epochs', type=int, default=5)
-    parser.add_argument('--hours', type=float, default=12)
+    parser.add_argument('--hours', type=float, default=2)
+    parser.add_argument('--learning-rate', type=float, default=.001)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--log-interval', type=float, default=10, help='Seconds between progress events; the first batch is always logged')
     parser.add_argument('--embedding-cache', choices=['memmap', 'ram'], default='memmap')
@@ -304,7 +326,7 @@ def main():
     parser.add_argument('--arrow-threads', type=int, default=2)
     parser.add_argument('--stop-file', type=Path, help='Checkpoint and stop after a completed batch when this file exists')
     args = parser.parse_args()
-    if min(args.batch_size, args.epochs, args.hours, args.log_interval, args.cache_budget_gib, args.cpu_threads, args.arrow_threads) <= 0:
+    if min(args.batch_size, args.epochs, args.hours, args.learning_rate, args.log_interval, args.cache_budget_gib, args.cpu_threads, args.arrow_threads) <= 0:
         parser.error('batch-size, epochs and hours must be positive')
     if args.command == 'train':
         with RunLogger(args.output, args.output.name, 'MLP') as logger:

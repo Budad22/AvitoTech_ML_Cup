@@ -4,6 +4,8 @@ The logging system is shared by architectures. It does not import a training
 framework, inspect or change the dataset, or control the optimizer. Presentation
 uses Rich Live, panels, progress bars and responsive tables; persistence uses
 Python logging with bounded JSONL rotation and an atomic latest-state file.
+Completed server pipelines display the selected checkpoint's final metrics,
+including full val and late control, instead of treating the last epoch as best.
 
 ## Monitor the current GPU job
 
@@ -11,13 +13,22 @@ Install local monitor dependencies once:
 
 ```powershell
 uv pip install --python .venv/Scripts/python.exe -r requirements-monitor.txt
-.\.venv\Scripts\python.exe scripts/remote.py status --host 25.9.106.39 --user bl1tz2200 --watch 10
+.\.venv\Scripts\python.exe scripts/remote.py status --host 25.9.106.39 --user bl1tz2200
 ```
 
 Rich is automatic in a terminal. `--format rich` forces it; `--format plain`
 is suitable for redirected text. `--verbose` adds process/task diagnostics,
 `--logs 30` adds recent logs, and `--json` emits one UTF-8 JSON snapshot per
 refresh without terminal controls. Ctrl+C stops only the viewer.
+
+Interactive terminals refresh automatically; `--watch` is optional and overrides
+the interval. `--once` prints one snapshot. JSON, plain and redirected output
+remain single-shot unless an interval is explicitly requested. Live rendering
+runs locally at 12 FPS with short eased needle/bar transitions; measured numbers
+are never interpolated. `--no-animation` disables interpolation. The target poll
+interval is one second; actual SSH latency may make updates slower. Normal live
+polls reuse expensive process/I/O metadata for up to ten seconds, while verbose,
+JSON and phase/task changes use full snapshots.
 
 The default screen focuses on epoch/batch progress, train/validation metrics,
 measured elapsed time, the remaining training budget, GPU/VRAM and freshness.
@@ -26,8 +37,9 @@ for completing all epochs. Low measured throughput is flagged without changing
 the job. Detailed historical setup logs are available only on request.
 
 Progress and resource panels have matching dimensions. The resource dial shows
-instantaneous GPU utilization on a 0–100 scale; its cyan needle and purple arc
-expand into spare panel space. The separate purple VRAM bar shows used memory,
+instantaneous GPU utilization on a 0–100 scale; its cyan needle and thin purple
+arc sit at the bottom with fixed proportions. Spare space is placed above the
+dial. The separate purple VRAM bar shows used memory,
 with used/total MiB printed above it. Restart an existing viewer after updating
 presentation code; the training process does not need a restart for UI changes.
 

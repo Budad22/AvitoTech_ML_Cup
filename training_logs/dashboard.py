@@ -14,11 +14,19 @@ PURPLE = '#b39df3'
 MUTED = '#8493a5'
 
 
+class _Spacer:
+    height = 0
+
+    def __rich_console__(self, console, options):
+        for _ in range(self.height):
+            yield Text('')
+
+
 class _PanelPair:
     """Match both panel dimensions using their rendered content at terminal width."""
-    def __init__(self, left, right, gauge=None):
+    def __init__(self, left, right, spacer=None):
         self.panels = (left, right)
-        self.gauge = gauge
+        self.spacer = spacer
 
     def __rich_console__(self, console, options):
         side_by_side = options.max_width >= 90
@@ -27,11 +35,11 @@ class _PanelPair:
         for panel in self.panels:
             panel.width = panel_width
             panel.height = None
-        if self.gauge:
-            self.gauge.height = self.gauge.minimum_height
+        if self.spacer:
+            self.spacer.height = 0
         heights = [len(console.render_lines(panel, measured, pad=False)) for panel in self.panels]
-        if self.gauge and heights[0] > heights[1]:
-            self.gauge.height += heights[0] - heights[1]
+        if self.spacer and heights[0] > heights[1]:
+            self.spacer.height = heights[0] - heights[1]
         height = max(heights)
         for panel in self.panels:
             panel.height = height
@@ -71,7 +79,7 @@ def dashboard(view, *, width=100, height=None, details=None):
     if total:
         percent = min(100, current / total * 100)
         caption = Text(f"{number(current)} / {number(total)} {progress.get('unit', 'шагов')}  ·  {percent:.2f}%", style=CYAN)
-        bar = ProgressBar(total=total, completed=min(total, current), complete_style=CYAN,
+        bar = ProgressBar(total=total, completed=min(total, progress.get('display_current', current)), complete_style=CYAN,
                           finished_style='green', pulse_style=CYAN)
     else:
         caption = Text('Точные значения появятся после первого события.', style=MUTED)
@@ -85,6 +93,7 @@ def dashboard(view, *, width=100, height=None, details=None):
         metrics.add_column(justify='right', style='bold white')
     labels = {'train_loss': 'Train loss', 'val_logloss': 'Val logloss', 'val_ndcg': 'Val NDCG',
               'best_ndcg': 'Лучший NDCG', 'learning_rate': 'Learning rate',
+              'full_val_ndcg': 'Полный val NDCG', 'control_ndcg': 'Поздний control NDCG',
               'batches_per_second': 'Батчей/с, текущее окно', 'loader_wait_pct': 'Ожидание данных, %',
               'candidates_per_second': 'Кандидатов/с'}
     values = view.get('metrics') or {}
@@ -113,8 +122,9 @@ def dashboard(view, *, width=100, height=None, details=None):
     resources.add_column(justify='right', style='white')
     resources.add_row('Прошло', duration(view.get('elapsed_seconds')))
     if view.get('budget_seconds'):
-        resources.add_row('Бюджет', duration(view['budget_seconds']))
-        resources.add_row('Осталось в бюджете', duration(view['budget_seconds'] - (view.get('elapsed_seconds') or 0)))
+        resources.add_row('Лимит обучения', duration(view['budget_seconds']))
+        if view['phase'] in ('training', 'initializing'):
+            resources.add_row('Осталось в лимите', duration(view['budget_seconds'] - (view.get('elapsed_seconds') or 0)))
     if view.get('steps_per_second'):
         speed = view['steps_per_second']
         unit = progress.get('unit', 'шаг')
@@ -122,23 +132,26 @@ def dashboard(view, *, width=100, height=None, details=None):
         resources.add_row(label, f'{speed:.2f} {unit}/с' if speed >= 1 else f'{1 / speed:.1f} с/{unit}')
     gpu = view.get('gpu')
     resource_items = [resources]
-    gauge = None
+    spacer = None
     if gpu:
-        gauge = LoadGauge(gpu['utilization'], height=4 if compact and width >= 70 else 3)
+        gauge = LoadGauge(gpu['utilization'], height=4 if compact else 6,
+                          needle_percent=gpu.get('display_utilization'))
+        memory = Group(Text(gpu['name'], style=PURPLE),
+                       Text(f"VRAM {number(gpu['used'])} / {number(gpu['total'])} МиБ", style=MUTED),
+                       ProgressBar(total=max(1, gpu['total']), completed=gpu['used'], complete_style=PURPLE), Text(''))
         if compact and width >= 70:
             summary = Table.grid(expand=True, padding=(0, 1))
             summary.add_column(ratio=3)
             summary.add_column(ratio=2)
-            summary.add_row(resources, gauge)
+            summary.add_row(resources, memory)
             resource_items = [summary]
         else:
-            resource_items.append(gauge)
-        resource_items += [Text(gpu['name'], style=PURPLE),
-            Text(f"VRAM {number(gpu['used'])} / {number(gpu['total'])} МиБ", style=MUTED),
-            ProgressBar(total=max(1, gpu['total']), completed=gpu['used'], complete_style=PURPLE)]
+            resource_items.append(memory)
+        spacer = _Spacer()
+        resource_items += [spacer, gauge]
     resources_panel = Panel(Group(*resource_items), title='[bold]ВРЕМЯ И РЕСУРСЫ[/bold]',
                             border_style='#48556b', box=box.ROUNDED, padding=padding)
-    content = _PanelPair(work, resources_panel, gauge)
+    content = _PanelPair(work, resources_panel, spacer)
     foot = Text(view.get('freshness', ''), style=MUTED)
     if view.get('source') == 'checkpoint':
         foot.append('\nПоказан сохранённый прогресс; текущие шаги могут быть впереди.', 'yellow')

@@ -5,10 +5,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-def read_snapshot(client, root):
+def read_snapshot(client, root, *, fast=False, previous=None):
     import base64
     source = (Path(__file__).with_name('status_snapshot.ps1')).read_text(encoding='utf-8')
-    script = '\n'.join(line.strip() for line in source.splitlines()
+    script = ('$quick=$true;\n' if fast else '$quick=$false;\n') + '\n'.join(line.strip() for line in source.splitlines()
                        if line.strip() and not line.lstrip().startswith('#'))
     encoded = base64.b64encode(script.encode('utf-16-le')).decode()
     if len(encoded) + 70 >= 7800:
@@ -27,6 +27,13 @@ def read_snapshot(client, root):
     if stdout.channel.recv_exit_status():
         raise RuntimeError(error.decode('utf-8', errors='replace'))
     snapshot = json.loads(payload.decode('utf-8-sig'))
+    if fast and previous:
+        changed = (snapshot['task']['state'] != previous['task']['state'] or
+                   (snapshot.get('training_state') or {}).get('phase') != (previous.get('training_state') or {}).get('phase') or
+                   snapshot.get('last_command') != previous.get('last_command'))
+        if changed:
+            return read_snapshot(client, root)
+        snapshot = {**previous, **snapshot}
     return snapshot
 
 

@@ -31,9 +31,17 @@ NDCG on the earlier ~80% of validation timestamps; the later part is held back
 until final evaluation. Ties follow the pessimistic official metric policy.
 
 Defaults: seed 42, 64 feeds per batch, AdamW lr 0.001, weight decay 0.0001,
-5 epochs, patience 2, and a 12-hour training budget. Data preparation is outside
+5 epochs, patience 2, and a 2-hour training budget for new runs. Data preparation is outside
 this budget. Final evaluation/inference may continue after the budget expires.
 Training is FP32; no negative sampling or mixed precision is used.
+
+Use `--learning-rate 0.0003` to test a lower constant AdamW learning rate.
+`--init-from runs/EXP-013-r02/best.pt` initializes only model weights in a new
+output directory: optimizer, RNG, counters and budget start fresh. The prepared
+manifest and category/validation contracts must match. In contrast, `--resume`
+restores the complete run, including its saved learning rate and budget; old
+12-hour checkpoints retain that original limit. Initialization provenance is
+hashed into config.json. Neither command submits predictions online.
 
 `last.pt` contains weights, optimizer, RNG, epoch, batch cursor and elapsed
 budget. Resume requires the same prepared manifest and uses the original run

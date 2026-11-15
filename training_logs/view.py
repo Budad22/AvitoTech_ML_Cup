@@ -27,6 +27,12 @@ def build_view(snapshot, *, host, phase, label, legacy_events=()):
     if history:
         view['metrics']['best_ndcg'] = max(e['ndcg'] for e in history)
         view['metrics']['val_ndcg'] = history[-1]['ndcg']
+    final = snapshot.get('metrics') or {}
+    if phase == 'complete' and final.get('selection'):
+        view['metrics'].update(val_ndcg=final['selection']['ndcg'], val_logloss=final['selection']['logloss'])
+        for part, key in (('all', 'full_val_ndcg'), ('control', 'control_ndcg')):
+            if part in final:
+                view['metrics'][key] = final[part]['ndcg']
     if view['metrics'].get('batches_per_second'):
         view['steps_per_second'] = view['metrics']['batches_per_second']
         view['speed_source'] = 'window'

@@ -28,11 +28,12 @@ class PipelineTests(unittest.TestCase):
             validation = validation.set_column(0, 'feed_id', pa.array([100, 101, 102], type=pa.int32()))
             pq.write_table(validation, fixture.source / 'val/impressions/part-00000.parquet')
             prepare_dataset(fixture.source, data, ('train', 'val'))
-            def run(output, stop=None, resume=None):
+            def run(output, stop=None, resume=None, init_from=None, learning_rate=.001):
                 args = SimpleNamespace(data=data, output=output, resume=resume, device='cpu',
                                        batch_size=1, seed=42, epochs=2, hours=.1, log_interval=10,
                                        embedding_cache='ram', cache_budget_gib=1, prefetch=2,
-                                       cpu_threads=1, arrow_threads=1, stop_file=stop)
+                                       cpu_threads=1, arrow_threads=1, stop_file=stop,
+                                       init_from=init_from, learning_rate=learning_rate)
                 with RunLogger(output, 'synthetic', 'MLP', echo=False) as log:
                     train(args, log)
                 return torch.load(output / 'last.pt', weights_only=False)
@@ -48,6 +49,16 @@ class PipelineTests(unittest.TestCase):
             for name, value in expected['model'].items():
                 torch.testing.assert_close(actual['model'][name], value, rtol=0, atol=0)
             self.assertTrue(torch.equal(actual['torch_rng'], expected['torch_rng']))
+            flag.touch()
+            warm = fixture.root / 'warm'
+            initialized = run(warm, flag, init_from=stopped / 'last.pt', learning_rate=.0003)
+            self.assertEqual((initialized['epoch'], initialized['cursor']), (0, 1))
+            self.assertEqual(initialized['history'], [])
+            self.assertEqual(initialized['optimizer']['param_groups'][0]['lr'], .0003)
+            self.assertTrue(all(value['step'] == 1 for value in initialized['optimizer']['state'].values()))
+            flag.unlink()
+            continued = run(warm, flag, resume=warm / 'last.pt', learning_rate=.001)
+            self.assertEqual(continued['optimizer']['param_groups'][0]['lr'], .0003)
         finally:
             fixture.tearDown()
 

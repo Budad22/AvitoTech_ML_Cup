@@ -35,6 +35,23 @@ function FileInfo($path) {
     $f=Get-Item $path
     if ($f) { @{bytes=$f.Length; modified=$f.LastWriteTimeUtc.ToString('o')} }
 }
+if ($quick) {
+    $worker=@(Tail "$run\worker.log" 40)
+    $snapshot=@{
+        checked_at=[DateTime]::UtcNow.ToString('o')
+        task=@{state=(Get-ScheduledTask AvitoMLP).State.ToString()}
+        training_state=JsonFile "$run\progress.json"
+        history=@(JsonFile "$run\history.json")
+        complete=(Test-Path "$run\checksums.json")
+        worker=$worker
+        last_command=@($worker | Where-Object { $_.StartsWith('COMMAND') } | Select-Object -Last 1)
+        errors=@(Tail "$run\worker.err.log" 5)
+        log=FileInfo "$run\worker.log"
+        gpu=@(& nvidia-smi --query-gpu=name,memory.used,memory.total,utilization.gpu --format=csv,noheader,nounits 2>$null)
+    }
+    $snapshot | ConvertTo-Json -Depth 8 -Compress
+    exit
+}
 $task=Get-ScheduledTask -TaskName AvitoMLP
 $info=Get-ScheduledTaskInfo -TaskName AvitoMLP
 $awake=Get-ScheduledTask -TaskName AvitoMLPAwake
@@ -67,6 +84,7 @@ $snapshot=@{
     processes=$processes
     io=@(Get-CimInstance Win32_PerfFormattedData_PerfProc_Process | Where-Object { $_.IDProcess -in $processes.ProcessId } | Select-Object IOReadBytesPersec,IOWriteBytesPersec)
     worker=@(Tail "$run\worker.log" 250)
+    last_command=@(Tail "$run\worker.log" 40 | Where-Object { $_.StartsWith('COMMAND') } | Select-Object -Last 1)
     errors=@(Tail "$run\worker.err.log" 30)
     bootstrap=@(Tail "$base\bootstrap.log" 30)
     log=FileInfo "$run\worker.log"

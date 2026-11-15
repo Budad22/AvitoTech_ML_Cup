@@ -6,6 +6,22 @@ import sys
 from rich.console import Console
 
 
+def add_refresh_options(parser):
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--watch', type=float, nargs='?', const=1, default=None, metavar='SECONDS',
+                       help='Override refresh interval; terminal default is 1 second')
+    group.add_argument('--once', action='store_true', help='Print one snapshot and exit')
+    parser.add_argument('--no-animation', action='store_true', help='Disable visual interpolation')
+
+
+def refresh_interval(args):
+    if args.once:
+        return 0
+    if args.watch is not None:
+        return args.watch
+    return 1. if sys.stdout.isatty() and not args.json and args.format != 'plain' else 0.
+
+
 def create_console(format='auto'):
     vt = False
     if os.name == 'nt' and sys.stdout.isatty():
