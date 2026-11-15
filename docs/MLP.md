@@ -43,6 +43,40 @@ checkpoint. Load checkpoints only from trusted sources.
 
 ## Windows GPU worker
 
+The active runtime is migrated to `Q:\AVITOCUP\AvitoTech_ML_Cup` on the NVMe SSD.
+Its Python installation, virtual environment, prepared tables and raw embeddings
+all live on Q:. The E: workspace is retained as a recovery copy. `remote.py`
+automatically selects Q: after `Q:\AVITOCUP\active-workspace.json` is published.
+The owner cancelled EXP-013-r01 and requested a fresh EXP-013-r02 on the same
+verified dataset. Its old E: run directory was deleted. The activation marker
+also identifies the current run for status/fetch; old weights are not resumed.
+Status reports measured recent throughput and time waiting for input batches;
+GPU utilization is an instantaneous sample, not the run's average.
+
+The frozen-data runner resumes `last.pt` without downloading or preparing data:
+
+```powershell
+python scripts/run_prepared.py
+# Request a safe pause after the next completed batch:
+New-Item runs/EXP-013-r02/STOP_AFTER_CHECKPOINT -ItemType File
+# Before restarting AvitoMLP, remove that request:
+Remove-Item runs/EXP-013-r02/STOP_AFTER_CHECKPOINT
+```
+
+Use `--embedding-cache ram --cache-budget-gib 16 --prefetch 2` for training on
+this 64 GiB host. The int8 train matrix occupies about 9.72 GiB, is loaded once
+per process, and remains read-only. A single background producer prepares at
+most two additional batches and pins host buffers for CUDA transfer. The cache
+budget rejects excess allocation. `--embedding-cache memmap --prefetch 0` is the
+lower-memory fallback. CPU/Arrow thread counts are independently configurable.
+Batch size, sample order, FP32 model and equal-feed loss semantics are preserved.
+
+`scripts/benchmark_pipeline.py` compares SSD memmap, RAM, and RAM with prefetch
+using cloned model/optimizer state on the same batches. Its CUDA-event timings
+separate transfer and compute; production checkpoints are never updated.
+
+The commands below describe the original first deployment on E:.
+
 ```powershell
 python scripts/remote.py deploy --host HOST --user USER
 python scripts/remote.py status --host HOST --user USER

@@ -3,8 +3,14 @@ $ProgressPreference='SilentlyContinue'
 $ErrorActionPreference='SilentlyContinue'
 [Console]::OutputEncoding=[Text.Encoding]::UTF8
 $base='E:\AVITOCUP'
+$runId='EXP-013-r01'
+if (Test-Path 'Q:\AVITOCUP\active-workspace.json') {
+    $base='Q:\AVITOCUP'
+    $active=Get-Content 'Q:\AVITOCUP\active-workspace.json' -Raw | ConvertFrom-Json
+    if ($active.run_id -match '^[A-Za-z0-9-]+$') { $runId=$active.run_id }
+}
 $repo="$base\AvitoTech_ML_Cup"
-$run="$repo\runs\EXP-013-r01"
+$run="$repo\runs\$runId"
 function Tail($path,$count) {
     if (!(Test-Path $path)) { return }
     $stream=[IO.File]::Open($path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::ReadWrite)
@@ -41,6 +47,10 @@ $processes=@(Get-CimInstance Win32_Process | Where-Object {
     $_.Name -match '^(python|uv|powershell)\.exe$' -and $_.CommandLine -match 'AvitoTech_ML_Cup|scripts.server_run.py'
 } | Select-Object ProcessId,CommandLine)
 $snapshot=@{
+    workspace=$base
+    run_id=$runId
+    run_directory=$run
+    migration=JsonFile 'Q:\AVITOCUP\migration-state.json'
     checked_at=[DateTime]::UtcNow.ToString('o')
     task=@{state=if ($task) {$task.State.ToString()} else {'Missing'}; result=$info.LastTaskResult; started=if ($info) {$info.LastRunTime.ToString('o')}}
     awake=if ($awake) {$awake.State.ToString()} else {'Missing'}

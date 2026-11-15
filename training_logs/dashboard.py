@@ -51,7 +51,9 @@ def dashboard(view, *, width=100, height=None, details=None):
         metrics.add_column(style=MUTED)
         metrics.add_column(justify='right', style='bold white')
     labels = {'train_loss': 'Train loss', 'val_logloss': 'Val logloss', 'val_ndcg': 'Val NDCG',
-              'best_ndcg': 'Лучший NDCG', 'learning_rate': 'Learning rate'}
+              'best_ndcg': 'Лучший NDCG', 'learning_rate': 'Learning rate',
+              'batches_per_second': 'Батчей/с, текущее окно', 'loader_wait_pct': 'Ожидание данных, %',
+              'candidates_per_second': 'Кандидатов/с'}
     values = view.get('metrics') or {}
     if not values:
         metrics.add_row('Метрики', 'ожидаются')
@@ -83,7 +85,8 @@ def dashboard(view, *, width=100, height=None, details=None):
     if view.get('steps_per_second'):
         speed = view['steps_per_second']
         unit = progress.get('unit', 'шаг')
-        resources.add_row('Темп, средний', f'{speed:.2f} {unit}/с' if speed >= 1 else f'{1 / speed:.1f} с/{unit}')
+        label = 'Темп, текущее окно' if view.get('speed_source') == 'window' else 'Темп, средний'
+        resources.add_row(label, f'{speed:.2f} {unit}/с' if speed >= 1 else f'{1 / speed:.1f} с/{unit}')
     gpu = view.get('gpu')
     resource_items = [resources]
     if gpu:

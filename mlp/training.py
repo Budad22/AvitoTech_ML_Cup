@@ -7,6 +7,7 @@ from pathlib import Path
 import platform
 import random
 import time
+import sys
 from datetime import datetime, timezone
 
 import numpy as np
@@ -21,6 +22,7 @@ from recsys_data.core import FeedBatch, CANDIDATES
 from .metrics import ndcg
 from .model import Ranker, features
 from training_logs import RunLogger
+from .pipeline import prepared_batches, to_device, feed_loss
 
 
 def save_checkpoint(path, state):
@@ -41,12 +43,15 @@ def select(batch, indices):
                      None, batch.embeddings)
 
 
-def batches(root, split, batch_size, seed=None):
-    dataset = PreparedSplit(root, split)
+def batches(root, split, batch_size, seed=None, *, embedding_cache='memmap',
+            cache_budget_bytes=16 * 1024**3, start_batch=0):
+    dataset = PreparedSplit(root, split, embedding_cache=embedding_cache, cache_budget_bytes=cache_budget_bytes)
     if seed is not None:
         random.Random(seed).shuffle(dataset.info['files'])
     columns = ['feed_id', 'timestamp', 'user_embedding', 'candidate_count', 'candidate_embedding_present', *CANDIDATES]
     for index, batch in enumerate(dataset.iter_batches(batch_size, include_labels=split != 'test', feature_columns=columns)):
+        if index < start_batch:
+            continue
         if seed is not None:
             order = np.random.default_rng(np.random.SeedSequence([seed, index])).permutation(len(batch.features))
             batch = select(batch, order)
@@ -127,7 +132,8 @@ def train(args, logger):
     if (output / 'last.pt').exists() and not args.resume:
         raise FileExistsError('Existing run: use --resume or a fresh output')
     logger.emit('run_initializing', phase='initialize', message='Loading run configuration')
-    torch.set_num_threads(8)
+    torch.set_num_threads(args.cpu_threads)
+    pa.set_cpu_count(args.arrow_threads)
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
@@ -155,7 +161,7 @@ def train(args, logger):
         random.setstate(state['random_rng'])
         if args.device == 'cuda' and state['cuda_rng'] is not None:
             torch.cuda.set_rng_state_all(state['cuda_rng'])
-    config = {**vars(args), 'data': str(args.data), 'output': str(output), 'resume': str(args.resume) if args.resume else None}
+    config = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
     config['environment'] = {'python': platform.python_version(), 'torch': torch.__version__,
                              'numpy': np.__version__, 'gpu': torch.cuda.get_device_name() if args.device == 'cuda' else None}
     config['code_sha256'] = {path.name: hashlib.sha256(path.read_bytes()).hexdigest()
@@ -197,41 +203,65 @@ def train(args, logger):
                 progress=dict(epoch=epoch + 1, epochs=args.epochs, current=cursor, total=total_batches, unit='батч'))
     while epoch < args.epochs and stale < 2:
         model.train()
-        for index, batch in enumerate(batches(args.data, 'train', args.batch_size, args.seed + epoch)):
-            if index < cursor:
-                continue
-            if elapsed + time.monotonic() - started >= args.hours * 3600:
-                save_checkpoint(output / 'last.pt', checkpoint())
-                if not (output / 'best.pt').exists() and cursor:
-                    metrics = evaluate(model, args.data, categories, args.device, boundary, 'selection', args.batch_size)
-                    best = metrics['ndcg']
-                    history.append(dict(epoch=epoch, partial_epoch=True, **metrics))
-                    save_checkpoint(output / 'best.pt', checkpoint())
-                    write_json(output / 'history.json', history)
-                print('Time budget reached; progress saved.', flush=True)
-                logger.emit('budget_exhausted', phase='completed', elapsed_seconds=elapsed + time.monotonic() - started)
-                return
-            dense, category, target, _ = tensors(batch, categories, args.device)
-            optimizer.zero_grad(set_to_none=True)
-            logits = model(dense, category)
-            losses = F.binary_cross_entropy_with_logits(logits, target, reduction='none')
-            loss = torch.stack([part.mean() for part in torch.split(losses, batch.candidate_counts.tolist())]).mean()
-            if not torch.isfinite(loss):
-                raise ValueError('Nonfinite training loss')
-            loss.backward()
-            optimizer.step()
-            cursor = index + 1
-            if cursor == 1 or time.monotonic() - last_report >= args.log_interval:
-                measured = elapsed + time.monotonic() - started
-                logger.emit('batch_completed', epoch=epoch + 1, batch=cursor, loss=loss.item(), seconds=measured,
-                            elapsed_seconds=measured, global_step=epoch * total_batches + cursor,
-                            metrics=dict(train_loss=loss.item(), learning_rate=optimizer.param_groups[0]['lr']),
-                            progress=dict(epoch=epoch + 1, epochs=args.epochs, current=cursor, total=total_batches, unit='батч'))
-                last_report = time.monotonic()
-            if time.monotonic() - last_save >= 600:
-                save_checkpoint(output / 'last.pt', checkpoint())
-                logger.emit('checkpoint_saved', checkpoint_at=datetime.now(timezone.utc).isoformat())
-                last_save = time.monotonic()
+        source = batches(args.data, 'train', args.batch_size, args.seed + epoch,
+                         embedding_cache=args.embedding_cache, cache_budget_bytes=int(args.cache_budget_gib * 1024**3),
+                         start_batch=cursor)
+        window_started = time.monotonic()
+        window_steps = 0
+        window_candidates = 0
+        loader_wait = 0.
+        reported_once = False
+        with prepared_batches(source, categories, device=args.device, prefetch=args.prefetch) as prepared:
+            ready = iter(prepared)
+            while True:
+                waiting = time.monotonic()
+                try:
+                    packed = next(ready)
+                except StopIteration:
+                    break
+                loader_wait += time.monotonic() - waiting
+                if elapsed + time.monotonic() - started >= args.hours * 3600:
+                    save_checkpoint(output / 'last.pt', checkpoint())
+                    if not (output / 'best.pt').exists() and cursor:
+                        metrics = evaluate(model, args.data, categories, args.device, boundary, 'selection', args.batch_size)
+                        best = metrics['ndcg']
+                        history.append(dict(epoch=epoch, partial_epoch=True, **metrics))
+                        save_checkpoint(output / 'best.pt', checkpoint())
+                        write_json(output / 'history.json', history)
+                    print('Time budget reached; progress saved.', flush=True)
+                    logger.emit('budget_exhausted', phase='completed', elapsed_seconds=elapsed + time.monotonic() - started)
+                    return
+                dense, category, target, weights = to_device(packed, args.device)
+                optimizer.zero_grad(set_to_none=True)
+                logits = model(dense, category)
+                loss = feed_loss(logits, target, weights, packed['feeds'])
+                if not torch.isfinite(loss):
+                    raise ValueError('Nonfinite training loss')
+                loss.backward()
+                optimizer.step()
+                cursor += 1
+                window_steps += 1
+                window_candidates += packed['candidates']
+                if not reported_once or time.monotonic() - last_report >= args.log_interval:
+                    measured = elapsed + time.monotonic() - started
+                    window_seconds = time.monotonic() - window_started
+                    logger.emit('batch_completed', epoch=epoch + 1, batch=cursor, loss=loss.item(), seconds=measured,
+                                elapsed_seconds=measured, global_step=epoch * total_batches + cursor,
+                                metrics=dict(train_loss=loss.item(), learning_rate=optimizer.param_groups[0]['lr'],
+                                             batches_per_second=window_steps / max(window_seconds, 1e-9),
+                                             candidates_per_second=window_candidates / max(window_seconds, 1e-9),
+                                             loader_wait_pct=100 * loader_wait / max(window_seconds, 1e-9)),
+                                progress=dict(epoch=epoch + 1, epochs=args.epochs, current=cursor, total=total_batches, unit='батч'))
+                    last_report = time.monotonic()
+                    reported_once = True
+                    window_started, window_steps, window_candidates, loader_wait = time.monotonic(), 0, 0, 0.
+                if time.monotonic() - last_save >= 600 or args.stop_file and args.stop_file.exists():
+                    save_checkpoint(output / 'last.pt', checkpoint())
+                    logger.emit('checkpoint_saved', checkpoint_at=datetime.now(timezone.utc).isoformat())
+                    last_save = time.monotonic()
+                    if args.stop_file and args.stop_file.exists():
+                        logger.emit('paused_by_request', phase='stopped')
+                        return
         logger.emit('validation_started', phase='validate')
         metrics = evaluate(model, args.data, categories, args.device, boundary, 'selection', args.batch_size)
         metrics['elapsed_seconds'] = elapsed + time.monotonic() - started
@@ -254,6 +284,7 @@ def train(args, logger):
 
 
 def main():
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command', choices=['train', 'evaluate', 'predict'])
     parser.add_argument('--data', type=Path, required=True, help='Prepared dataset root')
@@ -266,8 +297,14 @@ def main():
     parser.add_argument('--hours', type=float, default=12)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--log-interval', type=float, default=10, help='Seconds between progress events; the first batch is always logged')
+    parser.add_argument('--embedding-cache', choices=['memmap', 'ram'], default='memmap')
+    parser.add_argument('--cache-budget-gib', type=float, default=16)
+    parser.add_argument('--prefetch', type=int, choices=[0, 1, 2], default=2)
+    parser.add_argument('--cpu-threads', type=int, default=8)
+    parser.add_argument('--arrow-threads', type=int, default=2)
+    parser.add_argument('--stop-file', type=Path, help='Checkpoint and stop after a completed batch when this file exists')
     args = parser.parse_args()
-    if min(args.batch_size, args.epochs, args.hours, args.log_interval) <= 0:
+    if min(args.batch_size, args.epochs, args.hours, args.log_interval, args.cache_budget_gib, args.cpu_threads, args.arrow_threads) <= 0:
         parser.error('batch-size, epochs and hours must be positive')
     if args.command == 'train':
         with RunLogger(args.output, args.output.name, 'MLP') as logger:

@@ -4,7 +4,8 @@ try {
     [AvitoPower]::SetThreadExecutionState([uint32]2147483649) | Out-Null
     do {
         Start-Sleep -Seconds 30
-    } while ((Get-ScheduledTask -TaskName AvitoMLP).State -eq 'Running')
+    } while ((Get-ScheduledTask -TaskName AvitoMLP).State -eq 'Running' -or
+             ((Test-Path 'Q:\AVITOCUP\migration-state.json') -and !(Test-Path 'Q:\AVITOCUP\migration-release.flag')))
 } finally {
     [AvitoPower]::SetThreadExecutionState([uint32]2147483648) | Out-Null
 }

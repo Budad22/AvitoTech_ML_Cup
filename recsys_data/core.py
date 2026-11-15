@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import sqlite3
 import tempfile
+import threading
 
 import numpy as np
 import pyarrow as pa
@@ -18,6 +19,8 @@ import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 FORMAT_VERSION = 1
+_RAM_MATRICES = {}
+_RAM_LOCK = threading.Lock()
 FLOATS = ("f1", "f2", "f3", "f4", "f5")
 CANDIDATES = {"item_id": pa.int32(), "category_id": pa.int8(),
               **{name: pa.float32() for name in FLOATS},
@@ -60,7 +63,11 @@ def _sha256(path):
 class EmbeddingStore:
     """Keep int8 on disk; return float32 vectors and explicit presence masks."""
 
-    def __init__(self, directory):
+    def __init__(self, directory, *, cache="memmap", cache_budget_bytes=16 * 1024**3):
+        if cache not in ("memmap", "ram"):
+            raise ValueError("Embedding cache must be memmap or ram")
+        self.cache = cache
+        self.cache_budget_bytes = cache_budget_bytes
         self.directory = Path(directory)
         self.meta = json.loads((self.directory / "data.meta").read_text())
         shape = self.meta.get("shape")
@@ -87,7 +94,21 @@ class EmbeddingStore:
             if not self.available:
                 raise FileNotFoundError(f"Embedding matrix is not downloaded: {self.path}")
             if self._vectors is None:
-                self._vectors = np.memmap(self.path, dtype=np.int8, mode="r", shape=self.shape)
+                if self.cache == "ram":
+                    stat = self.path.stat()
+                    key = (str(self.path.resolve()), stat.st_size, stat.st_mtime_ns)
+                    with _RAM_LOCK:
+                        if key not in _RAM_MATRICES:
+                            used = sum(matrix.nbytes for matrix in _RAM_MATRICES.values())
+                            if used + stat.st_size > self.cache_budget_bytes:
+                                raise MemoryError("Embedding matrices exceed the configured RAM cache budget")
+                            print(f"Loading {self.path} into RAM ({stat.st_size / 1024**3:.2f} GiB)", flush=True)
+                            matrix = np.fromfile(self.path, dtype=np.int8).reshape(self.shape)
+                            matrix.setflags(write=False)
+                            _RAM_MATRICES[key] = matrix
+                        self._vectors = _RAM_MATRICES[key]
+                else:
+                    self._vectors = np.memmap(self.path, dtype=np.int8, mode="r", shape=self.shape)
             vectors[present] = self._vectors[indices[present]].astype(np.float32)
         return vectors, present
 
@@ -326,7 +347,7 @@ class FeedBatch:
 
 
 class PreparedSplit:
-    def __init__(self, root, split):
+    def __init__(self, root, split, *, embedding_cache="memmap", cache_budget_bytes=16 * 1024**3):
         self.root = Path(root).resolve()
         self.manifest = json.loads((self.root / "manifest.json").read_text())
         if self.manifest["format_version"] != FORMAT_VERSION:
@@ -334,7 +355,8 @@ class PreparedSplit:
         self.split = split
         self.info = self.manifest["splits"][split]
         source = (self.root / self.manifest["source_relative_path"]).resolve()
-        self.embeddings = EmbeddingStore(source / split / "item_embeddings")
+        self.embeddings = EmbeddingStore(source / split / "item_embeddings", cache=embedding_cache,
+                                         cache_budget_bytes=cache_budget_bytes)
         if self.embeddings.meta != self.info["embedding_meta"]:
             raise ValueError("Source embedding metadata has changed since preparation")
 

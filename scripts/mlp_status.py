@@ -85,7 +85,8 @@ def age(value):
 
 def render(snapshot, host, verbose=False, logs=0, previous=None):
     key, label = stage(snapshot)
-    lines = [f'MLP · {host} · EXP-013-r01', f'Стадия: {label}']
+    run_id = snapshot.get('run_id', 'EXP-013-r01')
+    lines = [f'MLP · {host} · {run_id}', f'Стадия: {label}']
     current = snapshot.get('archive') or snapshot.get('partial')
     total = snapshot.get('total_bytes')
     if current:
@@ -140,12 +141,13 @@ def render(snapshot, host, verbose=False, logs=0, previous=None):
     if errors or traceback:
         lines.append('В логах есть сообщения об ошибках; подробности: --logs 30')
     if verbose:
+        base = snapshot.get('workspace', 'E:\\AVITOCUP')
+        config = snapshot.get('config') or {}
         lines += [f"Задача: {snapshot['task']['state']} · код: {snapshot['task'].get('result')}",
                   f"Защита от сна: {snapshot.get('awake')}",
-                  f"Данные распакованы: {snapshot.get('extracted')} · подготовлены: {snapshot.get('prepared')}",
-                  'Размер архива измерен по файлу на сервере; общий размер — по локальному competition.zip.',
-                  'Windows может обновить размер распаковываемого файла только после его закрытия; процент распаковки — нижняя оценка.',
-                  'Каталог запуска: E:\\AVITOCUP\\AvitoTech_ML_Cup\\runs\\EXP-013-r01',
+                  f"Подготовленные данные: {config.get('data', 'не указаны')}",
+                  f"Кеш: {config.get('embedding_cache', 'memmap')} · очередь: {config.get('prefetch', 0)} · batch_size: {config.get('batch_size', '?')}",
+                  f'Каталог запуска: {base}\\AvitoTech_ML_Cup\\runs\\{run_id}',
                   'Процессы:']
         lines += [f"  PID {p['ProcessId']}: {p['CommandLine']}" for p in snapshot.get('processes', [])]
     if logs:

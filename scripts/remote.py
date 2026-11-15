@@ -11,6 +11,7 @@ import subprocess
 import sys
 import io
 import json
+import re
 import gzip
 import time
 from types import SimpleNamespace
@@ -21,7 +22,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import paramiko
 
 ROOT = Path(__file__).resolve().parents[1]
-REMOTE = 'E:/AVITOCUP'
+
+
+def active_workspace(client):
+    """Read the active runtime and run ID without modifying the server."""
+    script = "if (Test-Path 'Q:\\AVITOCUP\\active-workspace.json') { Get-Content 'Q:\\AVITOCUP\\active-workspace.json' -Raw } else { '{\"workspace\":\"E:/AVITOCUP\",\"run_id\":\"EXP-013-r01\"}' }"
+    encoded = base64.b64encode(script.encode('utf-16-le')).decode()
+    _, stdout, stderr = client.exec_command('powershell -NoProfile -EncodedCommand ' + encoded)
+    value = json.loads(stdout.read().decode('utf-8-sig'))
+    workspace = value['workspace'].replace('\\', '/')
+    run_id = value['run_id']
+    if stdout.channel.recv_exit_status() or workspace not in ('E:/AVITOCUP', 'Q:/AVITOCUP') or not re.fullmatch(r'[A-Za-z0-9-]+', run_id):
+        raise RuntimeError('Cannot determine the active server workspace')
+    return workspace, run_id
 
 
 class RemoteFiles:
@@ -105,6 +118,7 @@ def main():
                    look_for_keys=False, allow_agent=False)
     client.get_transport().set_keepalive(15)
     try:
+        remote_base, run_id = active_workspace(client)
         if args.action == 'status':
             from mlp_status import read_snapshot, render, stage, progress_events
             from training_logs.view import build_view
@@ -148,14 +162,16 @@ def main():
             return
         sftp = RemoteFiles(client)
         if args.action == 'fetch':
-            local = ROOT / 'runs' / 'EXP-013-r01'
+            local = ROOT / 'runs' / run_id
             local.mkdir(parents=True, exist_ok=True)
-            remote = REMOTE + '/AvitoTech_ML_Cup/runs/EXP-013-r01'
+            remote = remote_base + '/AvitoTech_ML_Cup/runs/' + run_id
             for entry in sftp.listdir_attr(remote):
                 if entry.filename.endswith(('.json', '.pt', '.log')):
                     sftp.get(remote + '/' + entry.filename, str(local / entry.filename))
             return
-        execute(client, r"New-Item -ItemType Directory -Force E:\AVITOCUP\AvitoTech_ML_Cup | Out-Null")
+        if args.action == 'deploy' and remote_base.startswith('Q:'):
+            raise RuntimeError('SSD workspace already deployed; use sync for source updates')
+        execute(client, f"New-Item -ItemType Directory -Force '{remote_base}/AvitoTech_ML_Cup' | Out-Null")
         files = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard'], cwd=ROOT, text=True).splitlines()
         def mkdir(path):
             try:
@@ -166,12 +182,12 @@ def main():
                     mkdir(parent)
                 sftp.mkdir(path)
         for name in files:
-            if args.action == 'sync' and name not in ('mlp/training.py', 'scripts/server_run.py', 'scripts/remote.py', 'scripts/keep_awake.ps1', 'docs/MLP.md', 'experiments.md'):
+            if args.action == 'sync' and not (name.startswith(('mlp/', 'recsys_data/', 'training_logs/', 'scripts/', 'tests/', 'docs/')) or name == 'experiments.md'):
                 continue
             local = ROOT / name
             if not local.is_file():
                 continue
-            destination = REMOTE + '/AvitoTech_ML_Cup/' + name
+            destination = remote_base + '/AvitoTech_ML_Cup/' + name
             mkdir(destination.rsplit('/', 1)[0])
             sftp.put(str(local), destination)
         if args.action == 'sync':
@@ -180,7 +196,7 @@ def main():
         print('Hashing local competition.zip', flush=True)
         with archive.open('rb') as source:
             digest = hashlib.file_digest(source, 'sha256').hexdigest()
-        with sftp.open(REMOTE + '/competition.sha256', 'w') as target:
+        with sftp.open(remote_base + '/competition.sha256', 'w') as target:
             target.write(digest)
         bootstrap = r'''$ErrorActionPreference = 'Stop'
 Set-Location E:\AVITOCUP\AvitoTech_ML_Cup
@@ -202,7 +218,7 @@ $worker = Start-Process -FilePath (Resolve-Path .venv\Scripts\python.exe) -Argum
 if ($worker.ExitCode) { throw 'MLP worker failed: inspect worker logs' }
 Stop-Transcript
 '''
-        with sftp.open(REMOTE + '/bootstrap.ps1', 'w') as target:
+        with sftp.open(remote_base + '/bootstrap.ps1', 'w') as target:
             target.write(bootstrap)
         # S4U needs no saved password and runs outside the SSH process tree.
         execute(client, r"$old=Get-ScheduledTask -TaskName AvitoMLP -ErrorAction SilentlyContinue; if ($old -and $old.State -eq 'Running') { throw 'Task already running' }; $action=New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-NoProfile -ExecutionPolicy Bypass -File E:\AVITOCUP\bootstrap.ps1'; $principal=New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType S4U -RunLevel Highest; $settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries; Register-ScheduledTask -TaskName AvitoMLP -Action $action -Principal $principal -Settings $settings -Force | Out-Null; Start-ScheduledTask -TaskName AvitoMLP; Get-ScheduledTask -TaskName AvitoMLP | Select-Object TaskName,State")

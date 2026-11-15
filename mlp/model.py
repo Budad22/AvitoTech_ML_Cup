@@ -17,8 +17,13 @@ def features(batch, categories):
     item = normalize(item)
     numeric = np.column_stack([table[f'f{i}'].to_numpy() for i in range(1, 6)])
     dense = np.column_stack((numeric, user, item, user * item, abs(user - item),
-                             ~present, np.linalg.norm(user, axis=1) == 0)).astype(np.float32)
-    category = np.array([categories.get(int(c), 0) for c in table['category_id'].to_pylist()])
+                             ~present, np.linalg.norm(user, axis=1) == 0)).astype(np.float32, copy=False)
+    lookup = np.zeros(256, dtype=np.int64)
+    for code, index in categories.items():
+        if -128 <= code <= 127:
+            lookup[code] = index
+    codes = table['category_id'].to_numpy()
+    category = lookup[codes]
     target = table['target'].to_numpy().astype(np.float32) if batch.labels is not None else None
     return dense, category, target, table
 

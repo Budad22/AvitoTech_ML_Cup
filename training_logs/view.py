@@ -10,13 +10,13 @@ def build_view(snapshot, *, host, phase, label, legacy_events=()):
                   'validate': ('evaluation', 'Валидация'), 'completed': ('transition', 'Обучение завершено'),
                   'error': ('error', 'Ошибка обучения')}
         phase, label = phases.get(state.get('phase'), (phase, label))
-    view = dict(run_id=state.get('run_id', 'EXP-013-r01'), architecture=state.get('architecture', 'MLP'),
+    view = dict(run_id=state.get('run_id', snapshot.get('run_id', 'EXP-013-r01')), architecture=state.get('architecture', 'MLP'),
                 host=host, phase=phase, label=label, progress=state.get('progress', {}),
                 metrics=dict(state.get('metrics') or {}), elapsed_seconds=state.get('elapsed_seconds', 0),
                 budget_seconds=state.get('budget_seconds', config.get('hours', 12) * 3600),
                 source=state.get('source', 'legacy log'), warnings=[])
     latest = next((e for e in reversed(list(legacy_events)) if 'batch' in e), None)
-    stamp = state.get('checkpoint_at') or state.get('timestamp')
+    stamp = (state.get('checkpoint_at') or state.get('timestamp')) if state.get('source') == 'checkpoint' else state.get('timestamp')
     if latest and latest.get('seconds', 0) >= view['elapsed_seconds']:
         view.update(progress=dict(epoch=latest['epoch'], epochs=config.get('epochs', 5),
                                   current=latest['batch'], total=snapshot.get('batches_per_epoch', 0), unit='батч'),
@@ -27,10 +27,18 @@ def build_view(snapshot, *, host, phase, label, legacy_events=()):
     if history:
         view['metrics']['best_ndcg'] = max(e['ndcg'] for e in history)
         view['metrics']['val_ndcg'] = history[-1]['ndcg']
-    if state.get('global_step') and view['elapsed_seconds']:
+    if view['metrics'].get('batches_per_second'):
+        view['steps_per_second'] = view['metrics']['batches_per_second']
+        view['speed_source'] = 'window'
+    elif state.get('global_step') and view['elapsed_seconds']:
         view['steps_per_second'] = state['global_step'] / view['elapsed_seconds']
         if phase == 'training' and state['global_step'] >= 10 and view['steps_per_second'] < .1:
             view['warnings'].append('Низкий средний темп. Подробности процесса и ресурсов: --verbose.')
+    migration = snapshot.get('migration') or {}
+    if migration.get('stage') == 'copying':
+        copied = migration.get('copied_bytes', 0) + migration.get('current_bytes', 0)
+        total = migration.get('total_bytes', 0)
+        view['warnings'].append(f'Перенос на SSD: {copied / 1024**3:.1f}/{total / 1024**3:.1f} ГиБ проверено/копируется.')
     for value in snapshot.get('gpu') or []:
         fields = value.split(',')
         if len(fields) == 4:
