@@ -82,6 +82,13 @@ def main():
         hashes = {path.name: hashlib.file_digest(path.open('rb'), 'sha256').hexdigest()
                   for path in RUN.iterdir() if path.suffix in ('.pt', '.parquet', '.json')}
         (RUN / 'checksums.json').write_text(json.dumps(hashes, indent=2))
+        metrics = json.loads((RUN / 'metrics.json').read_text())
+        journal = ROOT / 'experiments.md'
+        with journal.open('a', encoding='utf-8') as destination:
+            destination.write('\n\n### EXP-013-r01 — measured server results\n\n')
+            destination.write('Completed: ' + time.ctime() + '\n\n```json\n')
+            destination.write(json.dumps(metrics, indent=2) + '\n```\n')
+            destination.write('Artifacts: runs/EXP-013-r01; checksums.json records SHA-256. No online submission.\n')
         print('Pipeline complete', time.ctime(), flush=True)
     finally:
         ctypes.windll.kernel32.SetThreadExecutionState(0x80000000)

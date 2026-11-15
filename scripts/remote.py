@@ -116,7 +116,7 @@ def main():
                     mkdir(parent)
                 sftp.mkdir(path)
         for name in files:
-            if args.action == 'sync' and name not in ('mlp/training.py', 'scripts/server_run.py', 'scripts/remote.py', 'docs/MLP.md', 'experiments.md'):
+            if args.action == 'sync' and name not in ('mlp/training.py', 'scripts/server_run.py', 'scripts/remote.py', 'scripts/keep_awake.ps1', 'docs/MLP.md', 'experiments.md'):
                 continue
             local = ROOT / name
             if not local.is_file():
@@ -156,6 +156,7 @@ Stop-Transcript
             target.write(bootstrap)
         # S4U needs no saved password and runs outside the SSH process tree.
         execute(client, r"$old=Get-ScheduledTask -TaskName AvitoMLP -ErrorAction SilentlyContinue; if ($old -and $old.State -eq 'Running') { throw 'Task already running' }; $action=New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-NoProfile -ExecutionPolicy Bypass -File E:\AVITOCUP\bootstrap.ps1'; $principal=New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType S4U -RunLevel Highest; $settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries; Register-ScheduledTask -TaskName AvitoMLP -Action $action -Principal $principal -Settings $settings -Force | Out-Null; Start-ScheduledTask -TaskName AvitoMLP; Get-ScheduledTask -TaskName AvitoMLP | Select-Object TaskName,State")
+        execute(client, r"$action=New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-NoProfile -ExecutionPolicy Bypass -File E:\AVITOCUP\AvitoTech_ML_Cup\scripts\keep_awake.ps1'; $principal=New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType S4U -RunLevel Highest; $settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew; Register-ScheduledTask -TaskName AvitoMLPAwake -Action $action -Principal $principal -Settings $settings -Force | Out-Null; Start-ScheduledTask -TaskName AvitoMLPAwake")
     finally:
         client.close()
 
