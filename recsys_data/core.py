@@ -92,7 +92,14 @@ class EmbeddingStore:
         return vectors, present
 
 
-def _validate(table, split, embedding_rows):
+def _duplicate_candidate_count(table):
+    counts = _lengths(table, "item_id")
+    feed_ids = _np(table["feed_id"].combine_chunks()).astype(np.int64)
+    keys = (np.repeat(feed_ids, counts) << 32) | _np(_flat(table, "item_id")).astype(np.int64)
+    return len(keys) - len(np.unique(keys))
+
+
+def _validate(table, split, embedding_rows, *, allow_train_duplicate_items=False):
     expected = dict(BASE_SCHEMA)
     if split in ("train", "val"):
         expected["target"] = pa.list_(pa.int8())
@@ -134,9 +141,7 @@ def _validate(table, split, embedding_rows):
         values = _np(_flat(table, name)) if pa.types.is_list(table[name].type) else _np(table[name].combine_chunks())
         if np.any(values < 0):
             raise ValueError(f"Negative identifier in {name}")
-    feed_ids = _np(table["feed_id"].combine_chunks()).astype(np.int64)
-    keys = (np.repeat(feed_ids, counts) << 32) | _np(_flat(table, "item_id")).astype(np.int64)
-    if len(np.unique(keys)) != len(keys):
+    if not (split == "train" and allow_train_duplicate_items) and _duplicate_candidate_count(table):
         raise ValueError("Duplicate (feed_id, item_id) candidate keys")
     if "target" in expected:
         if not np.array_equal(_lengths(table, "target"), counts):
@@ -157,8 +162,9 @@ def _validate(table, split, embedding_rows):
     return counts, history_lengths
 
 
-def _prepare_table(table, split, embedding_rows):
-    counts, history_lengths = _validate(table, split, embedding_rows)
+def _prepare_table(table, split, embedding_rows, *, allow_train_duplicate_items=False):
+    counts, history_lengths = _validate(table, split, embedding_rows,
+                                       allow_train_duplicate_items=allow_train_duplicate_items)
     labels = table.select(["feed_id", "target"]).replace_schema_metadata(None) if "target" in table.column_names else None
     diagnostics = table.select(["feed_id", "pos"]).replace_schema_metadata(None) if "pos" in table.column_names else None
     features = table.select(list(BASE_SCHEMA)).replace_schema_metadata(None)
@@ -176,7 +182,8 @@ def _prepare_table(table, split, embedding_rows):
 
 
 def prepare_dataset(source, output, splits=("train", "val", "test"), *,
-                    batch_size=512, allow_missing_embeddings=False, archive_manifest=None):
+                    batch_size=512, allow_missing_embeddings=False, archive_manifest=None,
+                    allow_train_duplicate_items=False):
     """Validate and atomically write a new prepared directory; never overwrite inputs."""
     source, output = Path(source).resolve(), Path(output).resolve()
     splits = tuple(splits)
@@ -191,6 +198,7 @@ def prepare_dataset(source, output, splits=("train", "val", "test"), *,
     archive_path = Path(archive_manifest) if archive_manifest else source.parent / "archive_manifest.json"
     archive = json.loads(archive_path.read_text()) if archive_path.exists() else None
     manifest = {"format_version": FORMAT_VERSION, "started_at_utc": datetime.now(timezone.utc).isoformat(),
+                "candidate_key_policy": "train-occurrences-v1" if allow_train_duplicate_items else "unique-pairs-v1",
                 "source_relative_path": os.path.relpath(source, output), "batch_size": batch_size,
                 "versions": {"numpy": np.__version__, "pyarrow": pa.__version__},
                 "code_sha256": _sha256(__file__), "splits": {},
@@ -218,18 +226,25 @@ def prepare_dataset(source, output, splits=("train", "val", "test"), *,
                         "complete_impressions": set(p.name for p in paths) == expected_names if expected_names is not None else None,
                         "archive_files": len(expected_names) if expected_names is not None else None,
                         "has_labels": split != "test", "has_diagnostics": split == "train"}
-                for path in paths:
+                info["duplicate_candidate_occurrences"] = 0
+                for shard_index, path in enumerate(paths):
                     parquet = pq.ParquetFile(path)
                     file_info = {"name": path.name, "source_sha256": _sha256(path), "feeds": 0}
                     with ExitStack() as stack:
                         writers = {}
                         for batch in parquet.iter_batches(batch_size=batch_size):
                             raw = pa.Table.from_batches([batch])
-                            features, labels, diagnostics = _prepare_table(raw, split, store.shape[0])
+                            try:
+                                features, labels, diagnostics = _prepare_table(raw, split, store.shape[0],
+                                    allow_train_duplicate_items=allow_train_duplicate_items)
+                            except ValueError as error:
+                                raise ValueError(f"{split}/{path.name}: {error}") from error
                             try:
                                 registry.executemany("INSERT INTO feed_keys VALUES (?)", ((int(x),) for x in _np(features["feed_id"].combine_chunks())))
                             except sqlite3.IntegrityError as error:
                                 raise ValueError("Duplicate feed_id within or between splits") from error
+                            if split == "train" and allow_train_duplicate_items:
+                                info["duplicate_candidate_occurrences"] += _duplicate_candidate_count(raw)
                             for kind, table in (("features", features), ("labels", labels), ("diagnostics", diagnostics)):
                                 if table is None:
                                     continue
@@ -245,6 +260,9 @@ def prepare_dataset(source, output, splits=("train", "val", "test"), *,
                     if file_info["feeds"] == 0:
                         raise ValueError(f"Empty impressions shard: {path}")
                     info["files"].append(file_info)
+                    if (shard_index + 1) % 8 == 0 or shard_index + 1 == len(paths):
+                        print(f"Preparing {split}: {shard_index + 1}/{len(paths)} shards; "
+                              f"{info['feeds']} feeds; duplicate occurrences={info['duplicate_candidate_occurrences']}", flush=True)
                 registry.commit()
                 manifest["splits"][split] = info
                 print(f"{split}: {info['feeds']} feeds, {info['candidates']} candidates; complete={info['complete_impressions']}", flush=True)
@@ -320,7 +338,8 @@ class PreparedSplit:
         if self.embeddings.meta != self.info["embedding_meta"]:
             raise ValueError("Source embedding metadata has changed since preparation")
 
-    def iter_batches(self, batch_size=512, *, include_labels=False, include_diagnostics=False):
+    def iter_batches(self, batch_size=512, *, include_labels=False, include_diagnostics=False,
+                     feature_columns=None):
         if batch_size < 1:
             raise ValueError("batch_size must be positive")
         if include_labels and not self.info["has_labels"]:
@@ -329,7 +348,8 @@ class PreparedSplit:
             raise ValueError("Original positions are only available for train")
         kinds = ["features"] + (["labels"] if include_labels else []) + (["diagnostics"] if include_diagnostics else [])
         for shard in self.info["files"]:
-            iterators = [pq.ParquetFile(self.root / self.split / kind / shard["name"]).iter_batches(batch_size=batch_size)
+            iterators = [pq.ParquetFile(self.root / self.split / kind / shard["name"]).iter_batches(
+                            batch_size=batch_size, columns=feature_columns if kind == "features" else None)
                          for kind in kinds]
             for batches in zip_longest(*iterators):
                 if any(batch is None for batch in batches):

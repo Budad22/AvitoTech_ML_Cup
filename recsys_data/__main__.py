@@ -13,10 +13,13 @@ def main():
     parser.add_argument("--allow-missing-embeddings", action="store_true",
                         help="Prepare tables even when a matrix is not downloaded; vector lookup will fail explicitly")
     parser.add_argument("--archive-manifest", type=Path)
+    parser.add_argument("--allow-train-duplicate-items", action="store_true",
+                        help="Preserve repeated train candidate occurrences; val/test stay unique")
     args = parser.parse_args()
     prepare_dataset(args.data, args.output, args.splits, batch_size=args.batch_size,
                     allow_missing_embeddings=args.allow_missing_embeddings,
-                    archive_manifest=args.archive_manifest)
+                    archive_manifest=args.archive_manifest,
+                    allow_train_duplicate_items=args.allow_train_duplicate_items)
 
 
 if __name__ == "__main__":

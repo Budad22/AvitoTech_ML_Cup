@@ -28,6 +28,10 @@ def main():
         print('Worker started', time.ctime(), flush=True)
         archive = WORKSPACE / 'competition.zip'
         expected = (WORKSPACE / 'competition.sha256').read_text().strip()
+        marker = WORKSPACE / 'extraction.complete'
+        # Extraction's marker is written only after SHA-256 and ZIP CRC checks.
+        cached = (archive.exists() and marker.exists() and marker.read_text().strip() == expected
+                  and marker.stat().st_mtime_ns >= archive.stat().st_mtime_ns)
         if not archive.exists():
             partial = archive.with_suffix('.partial')
             url = 'https://storage.yandexcloud.net/avitotech-mlcup-2026/competition.zip'
@@ -47,11 +51,15 @@ def main():
                     time.sleep(10)
             else:
                 raise RuntimeError('Dataset download failed; partial file preserved')
-        digest = hashlib.file_digest(archive.open('rb'), 'sha256').hexdigest()
+        if cached:
+            digest = expected
+            print('Reusing verified, extracted archive (unchanged since verification).', flush=True)
+        else:
+            with archive.open('rb') as source_archive:
+                digest = hashlib.file_digest(source_archive, 'sha256').hexdigest()
         if digest != expected:
             raise ValueError('Dataset archive SHA-256 mismatch')
         source = WORKSPACE / 'competition'
-        marker = WORKSPACE / 'extraction.complete'
         if not marker.exists():
             with zipfile.ZipFile(archive) as compressed:
                 compressed.extractall(WORKSPACE)
@@ -65,9 +73,9 @@ def main():
             raise RuntimeError('CUDA is unavailable')
         print('CUDA', torch.__version__, torch.cuda.get_device_name(), flush=True)
         run('-m', 'unittest', 'discover', '-s', 'tests', '-v')
-        prepared = ROOT / 'artifacts' / 'prepared-full-v1'
+        prepared = ROOT / 'artifacts' / 'prepared-full-v2'
         if not prepared.exists():
-            run('-m', 'recsys_data', '--data', source, '--output', prepared)
+            run('-m', 'recsys_data', '--data', source, '--output', prepared, '--allow-train-duplicate-items')
         last = RUN / 'last.pt'
         args = ['-m', 'mlp', 'train', '--data', prepared, '--output', RUN]
         if last.exists():

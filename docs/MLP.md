@@ -1,5 +1,14 @@
 # MLP experiment
 
+For the full competition train, prepare a fresh `artifacts/prepared-full-v2`
+with `--allow-train-duplicate-items` and use that path in the commands below.
+This explicit policy preserves repeated train exposures, including their
+separate labels and original order; val/test keys remain unique. See DATA.md.
+The Windows worker enables this policy automatically. Category inspection
+reads only category/timestamp columns, and MLP batches omit unused histories.
+On resume, an unchanged archive with a matching successful extraction marker
+reuses the prior verification rather than reading and extracting it again.
+
 Run commands from the repository root with an activated Python 3.11 environment.
 Install `requirements-mlp.txt`; on the GPU server install the CUDA build of
 PyTorch 2.10.0 from its official wheel index. `paramiko` is needed only on the

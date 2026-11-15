@@ -11,11 +11,12 @@ import time
 import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
+import pyarrow.compute as pc
 import torch
 from torch.nn import functional as F
 
 from recsys_data import PreparedSplit
-from recsys_data.core import FeedBatch
+from recsys_data.core import FeedBatch, CANDIDATES
 from .metrics import ndcg
 from .model import Ranker, features
 
@@ -42,7 +43,8 @@ def batches(root, split, batch_size, seed=None):
     dataset = PreparedSplit(root, split)
     if seed is not None:
         random.Random(seed).shuffle(dataset.info['files'])
-    for index, batch in enumerate(dataset.iter_batches(batch_size, include_labels=split != 'test')):
+    columns = ['feed_id', 'timestamp', 'user_embedding', 'candidate_count', 'candidate_embedding_present', *CANDIDATES]
+    for index, batch in enumerate(dataset.iter_batches(batch_size, include_labels=split != 'test', feature_columns=columns)):
         if seed is not None:
             order = np.random.default_rng(np.random.SeedSequence([seed, index])).permutation(len(batch.features))
             batch = select(batch, order)
@@ -102,9 +104,14 @@ def evaluate(model, root, categories, device, boundary, part='all', batch_size=6
 
 def inspect(root, batch_size):
     categories = set()
-    for batch in batches(root, 'train', batch_size):
-        categories.update(batch.candidate_table()['category_id'].to_pylist())
-    timestamps = np.concatenate([batch.features['timestamp'].to_numpy() for batch in batches(root, 'val', batch_size)])
+    training = PreparedSplit(root, 'train')
+    print('Inspecting train category column and validation timestamps...', flush=True)
+    for shard in training.info['files']:
+        column = pq.read_table(Path(root) / 'train' / 'features' / shard['name'], columns=['category_id'])['category_id']
+        categories.update(pc.unique(pc.list_flatten(column)).to_pylist())
+    validation = PreparedSplit(root, 'val')
+    timestamps = np.concatenate([pq.read_table(Path(root) / 'val' / 'features' / shard['name'],
+                                columns=['timestamp'])['timestamp'].to_numpy() for shard in validation.info['files']])
     boundary = int(np.sort(timestamps)[min(len(timestamps) - 1, int(len(timestamps) * .8))])
     if not (timestamps < boundary).any():
         raise ValueError('Validation requires at least two distinct timestamps')
