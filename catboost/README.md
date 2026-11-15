@@ -34,7 +34,7 @@
 | Выбранные деревья | 61 |
 | Обучение / инференс test | 31,49 с / 0,72 с |
 
-Submission готов: `runs/catboost/EXP-015-r01/submission.parquet`, 33 008 326 байт, 2 904 806 проверенных строк. Булат подтвердил test NDCG **0,32509193596446206**; Public/Private не уточнено, запись находится в `experiments.md`. Локальный отчёт: [results/EXP-015-r01.json](results/EXP-015-r01.json).
+Submission готов: `runs/catboost/EXP-015-r01/submission.parquet`, 33 008 326 байт, 2 904 806 проверенных строк. Булат подтвердил test NDCG **0,32509193596446206**; Public/Private не уточнено, запись находится в [catboost_exp.md](../catboost_exp.md). Локальный отчёт: [results/EXP-015-r01.json](results/EXP-015-r01.json).
 
 Cosine user/item из аудита даёт 0,3416878731 и лучше этого минимального набора признаков. Это ориентир для следующего отдельного опыта с эмбеддингами; текущий запуск сохраняется как есть.
 
@@ -56,7 +56,7 @@ Cosine user/item из аудита даёт 0,3416878731 и лучше этог�
 .venv/bin/python -m unittest discover -s catboost -p 'test_*.py' -v
 ```
 
-Новые варианты этого метода сохраняйте отдельными конфигами и run-ID, с записью в experiments.md. Все преобразования для CatBoost остаются в этой папке.
+Новые варианты этого метода сохраняйте отдельными конфигами и run-ID, с записью в [catboost_exp.md](../catboost_exp.md). Все преобразования для CatBoost остаются в этой папке.
 
 ## История категорий: EXP-016-r01
 
