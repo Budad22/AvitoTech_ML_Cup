@@ -53,6 +53,6 @@ class StatusTests(unittest.TestCase):
         value = snapshot(archive={'bytes': 20_000_000_000}, extracted_bytes=10_000_000_000,
                          extracted_total_bytes=40_000_000_000)
         self.assertEqual(stage(value)[0], 'extraction')
-        self.assertIn('Распаковано: 10.00 ГБ / 40.00 ГБ (25.0%)', render(value, 'server'))
+        self.assertIn('Распаковано не менее: 10.00 ГБ / 40.00 ГБ (25.0%)', render(value, 'server'))
         value['extracted_bytes'] = 0
         self.assertEqual(stage(value)[0], 'verification')

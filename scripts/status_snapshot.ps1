@@ -40,6 +40,7 @@ $snapshot=@{
     metrics=JsonFile "$run\metrics.json"
     complete=(Test-Path "$run\checksums.json")
     processes=$processes
+    io=@(Get-CimInstance Win32_PerfFormattedData_PerfProc_Process | Where-Object { $_.IDProcess -in $processes.ProcessId } | Select-Object IOReadBytesPersec,IOWriteBytesPersec)
     worker=@(Tail "$run\worker.log" 250)
     errors=@(Tail "$run\worker.err.log" 30)
     bootstrap=@(Tail "$base\bootstrap.log" 30)

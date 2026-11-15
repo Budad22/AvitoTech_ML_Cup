@@ -67,3 +67,6 @@ omitted. `--watch` adds download speed/ETA after two samples; Ctrl+C stops only
 the viewer. `--verbose` shows task/process details, `--logs N` adds log tails,
 and `--json` emits the full snapshot for scripts. A running scheduler task by
 itself never means the optimizer is already training.
+Windows can defer file-size metadata updates until a large extracted file is
+closed. Extraction percentage is therefore a lower estimate; current process
+I/O rates help distinguish active extraction from unchanged file-size metadata.

@@ -101,10 +101,14 @@ def render(snapshot, host, verbose=False, logs=0, previous=None):
         lines.append(f"Промежуточных Parquet-файлов: {snapshot.get('staging_files', 0)}")
     if key == 'extraction':
         unpacked, expected = snapshot.get('extracted_bytes', 0), snapshot.get('extracted_total_bytes')
-        detail = f'Распаковано: {unpacked / 1e9:.2f} ГБ'
+        detail = f'Распаковано не менее: {unpacked / 1e9:.2f} ГБ'
         if expected:
             detail += f' / {expected / 1e9:.2f} ГБ ({unpacked / expected:.1%})'
         lines.append(detail)
+    if key in ('extraction', 'verification', 'preparation', 'initializing') and snapshot.get('io'):
+        read = sum(float(p.get('IOReadBytesPersec') or 0) for p in snapshot['io'])
+        written = sum(float(p.get('IOWriteBytesPersec') or 0) for p in snapshot['io'])
+        lines.append(f'Ввод/вывод: чтение {read / 1e6:.1f} МБ/с · запись {written / 1e6:.1f} МБ/с')
     events = progress_events(snapshot)
     batch = next((e for e in reversed(events) if 'batch' in e), None)
     if key == 'training' and batch:
@@ -134,6 +138,7 @@ def render(snapshot, host, verbose=False, logs=0, previous=None):
                   f"Защита от сна: {snapshot.get('awake')}",
                   f"Данные распакованы: {snapshot.get('extracted')} · подготовлены: {snapshot.get('prepared')}",
                   'Размер архива измерен по файлу на сервере; общий размер — по локальному competition.zip.',
+                  'Windows может обновить размер распаковываемого файла только после его закрытия; процент распаковки — нижняя оценка.',
                   'Каталог запуска: E:\\AVITOCUP\\AvitoTech_ML_Cup\\runs\\EXP-013-r01',
                   'Процессы:']
         lines += [f"  PID {p['ProcessId']}: {p['CommandLine']}" for p in snapshot.get('processes', [])]
