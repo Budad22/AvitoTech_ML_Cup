@@ -13,6 +13,32 @@ PURPLE = '#b39df3'
 MUTED = '#8493a5'
 
 
+class _PanelPair:
+    """Match both panel dimensions using their rendered content at terminal width."""
+    def __init__(self, left, right):
+        self.panels = (left, right)
+
+    def __rich_console__(self, console, options):
+        side_by_side = options.max_width >= 90
+        panel_width = (options.max_width - 2) // 2 if side_by_side else options.max_width
+        measured = options.update(width=panel_width, height=None)
+        for panel in self.panels:
+            panel.width = panel_width
+            panel.height = None
+        height = max(len(console.render_lines(panel, measured, pad=False)) for panel in self.panels)
+        for panel in self.panels:
+            panel.height = height
+        if side_by_side:
+            columns = Table.grid(padding=0)
+            columns.add_column(width=panel_width)
+            columns.add_column(width=2)
+            columns.add_column(width=panel_width)
+            columns.add_row(self.panels[0], Text(''), self.panels[1])
+            yield columns
+        else:
+            yield from self.panels
+
+
 def duration(seconds):
     seconds = max(0, int(seconds or 0))
     return f'{seconds // 3600:02d}:{seconds % 3600 // 60:02d}:{seconds % 60:02d}'
@@ -92,17 +118,10 @@ def dashboard(view, *, width=100, height=None, details=None):
     if gpu:
         resource_items += [Text(''), Text(gpu['name'], style=PURPLE),
             Text(f"GPU {gpu['utilization']}%  ·  VRAM {number(gpu['used'])} / {number(gpu['total'])} МиБ", style=MUTED),
-            ProgressBar(total=max(1, gpu['total']), completed=gpu['used'], complete_style=PURPLE)]
+            ProgressBar(total=100, completed=max(0, min(100, gpu['utilization'])), complete_style=PURPLE)]
     resources_panel = Panel(Group(*resource_items), title='[bold]ВРЕМЯ И РЕСУРСЫ[/bold]',
                             border_style='#48556b', box=box.ROUNDED, padding=padding)
-    if width >= 90:
-        columns = Table.grid(expand=True, padding=(0, 1))
-        columns.add_column(ratio=3)
-        columns.add_column(ratio=2)
-        columns.add_row(work, resources_panel)
-        content = columns
-    else:
-        content = Group(work, resources_panel)
+    content = _PanelPair(work, resources_panel)
     foot = Text(view.get('freshness', ''), style=MUTED)
     if view.get('source') == 'checkpoint':
         foot.append('\nПоказан сохранённый прогресс; текущие шаги могут быть впереди.', 'yellow')
