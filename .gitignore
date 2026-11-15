@@ -218,3 +218,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Competition data and generated artifacts
+data/
+artifacts/
+runs/
+*.memmap
+*.cbm
+*.pt

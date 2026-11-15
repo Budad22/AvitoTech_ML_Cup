@@ -1,0 +1,44 @@
+{
+  "prepared_path": "artifacts/prepared-v1",
+  "manifest_sha256": "86f5aa9af13c17aedeaf49eea63e5fef29961b2f59e2939aca54a094ad0fcb52",
+  "splits": {
+    "train": {
+      "raw_shards_equal": 4,
+      "feeds": 24592,
+      "candidates": 1925512,
+      "history_events": 4551792,
+      "complete_impressions": false,
+      "embedding_available": false
+    },
+    "val": {
+      "raw_shards_equal": 64,
+      "feeds": 14423,
+      "candidates": 1389971,
+      "history_events": 2499547,
+      "complete_impressions": true,
+      "embedding_available": true
+    },
+    "test": {
+      "raw_shards_equal": 64,
+      "feeds": 28595,
+      "candidates": 2904806,
+      "history_events": 4973106,
+      "complete_impressions": true,
+      "embedding_available": false
+    }
+  },
+  "checks": {
+    "all_original_columns_equal": true,
+    "whole_feed_batches_137": true,
+    "flat_candidate_and_history_counts": true,
+    "labels_and_positions_separated": true,
+    "real_val_vector_lookup_float32": true,
+    "unit_tests_passed": 6
+  },
+  "versions": {
+    "numpy": "2.0.2",
+    "pyarrow": "21.0.0"
+  },
+  "preparation_started_at_utc": "2026-11-15T12:26:01.049154+00:00",
+  "preparation_finished_at_utc": "2026-11-15T12:26:04.652854+00:00"
+}
