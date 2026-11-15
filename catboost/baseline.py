@@ -23,6 +23,8 @@ import pyarrow.parquet as pq
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from recsys_data import PreparedSplit
 from history_categories import add_history_categories, feature_names
+from cosine_features import COSINE_FEATURES, add_user_item_cosine
+from feed_context import CONTEXT_FEATURES, add_feed_percentiles
 
 FEATURES = ["f1", "f2", "f3", "f4", "f5", "category_id"]
 KEY_SCHEMA = pa.schema([("feed_id", pa.int32()), ("item_id", pa.int32()), ("score", pa.float32())])
@@ -42,10 +44,22 @@ def frame(table, features=FEATURES):
     return data
 
 
-def labeled_data(root, split, windows=()):
+def configured_features(windows, cosine, feed_percentiles=False):
+    return (FEATURES + feature_names(windows) + (COSINE_FEATURES if cosine else [])
+            + (CONTEXT_FEATURES if feed_percentiles else []))
+
+
+def candidate_features(batch, windows, cosine, feed_percentiles=False, *, include_target=False):
+    table = add_history_categories(batch, batch.candidate_table(include_target=include_target), windows)
+    if cosine:
+        table = add_user_item_cosine(batch, table)
+    return add_feed_percentiles(batch, table) if feed_percentiles else table
+
+
+def labeled_data(root, split, windows=(), cosine=False, feed_percentiles=False):
     dataset = PreparedSplit(root, split)
-    features = FEATURES + feature_names(windows)
-    tables = [add_history_categories(batch, batch.candidate_table(include_target=True), windows)
+    features = configured_features(windows, cosine, feed_percentiles)
+    tables = [candidate_features(batch, windows, cosine, feed_percentiles, include_target=True)
               .select(["feed_id", "item_id", *features, "target"])
               for batch in dataset.iter_batches(include_labels=True)]
     table = pa.concat_tables(tables)
@@ -114,13 +128,27 @@ def validate_submission(path, template):
 def run(data, output, config_path, feature_config_path=None, *, make_submission=False):
     started = time.perf_counter()
     feature_config = json.loads(feature_config_path.read_text()) if feature_config_path else {}
-    if set(feature_config) - {"history_category_windows"}:
+    if set(feature_config) - {"history_category_windows", "user_item_cosine", "feed_percentiles"}:
         raise ValueError("Unknown feature configuration key")
     windows = feature_config.get("history_category_windows", [])
     if (not isinstance(windows, list) or any(type(w) is not int or w < 1 or w > 256 for w in windows)
             or len(set(windows)) != len(windows)):
         raise ValueError("History windows must be distinct integers in [1, 256]")
-    features = FEATURES + feature_names(windows)
+    cosine = feature_config.get("user_item_cosine", False)
+    if type(cosine) is not bool:
+        raise ValueError("user_item_cosine must be a boolean")
+    feed_percentiles = feature_config.get("feed_percentiles", False)
+    if type(feed_percentiles) is not bool:
+        raise ValueError("feed_percentiles must be a boolean")
+    features = configured_features(windows, cosine, feed_percentiles)
+    embedding_files = {}
+    if cosine:
+        for split in ["train", "val"] + (["test"] if make_submission else []):
+            store = PreparedSplit(data, split).embeddings
+            if not store.available:
+                raise FileNotFoundError(f"Cosine requires {store.path}")
+            embedding_files[split] = {"path": str(store.path), "bytes": store.path.stat().st_size,
+                                      "metadata": store.meta}
     if output.exists():
         raise FileExistsError(f"Choose a new run directory: {output}")
     output.mkdir(parents=True)
@@ -130,6 +158,9 @@ def run(data, output, config_path, feature_config_path=None, *, make_submission=
     provenance = {"started_at_utc": datetime.now(timezone.utc).isoformat(), "status": "running",
                   "features": features, "feature_config": feature_config,
                   "feature_script_sha256": sha256(Path(__file__).with_name("history_categories.py")),
+                  "cosine_script_sha256": sha256(Path(__file__).with_name("cosine_features.py")),
+                  "context_script_sha256": sha256(Path(__file__).with_name("feed_context.py")),
+                  "embedding_files": embedding_files,
                   "categorical_features": ["category_id"], "config": config,
                   "script_sha256": sha256(__file__), "prepared_manifest_sha256": sha256(data / "manifest.json"),
                   "git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
@@ -137,8 +168,8 @@ def run(data, output, config_path, feature_config_path=None, *, make_submission=
                   "platform": platform.platform()}
     (output / "result.json").write_text(json.dumps(provenance, indent=2))
     print("Loading train and complete val", flush=True)
-    train_table, train_pool = labeled_data(data, "train", windows)
-    val_table, val_pool = labeled_data(data, "val", windows)
+    train_table, train_pool = labeled_data(data, "train", windows, cosine, feed_percentiles)
+    val_table, val_pool = labeled_data(data, "val", windows, cosine, feed_percentiles)
     provenance["load_seconds"] = time.perf_counter() - started
     provenance["train"] = {"feeds": len(np.unique(train_table["feed_id"].to_numpy())), "rows": len(train_table),
                            "complete": PreparedSplit(data, "train").info["complete_impressions"]}
@@ -164,7 +195,7 @@ def run(data, output, config_path, feature_config_path=None, *, make_submission=
         before_predict = time.perf_counter()
         with pq.ParquetWriter(output / "submission.parquet", KEY_SCHEMA, compression="zstd") as writer:
             for batch in PreparedSplit(data, "test").iter_batches():
-                table = add_history_categories(batch, batch.candidate_table(), windows)
+                table = candidate_features(batch, windows, cosine, feed_percentiles)
                 pool = Pool(frame(table, features), cat_features=["category_id"])
                 writer.write_table(prediction_table(table, model.predict(pool, thread_count=8)))
         provenance["test_predict_seconds"] = time.perf_counter() - before_predict

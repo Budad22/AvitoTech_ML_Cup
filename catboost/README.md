@@ -106,4 +106,49 @@ python3 scripts/expand_train.py --shards 16
 
 Загрузчик сверяет ETag официального архива, докачивает 12 файлов с CRC-проверкой и переиспользует неизменяемые исходные файлы через hard links. Подготовка проверена точным восстановлением всех исходных колонок 144 shard; отчёт: `reports/preparation_train16.json`.
 
-Контроль: [results/EXP-017-r01.json](results/EXP-017-r01.json). История: [results/EXP-016-r02.json](results/EXP-016-r02.json). Лучший локальный submission: `runs/catboost/EXP-016-r02/submission.parquet`; файл проверен на 2 904 806 строк и точное покрытие шаблона, автоматически не отправлялся. Модели, прогнозы и логи сохранены отдельно; исходные запуски не перезаписаны.
+Контроль: [results/EXP-017-r01.json](results/EXP-017-r01.json). История: [results/EXP-016-r02.json](results/EXP-016-r02.json). Сохранённый submission варианта train16: `runs/catboost/EXP-016-r02/submission.parquet`; файл проверен на 2 904 806 строк и точное покрытие шаблона, автоматически не отправлялся. Модели, прогнозы и логи сохранены отдельно; исходные запуски не перезаписаны.
+
+
+## Cosine поверх истории: EXP-018-r01
+
+Вариант с заметным приростом от cosine на **четырёх** train-файлах — **val NDCG 0,3519504563**. При сохранении истории категорий и прежних параметров добавлены cosine user/item и маска его определённости. К контролю с историей на тех же данных (EXP-016-r01) Δ=**+0,0197927345**; к исходному baseline без истории — **+0,0184973561**. Это один seed и checkpoint, выбранный на полной val; test не оценивался.
+
+```bash
+.venv/bin/python -u catboost/baseline.py   --data artifacts/prepared-v1   --feature-config catboost/configs/history_cosine.json   --output runs/catboost/EXP-018-r01
+.venv/bin/python catboost/compare_runs.py   --data artifacts/prepared-v1   --control runs/catboost/EXP-016-r01 --treatment runs/catboost/EXP-018-r01
+```
+
+Cosine требует полных матриц только train/val; lookup использует матрицу своего split. Нет вектора или нулевая норма — score=0, valid=0; определённый нулевой cosine имеет valid=1. Векторы переводятся в float32 до арифметики. Train-матрица скачана и CRC проверен; без feature-config или без user_item_cosine набор входов прежний.
+
+Подготовка/загрузка признаков заняла 109,88 с, обучение 34,71 с, весь запуск 145,24 с; выбраны 68 деревьев, пиковый RSS 3,32 GiB. Улучшение есть на обоих основных днях и всех срезах длины истории; на нулевом user-векторе (205 лент) Δ=−0,00219451. Подробности: [results/EXP-018-r01.json](results/EXP-018-r01.json) и [catboost_exp.md](../catboost_exp.md).
+
+Модель и val-прогнозы: `runs/catboost/EXP-018-r01/`. Test не читался, submission не создавался.
+
+
+## Контекст ленты: EXP-019-r01
+
+Поверх истории и cosine добавлены только пять процентилей f1–f5 внутри текущей ленты. Формула midrank: (число меньших значений + половина числа равных) / размер ленты. Равные значения получают одинаковый процентиль, константная лента — 0,5. Метки и случайный порядок кандидатов не используются.
+
+```bash
+.venv/bin/python -u catboost/baseline.py   --data artifacts/prepared-v1   --feature-config catboost/configs/history_cosine_context.json   --output runs/catboost/EXP-019-r01
+.venv/bin/python catboost/compare_runs.py   --data artifacts/prepared-v1   --control runs/catboost/EXP-018-r01 --treatment runs/catboost/EXP-019-r01
+```
+
+Полный val NDCG **0,3521669947**, Δ к cosine без контекста **+0,0002165383**. Bootstrap-интервал Δ [−0,00171056; +0,00210045] включает 0; на пустой/короткой истории есть ухудшение. Надёжное улучшение не установлено, вариант сохранён отдельно для последующего сравнения. Данные — те же 4 train-файла, параметры не менялись; checkpoint выбран на полной val, один seed.
+
+Подготовка/загрузка 102,74 с, обучение 42,87 с, всего 146,31 с; 91 дерево, пиковый RSS 3,40 GiB. Отчёт: [results/EXP-019-r01.json](results/EXP-019-r01.json). Артефакты: `runs/catboost/EXP-019-r01/`. Test не читался, submission не создавался.
+
+
+## Submission из сохранённой модели
+
+Только по явной команде владельца, без переобучения:
+
+```bash
+.venv/bin/python -u catboost/predict.py   --data artifacts/prepared-v1 --run runs/catboost/EXP-019-r01
+```
+
+Для варианта с контекстом подготовлен и проверен `runs/catboost/EXP-019-r01/submission.parquet`: 2 904 806 строк, полное покрытие шаблона, уникальные ключи, int32/int32/float32 и конечные score. Отчёт: [results/EXP-019-r01-submission.json](results/EXP-019-r01-submission.json). Модель не переобучалась. Булат сообщил результат на сайте соревнования: **test NDCG 0,3433693253**; Public/Private не уточнено. Ассистент файл автоматически не отправлял.
+
+Скрипт сверяет checkpoint, feature_config, код признаков и manifest с сохранённым запуском. Test-cosine требует отдельной test-матрицы, которая теперь скачана и прошла CRC. Старые файлы не перезаписываются; для другого имени используйте `--output`.
+
+Проверенный на сайте результат варианта **EXP-019-r01**: **test NDCG 0,3433693253**, подтверждён Булатом; локальный val — 0,3521669947. Отдельной test-оценки варианта без контекста нет.

@@ -1,0 +1,72 @@
+{
+  "status": "complete",
+  "training_run": "/Users/bulat/Documents/Avito/AvitoTech_ML_Cup/runs/catboost/EXP-019-r01",
+  "model_sha256": "bea7621aa804c046500e4dc4e119d615b04dc484a9105658b60208aa67d22c75",
+  "prepared_manifest_sha256": "86f5aa9af13c17aedeaf49eea63e5fef29961b2f59e2939aca54a094ad0fcb52",
+  "features": [
+    "f1",
+    "f2",
+    "f3",
+    "f4",
+    "f5",
+    "category_id",
+    "history_category_share_16",
+    "history_category_share_64",
+    "history_category_share_256",
+    "history_is_empty",
+    "user_item_cosine",
+    "user_item_cosine_valid",
+    "f1_feed_percentile",
+    "f2_feed_percentile",
+    "f3_feed_percentile",
+    "f4_feed_percentile",
+    "f5_feed_percentile"
+  ],
+  "feature_config": {
+    "history_category_windows": [
+      16,
+      64,
+      256
+    ],
+    "user_item_cosine": true,
+    "feed_percentiles": true
+  },
+  "started_at_utc": "2026-11-15T15:47:10.277821+00:00",
+  "finished_at_utc": "2026-11-15T15:47:16.535041+00:00",
+  "predict_and_validate_seconds": 6.257188625,
+  "submission": {
+    "rows": 2904806,
+    "exact_template_coverage": true,
+    "unique_keys": true,
+    "finite_float32_scores": true,
+    "sha256": "32339467f72196a9bebc07b8eac3b8cffbb3c59481863d05284c2f3603f1d36e",
+    "bytes": 33356109
+  },
+  "output": "/Users/bulat/Documents/Avito/AvitoTech_ML_Cup/runs/catboost/EXP-019-r01/submission.parquet",
+  "script_sha256": "3faecd78caf29a229e9abf868d75e7632954d761859ab16e817aa970163ea833",
+  "retrained": false,
+  "test_ndcg": 0.3433693253,
+  "uploaded": true,
+  "test_embeddings": {
+    "path": "/Users/bulat/Documents/Avito/AvitoTech_ML_Cup/data/initial_audit/competition/test/item_embeddings/data.memmap",
+    "bytes": 603001344,
+    "metadata": {
+      "dtype": "int8",
+      "shape": [
+        4710948,
+        128
+      ],
+      "order": "C"
+    }
+  },
+  "external_evaluation": {
+    "source": "Owner-reported result on the competition website",
+    "reported_value": "0,3433693253",
+    "test_ndcg": 0.3433693253,
+    "public_or_private": null,
+    "submission_id": null,
+    "submitted_at": null,
+    "reported_by": "Булат"
+  },
+  "uploaded_by": "owner"
+}

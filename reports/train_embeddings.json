@@ -1,0 +1,10 @@
+{
+  "path": "data/initial_audit/competition/train/item_embeddings/data.memmap",
+  "bytes": 10439416832,
+  "archive_etag": "\"d3288eba5c8598d86d984dc211832c84-1836\"",
+  "archive_member_crc32": "65544887",
+  "completion_crc_verified": "Confirmed by user-provided output from inspect_remote_zip.py: CRC verified",
+  "compressed_bytes": 8540434744,
+  "available_for_train": true,
+  "test_downloaded": false
+}
