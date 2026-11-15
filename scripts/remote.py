@@ -12,6 +12,7 @@ import sys
 import io
 import json
 import gzip
+import time
 from types import SimpleNamespace
 
 import paramiko
@@ -85,16 +86,41 @@ def main():
     parser.add_argument('action', choices=['deploy', 'status', 'fetch', 'sync'])
     parser.add_argument('--host', required=True)
     parser.add_argument('--user', required=True)
+    parser.add_argument('-v', '--verbose', action='store_true', help='Show task, paths and process details')
+    parser.add_argument('--logs', type=int, nargs='?', const=20, default=0, metavar='N', help='Show the last N log lines (default: 20)')
+    parser.add_argument('--json', action='store_true', help='Print the status snapshot as JSON')
+    parser.add_argument('--watch', type=float, nargs='?', const=10, default=0, metavar='SECONDS', help='Refresh status (default: every 10 seconds); Ctrl+C exits only the viewer')
     args = parser.parse_args()
+    if args.logs < 0 or args.watch < 0 or 0 < args.watch < 2:
+        parser.error('logs must be nonnegative; watch must be at least 2 seconds')
     client = paramiko.SSHClient()
     client.load_system_host_keys()
     client.load_host_keys(str(Path.home() / '.ssh' / 'known_hosts'))
     password = getpass.getpass('SSH password: ') if sys.stdin.isatty() else sys.stdin.readline().rstrip('\r\n')
     client.connect(args.host, username=args.user, password=password, timeout=20,
                    look_for_keys=False, allow_agent=False)
+    client.get_transport().set_keepalive(15)
     try:
         if args.action == 'status':
-            execute(client, r"Get-ScheduledTaskInfo -TaskName AvitoMLP | Format-List; Get-Content E:\AVITOCUP\bootstrap.log -Tail 15 -ErrorAction SilentlyContinue; Get-Content E:\AVITOCUP\AvitoTech_ML_Cup\runs\EXP-013-r01\worker.log -Tail 15 -ErrorAction SilentlyContinue; Get-Item E:\AVITOCUP\competition* | Select-Object Name,Length; nvidia-smi --query-gpu=name,memory.used,utilization.gpu --format=csv")
+            from mlp_status import read_snapshot, render, stage
+            previous = None
+            try:
+                while True:
+                    snapshot = read_snapshot(client, ROOT)
+                    if args.json:
+                        snapshot['stage'], snapshot['stage_label'] = stage(snapshot)
+                        print(json.dumps(snapshot, ensure_ascii=False), flush=True)
+                    else:
+                        if previous:
+                            print('\n' + '=' * 60)
+                        print(render(snapshot, args.host, args.verbose, args.logs, previous), flush=True)
+                    previous = snapshot
+                    if not args.watch:
+                        break
+                    time.sleep(args.watch)
+            except KeyboardInterrupt:
+                if not args.json:
+                    print('\nПросмотр завершён. Серверная задача продолжает работать.')
             return
         sftp = RemoteFiles(client)
         if args.action == 'fetch':
@@ -157,6 +183,9 @@ Stop-Transcript
         # S4U needs no saved password and runs outside the SSH process tree.
         execute(client, r"$old=Get-ScheduledTask -TaskName AvitoMLP -ErrorAction SilentlyContinue; if ($old -and $old.State -eq 'Running') { throw 'Task already running' }; $action=New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-NoProfile -ExecutionPolicy Bypass -File E:\AVITOCUP\bootstrap.ps1'; $principal=New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType S4U -RunLevel Highest; $settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries; Register-ScheduledTask -TaskName AvitoMLP -Action $action -Principal $principal -Settings $settings -Force | Out-Null; Start-ScheduledTask -TaskName AvitoMLP; Get-ScheduledTask -TaskName AvitoMLP | Select-Object TaskName,State")
         execute(client, r"$action=New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-NoProfile -ExecutionPolicy Bypass -File E:\AVITOCUP\AvitoTech_ML_Cup\scripts\keep_awake.ps1'; $principal=New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType S4U -RunLevel Highest; $settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew; Register-ScheduledTask -TaskName AvitoMLPAwake -Action $action -Principal $principal -Settings $settings -Force | Out-Null; Start-ScheduledTask -TaskName AvitoMLPAwake")
+    except (OSError, paramiko.SSHException) as error:
+        print(f'Не удалось получить ответ сервера: {error}. Серверная задача не остановлена.', file=sys.stderr)
+        raise SystemExit(1)
     finally:
         client.close()
 

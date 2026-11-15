@@ -37,6 +37,9 @@ checkpoint. Load checkpoints only from trusted sources.
 ```powershell
 python scripts/remote.py deploy --host HOST --user USER
 python scripts/remote.py status --host HOST --user USER
+python scripts/remote.py status --host HOST --user USER --watch 10
+python scripts/remote.py status --host HOST --user USER --verbose --logs 30
+python scripts/remote.py status --host HOST --user USER --json
 python scripts/remote.py fetch --host HOST --user USER
 ```
 
@@ -54,3 +57,13 @@ Windows. Deployment refuses a second instance while the task is running.
 After a failure, inspect the log before restarting the scheduled task; existing
 checkpoints are resumed automatically. `fetch` retrieves logs, metrics and
 checkpoints, while large predictions remain on the server.
+
+Status is read-only and does not restart the worker. Its default output shows
+the current stage, archive/extraction progress, GPU usage, training batch/loss,
+best validation NDCG and checkpoint age when available. Archive progress divides
+the server file size by the local `competition.zip` size; extraction progress
+uses the ZIP inventory's uncompressed size. Without a local archive, totals are
+omitted. `--watch` adds download speed/ETA after two samples; Ctrl+C stops only
+the viewer. `--verbose` shows task/process details, `--logs N` adds log tails,
+and `--json` emits the full snapshot for scripts. A running scheduler task by
+itself never means the optimizer is already training.
