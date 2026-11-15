@@ -1,14 +1,25 @@
 """Read-only stage detection and human-readable progress reports."""
 import json
+import gzip
 from datetime import datetime, timezone
 from pathlib import Path
-import zipfile
 
 
 def read_snapshot(client, root):
     import base64
-    script = (Path(__file__).with_name('status_snapshot.ps1')).read_text(encoding='utf-8')
+    source = (Path(__file__).with_name('status_snapshot.ps1')).read_text(encoding='utf-8')
+    script = '\n'.join(line.strip() for line in source.splitlines()
+                       if line.strip() and not line.lstrip().startswith('#'))
     encoded = base64.b64encode(script.encode('utf-16-le')).decode()
+    if len(encoded) + 70 >= 7800:
+        payload = base64.b64encode(gzip.compress(script.encode('utf-8'))).decode()
+        wrapper = (f"$m=[IO.MemoryStream]::new([Convert]::FromBase64String('{payload}')); "
+                   "$g=[IO.Compression.GZipStream]::new($m,[IO.Compression.CompressionMode]::Decompress); "
+                   "$r=[IO.StreamReader]::new($g,[Text.Encoding]::UTF8); "
+                   "& ([ScriptBlock]::Create($r.ReadToEnd())); $r.Dispose()")
+        encoded = base64.b64encode(wrapper.encode('utf-16-le')).decode()
+    if len(encoded) + 70 >= 8191:
+        raise ValueError('Status collector exceeds the Windows SSH command length limit')
     stdin, stdout, stderr = client.exec_command(
         'powershell -NoProfile -NonInteractive -EncodedCommand ' + encoded, timeout=90)
     stdin.close()
@@ -16,11 +27,6 @@ def read_snapshot(client, root):
     if stdout.channel.recv_exit_status():
         raise RuntimeError(error.decode('utf-8', errors='replace'))
     snapshot = json.loads(payload.decode('utf-8-sig'))
-    archive = root.parent / 'competition.zip'
-    snapshot['total_bytes'] = archive.stat().st_size if archive.exists() else None
-    if archive.exists():
-        with zipfile.ZipFile(archive) as compressed:
-            snapshot['extracted_total_bytes'] = sum(entry.file_size for entry in compressed.infolist())
     return snapshot
 
 

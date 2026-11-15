@@ -7,6 +7,7 @@ from pathlib import Path
 import platform
 import random
 import time
+from datetime import datetime, timezone
 
 import numpy as np
 import pyarrow as pa
@@ -19,6 +20,7 @@ from recsys_data import PreparedSplit
 from recsys_data.core import FeedBatch, CANDIDATES
 from .metrics import ndcg
 from .model import Ranker, features
+from training_logs import RunLogger
 
 
 def save_checkpoint(path, state):
@@ -119,11 +121,12 @@ def inspect(root, batch_size):
         'selection': int((timestamps < boundary).sum()), 'control': int((timestamps >= boundary).sum())}
 
 
-def train(args):
+def train(args, logger):
     output = args.output
     output.mkdir(parents=True, exist_ok=True)
     if (output / 'last.pt').exists() and not args.resume:
         raise FileExistsError('Existing run: use --resume or a fresh output')
+    logger.emit('run_initializing', phase='initialize', message='Loading run configuration')
     torch.set_num_threads(8)
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -184,7 +187,14 @@ def train(args):
                 config['batch_size'] = args.batch_size
                 torch.cuda.empty_cache()
         write_json(output / 'config.json', dict(config, boundary=boundary, partitions=sizes))
-    print(json.dumps({'event': 'training_started', 'batch_size': args.batch_size, 'partitions': sizes}), flush=True)
+    prepared_meta = json.loads((args.data / 'manifest.json').read_text())
+    total_batches = sum((file['feeds'] + args.batch_size - 1) // args.batch_size
+                        for file in prepared_meta['splits']['train']['files'])
+    budget = args.hours * 3600
+    last_report = time.monotonic()
+    logger.emit('training_started', batch_size=args.batch_size, partitions=sizes,
+                budget_seconds=budget, elapsed_seconds=elapsed,
+                progress=dict(epoch=epoch + 1, epochs=args.epochs, current=cursor, total=total_batches, unit='батч'))
     while epoch < args.epochs and stale < 2:
         model.train()
         for index, batch in enumerate(batches(args.data, 'train', args.batch_size, args.seed + epoch)):
@@ -199,6 +209,7 @@ def train(args):
                     save_checkpoint(output / 'best.pt', checkpoint())
                     write_json(output / 'history.json', history)
                 print('Time budget reached; progress saved.', flush=True)
+                logger.emit('budget_exhausted', phase='completed', elapsed_seconds=elapsed + time.monotonic() - started)
                 return
             dense, category, target, _ = tensors(batch, categories, args.device)
             optimizer.zero_grad(set_to_none=True)
@@ -210,12 +221,18 @@ def train(args):
             loss.backward()
             optimizer.step()
             cursor = index + 1
-            if cursor % 100 == 0:
-                print(json.dumps({'epoch': epoch + 1, 'batch': cursor, 'loss': loss.item(),
-                                  'seconds': elapsed + time.monotonic() - started}), flush=True)
+            if cursor == 1 or time.monotonic() - last_report >= args.log_interval:
+                measured = elapsed + time.monotonic() - started
+                logger.emit('batch_completed', epoch=epoch + 1, batch=cursor, loss=loss.item(), seconds=measured,
+                            elapsed_seconds=measured, global_step=epoch * total_batches + cursor,
+                            metrics=dict(train_loss=loss.item(), learning_rate=optimizer.param_groups[0]['lr']),
+                            progress=dict(epoch=epoch + 1, epochs=args.epochs, current=cursor, total=total_batches, unit='батч'))
+                last_report = time.monotonic()
             if time.monotonic() - last_save >= 600:
                 save_checkpoint(output / 'last.pt', checkpoint())
+                logger.emit('checkpoint_saved', checkpoint_at=datetime.now(timezone.utc).isoformat())
                 last_save = time.monotonic()
+        logger.emit('validation_started', phase='validate')
         metrics = evaluate(model, args.data, categories, args.device, boundary, 'selection', args.batch_size)
         metrics['elapsed_seconds'] = elapsed + time.monotonic() - started
         metrics['peak_cuda_bytes'] = torch.cuda.max_memory_allocated() if args.device == 'cuda' else 0
@@ -229,7 +246,10 @@ def train(args):
             save_checkpoint(output / 'best.pt', checkpoint())
         save_checkpoint(output / 'last.pt', checkpoint())
         write_json(output / 'history.json', history)
-        print(json.dumps(history[-1]), flush=True)
+        logger.emit('epoch_completed', phase='validate', epoch=epoch,
+                    elapsed_seconds=elapsed + time.monotonic() - started,
+                    metrics=dict(val_ndcg=metrics['ndcg'], val_logloss=metrics['logloss'], best_ndcg=best))
+    logger.emit('training_completed', phase='completed', elapsed_seconds=elapsed + time.monotonic() - started)
     print('Training complete.', flush=True)
 
 
@@ -245,11 +265,13 @@ def main():
     parser.add_argument('--epochs', type=int, default=5)
     parser.add_argument('--hours', type=float, default=12)
     parser.add_argument('--seed', type=int, default=42)
+    parser.add_argument('--log-interval', type=float, default=10, help='Seconds between progress events; the first batch is always logged')
     args = parser.parse_args()
-    if min(args.batch_size, args.epochs, args.hours) <= 0:
+    if min(args.batch_size, args.epochs, args.hours, args.log_interval) <= 0:
         parser.error('batch-size, epochs and hours must be positive')
     if args.command == 'train':
-        train(args)
+        with RunLogger(args.output, args.output.name, 'MLP') as logger:
+            train(args, logger)
         return
     if not args.model:
         parser.error('--model is required')

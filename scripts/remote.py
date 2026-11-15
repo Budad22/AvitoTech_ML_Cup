@@ -15,6 +15,9 @@ import gzip
 import time
 from types import SimpleNamespace
 
+# Direct invocation adds scripts/, while shared renderers live at repository root.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 import paramiko
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,6 +93,7 @@ def main():
     parser.add_argument('--logs', type=int, nargs='?', const=20, default=0, metavar='N', help='Show the last N log lines (default: 20)')
     parser.add_argument('--json', action='store_true', help='Print the status snapshot as JSON')
     parser.add_argument('--watch', type=float, nargs='?', const=10, default=0, metavar='SECONDS', help='Refresh status (default: every 10 seconds); Ctrl+C exits only the viewer')
+    parser.add_argument('--format', choices=['auto', 'rich', 'plain'], default='auto', help='Terminal dashboard or plain text; auto uses Rich only for a TTY')
     args = parser.parse_args()
     if args.logs < 0 or args.watch < 0 or 0 < args.watch < 2:
         parser.error('logs must be nonnegative; watch must be at least 2 seconds')
@@ -102,22 +106,42 @@ def main():
     client.get_transport().set_keepalive(15)
     try:
         if args.action == 'status':
-            from mlp_status import read_snapshot, render, stage
+            from mlp_status import read_snapshot, render, stage, progress_events
+            from training_logs.view import build_view
+            from training_logs.dashboard import dashboard
+            from training_logs.terminal import create_console
+            from rich.live import Live
+            from contextlib import ExitStack
+            console = create_console(args.format)
+            pretty = not args.json and (args.format == 'rich' or args.format == 'auto' and console.is_terminal)
             previous = None
             try:
-                while True:
-                    snapshot = read_snapshot(client, ROOT)
-                    if args.json:
-                        snapshot['stage'], snapshot['stage_label'] = stage(snapshot)
-                        print(json.dumps(snapshot, ensure_ascii=False), flush=True)
-                    else:
-                        if previous:
-                            print('\n' + '=' * 60)
-                        print(render(snapshot, args.host, args.verbose, args.logs, previous), flush=True)
-                    previous = snapshot
-                    if not args.watch:
-                        break
-                    time.sleep(args.watch)
+                with ExitStack() as stack:
+                    live = stack.enter_context(Live(console=console, auto_refresh=False)) if pretty and args.watch else None
+                    while True:
+                        snapshot = read_snapshot(client, ROOT)
+                        phase, label = stage(snapshot)
+                        view = build_view(snapshot, host=args.host, phase=phase, label=label,
+                                          legacy_events=progress_events(snapshot))
+                        if args.json:
+                            snapshot.update(stage=phase, stage_label=label, training_view=view)
+                            print(json.dumps(snapshot, ensure_ascii=False), flush=True)
+                        else:
+                            details = render(snapshot, args.host, args.verbose, args.logs, previous) if args.verbose or args.logs else None
+                            panel = dashboard(view, width=console.width, height=console.height, details=details)
+                            if live:
+                                live.update(panel, refresh=True)
+                            elif pretty:
+                                console.print(panel)
+                            else:
+                                from training_logs.view import plain_view
+                                print(plain_view(view), flush=True)
+                                if details:
+                                    print(details, flush=True)
+                        previous = snapshot
+                        if not args.watch:
+                            break
+                        time.sleep(args.watch)
             except KeyboardInterrupt:
                 if not args.json:
                     print('\nПросмотр завершён. Серверная задача продолжает работать.')
