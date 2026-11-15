@@ -17,7 +17,7 @@ RUN = ROOT / 'runs' / 'EXP-013-r01'
 
 def run(*args):
     print('COMMAND', args, flush=True)
-    subprocess.run([sys.executable, *map(str, args)], cwd=ROOT, check=True)
+    subprocess.run([sys.executable, *map(str, args)], cwd=ROOT, check=True, stderr=subprocess.STDOUT)
 
 
 def main():

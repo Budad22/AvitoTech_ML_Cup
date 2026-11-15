@@ -148,6 +148,8 @@ def train(args):
     config = {**vars(args), 'data': str(args.data), 'output': str(output), 'resume': str(args.resume) if args.resume else None}
     config['environment'] = {'python': platform.python_version(), 'torch': torch.__version__,
                              'numpy': np.__version__, 'gpu': torch.cuda.get_device_name() if args.device == 'cuda' else None}
+    config['code_sha256'] = {path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+                             for path in Path(__file__).parent.glob('*.py')}
     write_json(output / 'config.json', dict(config, boundary=boundary, partitions=sizes))
     started = last_save = time.monotonic()
 

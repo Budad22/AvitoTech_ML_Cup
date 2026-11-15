@@ -148,8 +148,8 @@ if ($LASTEXITCODE) { throw 'Data dependency installation failed' }
 & E:\AVITOCUP\uv.exe pip install --python .venv\Scripts\python.exe torch==2.10.0 --index-url https://download.pytorch.org/whl/cu128
 if ($LASTEXITCODE) { throw 'CUDA PyTorch installation failed' }
 New-Item -ItemType Directory -Force runs\EXP-013-r01 | Out-Null
-& .venv\Scripts\python.exe -u scripts\server_run.py *> runs\EXP-013-r01\worker.log
-if ($LASTEXITCODE) { throw 'MLP worker failed: inspect worker.log' }
+$worker = Start-Process -FilePath (Resolve-Path .venv\Scripts\python.exe) -ArgumentList '-u scripts\server_run.py' -WorkingDirectory (Get-Location).Path -WindowStyle Hidden -Wait -PassThru -RedirectStandardOutput runs\EXP-013-r01\worker.log -RedirectStandardError runs\EXP-013-r01\worker.err.log
+if ($worker.ExitCode) { throw 'MLP worker failed: inspect worker logs' }
 Stop-Transcript
 '''
         with sftp.open(REMOTE + '/bootstrap.ps1', 'w') as target:
