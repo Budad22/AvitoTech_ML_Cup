@@ -1,0 +1,14 @@
+{
+  "iterations": 200,
+  "depth": 6,
+  "learning_rate": 0.1,
+  "loss_function": "YetiRank",
+  "eval_metric": "NDCG:type=Base",
+  "task_type": "CPU",
+  "boosting_type": "Plain",
+  "one_hot_max_size": 64,
+  "random_seed": 42,
+  "thread_count": 8,
+  "early_stopping_rounds": 30,
+  "allow_writing_files": false
+}
