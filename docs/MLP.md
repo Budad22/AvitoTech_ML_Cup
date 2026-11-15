@@ -70,6 +70,12 @@ most two additional batches and pins host buffers for CUDA transfer. The cache
 budget rejects excess allocation. `--embedding-cache memmap --prefetch 0` is the
 lower-memory fallback. CPU/Arrow thread counts are independently configurable.
 Batch size, sample order, FP32 model and equal-feed loss semantics are preserved.
+CPU feature assembly writes into one contiguous float32 output, reuses owned
+item-vector buffers and computes user masks before candidate expansion. The
+shared embedding lookup casts directly into its float32 destination.
+`scripts/benchmark_features.py --help` describes a CPU-only comparison of saved
+code trees on identical batches, with exact byte checks before alternating
+timing runs. Warmup is excluded; concurrent-training measurements are labelled.
 
 `scripts/benchmark_pipeline.py` compares SSD memmap, RAM, and RAM with prefetch
 using cloned model/optimizer state on the same batches. Its CUDA-event timings

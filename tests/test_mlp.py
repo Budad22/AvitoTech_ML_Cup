@@ -4,6 +4,8 @@ import tempfile
 import unittest
 
 import numpy as np
+import pyarrow as pa
+import pyarrow.parquet as pq
 import torch
 
 from mlp.metrics import ndcg
@@ -14,6 +16,41 @@ import test_data
 
 
 class MLPContracts(unittest.TestCase):
+    def test_feature_optimization_matches_original_values_exactly(self):
+        fixture = test_data.DataContracts()
+        fixture.setUp()
+        batch = None
+        try:
+            rng = np.random.default_rng(19)
+            vectors = rng.integers(-128, 128, (3, 128), dtype=np.int8)
+            vectors[2] = 0
+            vectors.tofile(fixture.source / 'train/item_embeddings/data.memmap')
+            users = rng.integers(-128, 128, (3, 128), dtype=np.int8)
+            users[1] = 0
+            raw = fixture.table.set_column(fixture.table.schema.get_field_index('user_embedding'),
+                                           'user_embedding', pa.array(users.tolist(), type=pa.list_(pa.int8())))
+            pq.write_table(raw, fixture.source / 'train/impressions/part-00000.parquet')
+            output = fixture.root / 'prepared'
+            prepare_dataset(fixture.source, output, ('train',))
+            batch = next(PreparedSplit(output, 'train').iter_batches(include_labels=True))
+            dense, category, target, table = features(batch, {2: 1, 5: 2})
+            def original_normalize(values):
+                return values / np.maximum(np.linalg.norm(values, axis=-1, keepdims=True), 1e-12)
+            user = np.repeat(original_normalize(batch.user_vectors()), batch.candidate_counts, axis=0)
+            item, present = batch.candidate_vectors()
+            item = original_normalize(item)
+            numeric = np.column_stack([table[f'f{i}'].to_numpy() for i in range(1, 6)])
+            expected = np.column_stack((numeric, user, item, user * item, abs(user - item),
+                                        ~present, np.linalg.norm(user, axis=1) == 0)).astype(np.float32)
+            np.testing.assert_array_equal(dense, expected)
+            self.assertEqual(dense.tobytes(), expected.tobytes())
+            np.testing.assert_array_equal(category, [0, 1, 0, 0, 2] * 3)
+            np.testing.assert_array_equal(target, table['target'].to_numpy())
+            self.assertTrue(dense.flags.c_contiguous)
+        finally:
+            batch = None
+            fixture.tearDown()
+
     def test_metric_order_and_pessimistic_ties(self):
         self.assertEqual(ndcg([1, 0], [2., 1.]), 1.)
         self.assertAlmostEqual(ndcg([1, 0], [1., 1.]), 1 / np.log2(3))

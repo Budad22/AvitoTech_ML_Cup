@@ -109,7 +109,8 @@ class EmbeddingStore:
                         self._vectors = _RAM_MATRICES[key]
                 else:
                     self._vectors = np.memmap(self.path, dtype=np.int8, mode="r", shape=self.shape)
-            vectors[present] = self._vectors[indices[present]].astype(np.float32)
+            # Assignment casts int8 directly into the owned float32 output.
+            vectors[present] = self._vectors[indices[present]]
         return vectors, present
 
 

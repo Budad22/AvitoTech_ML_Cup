@@ -25,6 +25,12 @@ Unmeasured metrics are displayed as pending. Budget remaining is not an ETA
 for completing all epochs. Low measured throughput is flagged without changing
 the job. Detailed historical setup logs are available only on request.
 
+Progress and resource panels have matching dimensions. The resource dial shows
+instantaneous GPU utilization on a 0–100 scale; its cyan needle and purple arc
+expand into spare panel space. The separate purple VRAM bar shows used memory,
+with used/total MiB printed above it. Restart an existing viewer after updating
+presentation code; the training process does not need a restart for UI changes.
+
 ## Reuse from any trainer
 
 ```python

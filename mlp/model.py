@@ -12,12 +12,23 @@ def normalize(values):
 def features(batch, categories):
     table = batch.candidate_table(include_target=batch.labels is not None)
     counts = batch.candidate_counts
-    user = np.repeat(normalize(batch.user_vectors()), counts, axis=0)
+    users = normalize(batch.user_vectors())
+    user = np.repeat(users, counts, axis=0)
     item, present = batch.candidate_vectors()
-    item = normalize(item)
-    numeric = np.column_stack([table[f'f{i}'].to_numpy() for i in range(1, 6)])
-    dense = np.column_stack((numeric, user, item, user * item, abs(user - item),
-                             ~present, np.linalg.norm(user, axis=1) == 0)).astype(np.float32, copy=False)
+    # Candidate vectors are owned float32 buffers; normalizing them cannot alter
+    # the read-only embedding cache. Write derived features into one allocation.
+    item /= np.maximum(np.linalg.norm(item, axis=-1, keepdims=True), 1e-12)
+    dense = np.empty((len(item), 519), dtype=np.float32)
+    for i in range(5):
+        dense[:, i] = table[f'f{i + 1}'].to_numpy()
+    dense[:, 5:133] = user
+    dense[:, 133:261] = item
+    np.multiply(user, item, out=dense[:, 261:389])
+    difference = dense[:, 389:517]
+    np.subtract(user, item, out=difference)
+    np.abs(difference, out=difference)
+    dense[:, 517] = ~present
+    dense[:, 518] = np.repeat(np.linalg.norm(users, axis=1) == 0, counts)
     lookup = np.zeros(256, dtype=np.int64)
     for code, index in categories.items():
         if -128 <= code <= 127:
