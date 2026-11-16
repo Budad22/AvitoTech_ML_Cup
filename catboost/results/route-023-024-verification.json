@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "run_id": "EXP-CB-023-r01",
+      "artifact_hashes": true,
+      "exact_val_reproduction": true,
+      "exact_candidate_permutation": true,
+      "feeds": 137,
+      "candidates": 11534
+    },
+    {
+      "run_id": "EXP-CB-024-r01",
+      "artifact_hashes": true,
+      "exact_val_reproduction": true,
+      "exact_candidate_permutation": true,
+      "feeds": 137,
+      "candidates": 11534
+    }
+  ],
+  "common_train_candidates": 1925512,
+  "common_train_columns_exact": true,
+  "source_snapshot_sha256": "708cf1b9f563e546f05a205aaaa1e1b98ae5aaaef70cc0e1f1a55bab3aa2a765",
+  "test_read": false
+}

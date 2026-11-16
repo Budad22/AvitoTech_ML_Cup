@@ -1,0 +1,31 @@
+{
+  "run_id": "EXP-CB-020-r01",
+  "model_config": {
+    "iterations": 200,
+    "depth": 6,
+    "learning_rate": 0.1,
+    "loss_function": "YetiRank",
+    "eval_metric": "NDCG:type=Base",
+    "task_type": "CPU",
+    "boosting_type": "Plain",
+    "one_hot_max_size": 64,
+    "random_seed": 42,
+    "thread_count": 8,
+    "early_stopping_rounds": 30,
+    "allow_writing_files": false
+  },
+  "feature_config": {
+    "history_category_windows": [
+      16,
+      64,
+      256
+    ],
+    "user_item_cosine": true,
+    "feed_percentiles": true,
+    "centroid": true,
+    "event_types": false
+  },
+  "decision_metric": "selection full-length NDCG",
+  "minimum_delta": 0.001,
+  "decisions_sha256": "1c2b11de045e4730e7a6d515df2db9f70fa677b407225e2acc706e2ededee40e"
+}

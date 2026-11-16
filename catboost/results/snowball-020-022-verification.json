@@ -1,0 +1,42 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "run_id": "EXP-CB-020-control-r01",
+      "checkpoint_and_predictions_hashes": true,
+      "real_val_predictions_exact": true,
+      "candidate_permutation_exact": true,
+      "feeds": 137,
+      "rows": 11534,
+      "test_read": false
+    },
+    {
+      "run_id": "EXP-CB-020-r01",
+      "checkpoint_and_predictions_hashes": true,
+      "real_val_predictions_exact": true,
+      "candidate_permutation_exact": true,
+      "feeds": 137,
+      "rows": 11534,
+      "test_read": false
+    },
+    {
+      "run_id": "EXP-CB-021-r01",
+      "checkpoint_and_predictions_hashes": true,
+      "real_val_predictions_exact": true,
+      "candidate_permutation_exact": true,
+      "feeds": 137,
+      "rows": 11534,
+      "test_read": false
+    },
+    {
+      "run_id": "EXP-CB-022-r01",
+      "checkpoint_and_predictions_hashes": true,
+      "real_val_predictions_exact": true,
+      "candidate_permutation_exact": true,
+      "feeds": 137,
+      "rows": 11534,
+      "test_read": false
+    }
+  ],
+  "series_report_sha256": "85113875e2d7babf2b70006ce5b38095738007f68fbf719096232840f2770d9a"
+}

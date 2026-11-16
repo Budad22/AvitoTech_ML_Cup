@@ -1,0 +1,65 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "run_id": "EXP-CB-025-r01",
+      "artifact_hashes": true,
+      "real_val_reproduction_exact": true,
+      "permutation_exact": true,
+      "feeds": 137,
+      "candidates": 11534
+    },
+    {
+      "run_id": "EXP-CB-027-r01",
+      "artifact_hashes": true,
+      "real_val_reproduction_exact": true,
+      "permutation_exact": true,
+      "feeds": 137,
+      "candidates": 11534
+    },
+    {
+      "run_id": "EXP-CB-029-r01",
+      "artifact_hashes": true,
+      "real_val_reproduction_exact": true,
+      "permutation_exact": true,
+      "feeds": 137,
+      "candidates": 11534
+    },
+    {
+      "run_id": "EXP-CB-031-r01",
+      "artifact_hashes": true,
+      "real_val_reproduction_exact": true,
+      "permutation_exact": true,
+      "feeds": 137,
+      "candidates": 11534
+    },
+    {
+      "run_id": "EXP-CB-033-r01",
+      "artifact_hashes": true,
+      "real_val_reproduction_exact": true,
+      "permutation_exact": true,
+      "feeds": 137,
+      "candidates": 11534
+    },
+    {
+      "run_id": "EXP-CB-035-r01",
+      "artifact_hashes": true,
+      "real_val_reproduction_exact": true,
+      "permutation_exact": true,
+      "feeds": 137,
+      "candidates": 11534
+    },
+    {
+      "run_id": "EXP-CB-037-r01",
+      "artifact_hashes": true,
+      "real_val_reproduction_exact": true,
+      "permutation_exact": true,
+      "feeds": 137,
+      "candidates": 11534
+    }
+  ],
+  "best_run_id": "EXP-CB-024-r01",
+  "projection_sha256": "3a123144696c3ab0aa89981af427df8aeb663e17222384276f951c30a8e67550",
+  "source_snapshot_sha256": "e0f25bc5ccda95688217e768c3f80142facf669644ff06cb4ccc5f09e8dda548",
+  "test_read": false
+}

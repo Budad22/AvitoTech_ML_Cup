@@ -1,0 +1,35 @@
+{
+  "run_id": "EXP-CB-024-r01",
+  "run_directory": "runs/catboost/route-023-024/EXP-CB-024-r01",
+  "model_config": {
+    "iterations": 200,
+    "depth": 6,
+    "learning_rate": 0.1,
+    "loss_function": "YetiRank",
+    "eval_metric": "NDCG:type=Base",
+    "task_type": "CPU",
+    "boosting_type": "Plain",
+    "one_hot_max_size": 64,
+    "random_seed": 42,
+    "thread_count": 8,
+    "early_stopping_rounds": 30,
+    "allow_writing_files": false
+  },
+  "feature_config": {
+    "history_category_windows": [
+      16,
+      64,
+      256
+    ],
+    "user_item_cosine": true,
+    "feed_percentiles": true,
+    "centroid": true,
+    "event_types": false,
+    "neighbors": true
+  },
+  "seed_confirmation_passed": null,
+  "candidate_changed": false,
+  "selection_threshold": 0.001,
+  "projection_sha256": "3a123144696c3ab0aa89981af427df8aeb663e17222384276f951c30a8e67550",
+  "provisional_candidate": null
+}

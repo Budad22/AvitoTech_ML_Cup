@@ -1,0 +1,94 @@
+{
+  "run_id": "EXP-CB-023-r01",
+  "control_run": "EXP-CB-020-r01",
+  "full_val_bootstrap": {
+    "delta_ndcg": 0.007440501787129358,
+    "feeds": 14423,
+    "user_cluster_bootstrap_95": [
+      0.005140483344365159,
+      0.00994953127678306
+    ],
+    "bootstrap_repetitions": 1000,
+    "limitation": "Diagnostic; checkpoint selection and training-seed uncertainty excluded"
+  },
+  "slices": {
+    "empty_history": {
+      "feeds": 194,
+      "control_ndcg": 0.36434482375998006,
+      "candidate_ndcg": 0.3540789498840847,
+      "delta_ndcg": -0.010265873875895394
+    },
+    "history_1_15": {
+      "feeds": 454,
+      "control_ndcg": 0.3861799482427265,
+      "candidate_ndcg": 0.37529313547257154,
+      "delta_ndcg": -0.010886812770154975
+    },
+    "history_16_63": {
+      "feeds": 1306,
+      "control_ndcg": 0.3614696237240588,
+      "candidate_ndcg": 0.37376149819135607,
+      "delta_ndcg": 0.012291874467297355
+    },
+    "history_64_255": {
+      "feeds": 8293,
+      "control_ndcg": 0.3544183780978681,
+      "candidate_ndcg": 0.3629527599096718,
+      "delta_ndcg": 0.00853438181180368
+    },
+    "history_256": {
+      "feeds": 4176,
+      "control_ndcg": 0.34495607883252255,
+      "candidate_ndcg": 0.35152210694214003,
+      "delta_ndcg": 0.006566028109617453
+    },
+    "zero_user": {
+      "feeds": 205,
+      "control_ndcg": 0.34427946327583986,
+      "candidate_ndcg": 0.35386390697939224,
+      "delta_ndcg": 0.009584443703552308
+    },
+    "candidates_5_30": {
+      "feeds": 4056,
+      "control_ndcg": 0.5060866525558079,
+      "candidate_ndcg": 0.5155493600221248,
+      "delta_ndcg": 0.009462707466316831
+    },
+    "candidates_31_100": {
+      "feeds": 5061,
+      "control_ndcg": 0.3344684925024568,
+      "candidate_ndcg": 0.3409253986178175,
+      "delta_ndcg": 0.006456906115360671
+    },
+    "candidates_101plus": {
+      "feeds": 5306,
+      "control_ndcg": 0.25487817797666756,
+      "candidate_ndcg": 0.2617110490551722,
+      "delta_ndcg": 0.006832871078504579
+    },
+    "day_moscow_2026-09-22": {
+      "feeds": 7542,
+      "control_ndcg": 0.3542696109800277,
+      "candidate_ndcg": 0.3611866564876386,
+      "delta_ndcg": 0.006917045507610904
+    },
+    "day_moscow_2026-09-23": {
+      "feeds": 1,
+      "control_ndcg": 0.1505149978319906,
+      "candidate_ndcg": 0.15019048322368797,
+      "delta_ndcg": -0.00032451460830262846
+    },
+    "day_moscow_2026-09-24": {
+      "feeds": 6878,
+      "control_ndcg": 0.3526134239357329,
+      "candidate_ndcg": 0.36062144693823117,
+      "delta_ndcg": 0.00800802300249832
+    },
+    "day_moscow_2026-09-25": {
+      "feeds": 2,
+      "control_ndcg": 0.24453241315894395,
+      "candidate_ndcg": 0.2781035935540111,
+      "delta_ndcg": 0.03357118039506715
+    }
+  }
+}

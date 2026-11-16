@@ -1,0 +1,102 @@
+{
+  "status": "complete",
+  "training_run": "/Users/bulat/Documents/Avito/AvitoTech_ML_Cup/runs/catboost/route-023-024/EXP-CB-024-r01",
+  "run_id": "EXP-CB-024-r01",
+  "model_sha256": "b965cd60e52db4c7c8f5adb46311841e0a5cd443349d3466b544ae88f42356a7",
+  "training_manifest_sha256": "f0f6e14a7d440c3717a5c0bdcac9939d3f1025fc32fdff08e2d3597c8fb5bf04",
+  "inference_manifest_sha256": "86f5aa9af13c17aedeaf49eea63e5fef29961b2f59e2939aca54a094ad0fcb52",
+  "same_val_test_manifest_entries": true,
+  "source_snapshot_sha256": "708cf1b9f563e546f05a205aaaa1e1b98ae5aaaef70cc0e1f1a55bab3aa2a765",
+  "feature_source_sha256": {
+    "catboost/baseline.py": "61153cd70277bfb4d142c8da3b6f98c0435146059ae7ba9f05c2a21dbe621bc7",
+    "catboost/history_categories.py": "56739d1993501a7910091da1ccbc906816ba5eeef3f5f8e41f424509422ffab0",
+    "catboost/cosine_features.py": "c7c51d4d5de99752713ddc96bfd9f9a635c69c800bf2083a78ff22aad5c950f6",
+    "catboost/feed_context.py": "6d019f04c2fa4e2bac2ae6a6b3122226a4c4b94976b2071380d883087f5a438b",
+    "catboost/history_signals.py": "97dd0c0dc872da97affc2bdcad27ed33de973b4ade007f361c6995a84abd9bbe",
+    "catboost/history_neighbors.py": "41ba19de7d4dc75b73fae143c71a05c231121ee8637a1243eae9bc8d575f828f",
+    "recsys_data/core.py": "3234350e7162545bb3f1af6a489de7ae260a1772386e000a87f5cd6f91f5132a",
+    "recsys_data/__init__.py": "7f6d95e0acf1734b408363cbbc5b84918e20d75568df8d3afb6d3910d45af2cd"
+  },
+  "features": [
+    "f1",
+    "f2",
+    "f3",
+    "f4",
+    "f5",
+    "category_id",
+    "history_category_share_16",
+    "history_category_share_64",
+    "history_category_share_256",
+    "history_is_empty",
+    "user_item_cosine",
+    "user_item_cosine_valid",
+    "f1_feed_percentile",
+    "f2_feed_percentile",
+    "f3_feed_percentile",
+    "f4_feed_percentile",
+    "f5_feed_percentile",
+    "history_centroid_cosine_64",
+    "history_centroid_cosine_valid_64",
+    "history_vector_count_64",
+    "history_max_cosine_64",
+    "history_top3_mean_cosine_64",
+    "history_neighbor_valid_64"
+  ],
+  "feature_config": {
+    "history_category_windows": [
+      16,
+      64,
+      256
+    ],
+    "user_item_cosine": true,
+    "feed_percentiles": true,
+    "centroid": true,
+    "event_types": false,
+    "neighbors": true
+  },
+  "val_probe": {
+    "feeds": 137,
+    "candidates": 11534,
+    "exact_saved_float32_scores": true
+  },
+  "started_at_utc": "2026-11-16T08:56:16.009848+00:00",
+  "finished_at_utc": "2026-11-16T08:56:27.700083+00:00",
+  "predict_and_validate_seconds": 11.690251958,
+  "submission": {
+    "rows": 2904806,
+    "exact_template_coverage": true,
+    "unique_keys": true,
+    "finite_float32_scores": true,
+    "sha256": "cd213b421bbf7de1376329edaa3b7a4398db6f3e37fc84f5865d0c85f2dc10db",
+    "bytes": 33387667
+  },
+  "output": "/Users/bulat/Documents/Avito/AvitoTech_ML_Cup/runs/catboost/route-023-024/EXP-CB-024-r01/submission.parquet",
+  "script_sha256": "9789836905dd74b2201afe471bbe901ab44bb0dd3b55a75e894f1e35e4bb8f0c",
+  "retrained": false,
+  "test_ndcg": 0.3521185292,
+  "uploaded": true,
+  "test_embeddings": {
+    "path": "/Users/bulat/Documents/Avito/AvitoTech_ML_Cup/data/initial_audit/competition/test/item_embeddings/data.memmap",
+    "metadata": {
+      "dtype": "int8",
+      "shape": [
+        4710948,
+        128
+      ],
+      "order": "C"
+    },
+    "bytes": 603001344
+  },
+  "external_evaluation": {
+    "source": "Owner-reported result on the competition website",
+    "reported_value": "0,3521185292",
+    "test_ndcg": 0.3521185292,
+    "public_or_private": null,
+    "submission_id": null,
+    "submitted_at": null,
+    "reported_by": "Булат",
+    "independently_verified": false
+  },
+  "uploaded_by": "owner",
+  "assistant_uploaded": false
+}
