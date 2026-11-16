@@ -4,7 +4,7 @@ import json
 
 
 def read_suite(client):
-    script = r"""+$ErrorActionPreference='Stop'
+    script = r"""$ErrorActionPreference='Stop'
 [Console]::OutputEncoding=[Text.Encoding]::UTF8
 $active=Get-Content 'Q:\AVITOCUP\active-suite.json' -Raw | ConvertFrom-Json
 $root=[IO.Path]::GetFullPath($active.suite_directory)
