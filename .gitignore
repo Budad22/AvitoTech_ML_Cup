@@ -226,3 +226,6 @@ runs/
 *.memmap
 *.cbm
 *.pt
+
+# Softmax validation predictions are delivered as a separate archive.
+/ensembles/mlp_softmax/*.parquet

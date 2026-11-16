@@ -14,6 +14,7 @@ import traceback
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from mlp_trials.state import write_json
+from mlp_trials.models import KINDS
 
 VARIANTS = ('baseline', 'history_stats', 'history_pool', 'history_attention',
             'softmax', 'lambda', 'context_stats', 'context_pool', 'cross', 'raw_norm', 'low_lr')
@@ -144,7 +145,7 @@ def run(args):
                                  '--output', str(output), '--kind', kind, '--device', device,
                                  '--epochs', str(args.epochs), '--hours', str(args.hours),
                                  '--batch-size', str(args.batch_size), '--seed', '42',
-                                 '--history-window', '128' if kind == 'history_stats' else '64',
+                                 '--history-window', '128' if kind in ('history_stats', 'history_stats_plr') else '64',
                                  '--learning-rate', '.0003' if kind == 'low_lr' else '.001']
                     if (output / 'last.pt').exists():
                         arguments += ['--resume', str(output / 'last.pt')]
@@ -203,7 +204,7 @@ def main():
     parser.add_argument('--epochs', type=int, default=5)
     parser.add_argument('--hours', type=float, default=2)
     parser.add_argument('--batch-size', type=int, default=64)
-    parser.add_argument('--variants', nargs='+', choices=VARIANTS)
+    parser.add_argument('--variants', nargs='+', choices=KINDS)
     parser.add_argument('--selection-only', action='store_true', help='Keep control/test sealed during screening')
     parser.add_argument('--run-prefix', default='EXP-024')
     parser.add_argument('--device', choices=['cpu', 'cuda'], default='cuda')

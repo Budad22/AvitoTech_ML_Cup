@@ -4,10 +4,13 @@ from torch import nn
 
 from mlp.model import Ranker
 from .data import pad
+from .periodic import PeriodicEmbeddings
 
 KINDS = ('baseline', 'history_stats', 'history_pool', 'history_attention',
-         'softmax', 'lambda', 'context_stats', 'context_pool', 'cross', 'raw_norm', 'low_lr')
+         'softmax', 'lambda', 'context_stats', 'context_pool', 'cross', 'raw_norm', 'low_lr',
+         'plr', 'history_stats_plr')
 BASE_KINDS = {'baseline', 'softmax', 'lambda', 'low_lr'}
+PLR_KINDS = {'plr', 'history_stats_plr'}
 
 
 def head(size):
@@ -58,9 +61,12 @@ class TrialRanker(nn.Module):
         self.kind = kind
         self.category = nn.Embedding(categories + 1, 16, padding_idx=0)
         size = 535
+        if kind in PLR_KINDS:
+            self.numerical = PeriodicEmbeddings()
+            size += 5 * (16 - 1)  # Replace five scalars with five 16D embeddings.
         if kind == 'raw_norm':
             size += 2
-        elif kind == 'history_stats':
+        elif kind in ('history_stats', 'history_stats_plr'):
             size += 529
         elif kind in ('context_stats', 'context_pool'):
             size += 17
@@ -89,10 +95,13 @@ class TrialRanker(nn.Module):
 
     def forward(self, inputs):
         dense = inputs['dense']
-        base = torch.cat((dense, self.category(inputs['category'])), dim=1)
+        encoded = dense
+        if self.kind in PLR_KINDS:
+            encoded = torch.cat((self.numerical(dense[:, :5]).flatten(1), dense[:, 5:]), dim=1)
+        base = torch.cat((encoded, self.category(inputs['category'])), dim=1)
         if self.kind == 'raw_norm':
             base = torch.cat((base, inputs['norms']), dim=1)
-        elif self.kind == 'history_stats':
+        elif self.kind in ('history_stats', 'history_stats_plr'):
             base = torch.cat((base, history_stats(inputs)), dim=1)
         elif self.kind in ('context_stats', 'context_pool'):
             base = torch.cat((base, inputs['context']), dim=1)

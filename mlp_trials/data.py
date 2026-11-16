@@ -9,7 +9,7 @@ from recsys_data.core import CANDIDATES, _flat
 from mlp.model import features, normalize
 from mlp.training import select
 
-HISTORY_KINDS = {'history_stats', 'history_pool', 'history_attention'}
+HISTORY_KINDS = {'history_stats', 'history_pool', 'history_attention', 'history_stats_plr'}
 HISTORY_COLUMNS = ['history_length', 'history__category_id', 'history__event_type',
                    'history__event_source', 'history__item_id__embedding_idx']
 

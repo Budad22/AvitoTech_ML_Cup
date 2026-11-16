@@ -11,12 +11,12 @@ from mlp_trials.models import KINDS, create_model, score
 from mlp_trials.losses import objective
 
 
-def check(batch_size=64, candidates=300, device='cuda'):
+def check(batch_size=64, candidates=300, device='cuda', kinds=KINDS):
     torch.set_num_threads(4)
     results = []
-    for kind in KINDS:
+    for kind in kinds:
         torch.manual_seed(42)
-        n, h = batch_size * candidates, 128 if kind == 'history_stats' else 64
+        n, h = batch_size * candidates, 128 if kind in ('history_stats', 'history_stats_plr') else 64
         def zeros(*shape, dtype=torch.float32):
             return torch.zeros(shape, dtype=dtype, device=device)
         inputs = dict(dense=zeros(n, 519), category=zeros(n, dtype=torch.long),
@@ -57,7 +57,8 @@ if __name__ == '__main__':
     parser.add_argument('--candidates', type=int, default=300)
     parser.add_argument('--device', default='cuda', choices=['cuda', 'cpu'])
     parser.add_argument('--output', type=Path)
+    parser.add_argument('--kinds', nargs='+', choices=KINDS, default=KINDS)
     args = parser.parse_args()
-    result = check(args.batch_size, args.candidates, args.device)
+    result = check(args.batch_size, args.candidates, args.device, args.kinds)
     if args.output:
         args.output.write_text(json.dumps(result, indent=2), encoding='utf-8')

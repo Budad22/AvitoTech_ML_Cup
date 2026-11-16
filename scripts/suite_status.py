@@ -11,7 +11,8 @@ $root=[IO.Path]::GetFullPath($active.suite_directory)
 if (!$root.StartsWith('Q:\AVITOCUP\experiments\',[StringComparison]::OrdinalIgnoreCase)) {throw 'Invalid suite directory'}
 $state=Get-Content "$root\status.json" -Raw | ConvertFrom-Json
 $progress=if ($state.current.output -and (Test-Path "$($state.current.output)\progress.json")) {Get-Content "$($state.current.output)\progress.json" -Raw | ConvertFrom-Json}
-@{suite=$state; progress=$progress; task=(Get-ScheduledTask -TaskName AvitoMLPSuite).State.ToString(); gpu=@(& nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits)} | ConvertTo-Json -Depth 15 -Compress
+$taskName=if ($active.task_name) {$active.task_name} else {'AvitoMLPSuite'}
+@{suite=$state; progress=$progress; task=(Get-ScheduledTask -TaskName $taskName).State.ToString(); gpu=@(& nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits)} | ConvertTo-Json -Depth 15 -Compress
 """
     encoded = base64.b64encode(script.encode('utf-16-le')).decode()
     _, stdout, stderr = client.exec_command('powershell -NoProfile -NonInteractive -EncodedCommand ' + encoded, timeout=60)

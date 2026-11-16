@@ -25,6 +25,12 @@ class StatusTests(unittest.TestCase):
         self.assertEqual(stage(value)[0], 'stopped')
         self.assertNotIn('Эпоха: 1/', render(value, 'server'))
 
+    def test_successful_exit_is_explained_without_claiming_pipeline_completion(self):
+        phase, label = stage(snapshot(task={'state': 'Ready', 'result': 0}))
+        self.assertEqual(phase, 'stopped')
+        self.assertIn('успешное завершение', label)
+        self.assertEqual(stage(snapshot(complete=True, task={'state': 'Ready', 'result': 0}))[0], 'complete')
+
     def test_live_training_and_opt_in_logs(self):
         value = snapshot(processes=[{'ProcessId': 123, 'CommandLine': 'python -m mlp train --data E:/AVITOCUP/data'}],
                          worker=['{"event":"training_started"}', '{"epoch":2,"batch":100,"loss":0.12345,"seconds":3600}'])

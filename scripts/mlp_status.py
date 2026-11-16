@@ -45,6 +45,8 @@ def stage(snapshot):
         return 'complete', 'Пайплайн завершён'
     if not running:
         code = snapshot['task'].get('result')
+        if code == 0:
+            return 'stopped', 'Задача не работает; код 0 означает успешное завершение'
         return 'stopped', f'Задача не работает (код завершения: {code})'
     commands = ' '.join(p.get('CommandLine') or '' for p in snapshot.get('processes', [])).replace('-m mlp_trials ', '-m mlp ')
     for pattern, key, label in (

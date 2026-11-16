@@ -12,11 +12,11 @@ if (Test-Path 'Q:\AVITOCUP\active-workspace.json') {
 $repo="$base\AvitoTech_ML_Cup"
 $run="$repo\runs\$runId"
 $taskName='AvitoMLP'
-if ($active.task_name -eq 'AvitoMLPSuite') {
+if ($active.task_name -match '^AvitoMLP[A-Za-z0-9_-]*$' -and $active.run_directory) {
     $candidate=[IO.Path]::GetFullPath($active.run_directory)
     if ($candidate.StartsWith('Q:\AVITOCUP\experiments\',[StringComparison]::OrdinalIgnoreCase)) {
         $run=$candidate
-        $taskName='AvitoMLPSuite'
+        $taskName=$active.task_name
     }
 }
 function Tail($path,$count) {
@@ -43,7 +43,7 @@ function FileInfo($path) {
     $f=Get-Item $path
     if ($f) { @{bytes=$f.Length; modified=$f.LastWriteTimeUtc.ToString('o')} }
 }
-$suite=if ($taskName -eq 'AvitoMLPSuite') { JsonFile "$($active.suite_directory)\status.json" }
+$suite=if ($active.suite_directory -and $run.StartsWith('Q:\AVITOCUP\experiments\',[StringComparison]::OrdinalIgnoreCase)) { JsonFile "$($active.suite_directory)\status.json" }
 $done=if ($suite) { $suite.status -in @('completed','completed_with_errors') } else { Test-Path "$run\checksums.json" }
 if ($quick) {
     $worker=@(Tail "$run\worker.log" 40)
