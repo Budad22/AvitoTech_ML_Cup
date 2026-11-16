@@ -49,7 +49,7 @@ def write_leaderboard(directory, ledger):
     (directory / 'leaderboard.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
 
 
-def report(directory, trainer, names, catalog, seeds, ledger, incomplete):
+def report(directory, trainer, names, catalog, seeds, ledger, incomplete, experiment='EXP-029'):
     by_name = {case['name']: case for case in catalog}
     metrics, scores, fast_scores, details = {}, {}, {}, []
     for name in names:
@@ -82,7 +82,7 @@ def report(directory, trainer, names, catalog, seeds, ledger, incomplete):
                 blended, metrics[alternative], users, comparisons=max(1, (len(names) + 1) * len(names) // 2))
             result['blend'] = dict(left=mlp, right=alternative, weights=[.5, .5],
                                    confirmation_ndcg=float(blended.mean()))
-    result.update(experiment='EXP-029', seeds=list(seeds), final_runs=details,
+    result.update(experiment=experiment, device=getattr(trainer, 'device', 'cpu'), seeds=list(seeds), final_runs=details,
                   confirmation_feeds=len(trainer.confirmation), fast_feeds=len(trainer.fast),
                   confirmation_selection_indices_sha256=sha256(trainer.cache / 'confirmation.npy'),
                   data=trainer.info, ledger=ledger, official_control_evaluated=False, test_predicted=False)
@@ -106,8 +106,25 @@ def run(args):
     catalog = hypotheses()
     by_name = {case['name']: case for case in catalog}
     seeds = (42, 43, 44)
+    device = getattr(args, 'device', 'cpu')
+    experiment = getattr(args, 'experiment', 'EXP-029')
+    selected_path = getattr(args, 'finalists', None)
+    selected_plan = read(selected_path) if selected_path else None
+    if selected_path and not selected_plan:
+        raise ValueError('Missing frozen finalist plan')
+    if selected_plan:
+        names = selected_plan['names']
+        if len(names) != len(set(names)) or not set(CONTROLS).issubset(names) or any(n not in by_name for n in names):
+            raise ValueError('Frozen finalists must contain known unique models and both controls')
+        if selected_plan['seeds'] != list(seeds):
+            raise ValueError('Frozen finalist seeds changed')
     config = dict(catalog=catalog, seeds=list(seeds), batch_size=16, threads=4, cache=str(cache),
                   steps=[200, 800, 3200, 6400], maximum_hours=args.maximum_hours)
+    if device != 'cpu' or experiment != 'EXP-029':
+        config.update(device=device, experiment=experiment)
+    if selected_plan:
+        config.update(finalists_source=str(selected_path.resolve()), finalists_sha256=sha256(selected_path),
+                      mode='confirm_frozen_finalists')
     root = Path(__file__).parents[1]
     hashes = {str(path.relative_to(root)): sha256(path) for folder in
               ('mlp_research', 'mlp', 'mlp_trials', 'recsys_data', 'training_logs', 'scripts')
@@ -118,17 +135,21 @@ def run(args):
         raise ValueError('Research source snapshot changed')
     write_json(directory / 'research-config.json', config)
     write_json(directory / 'code-hashes.json', hashes)
-    with controller_lock(directory / 'controller.lock'), RunLogger(directory, 'EXP-029', 'CPU/research') as logger:
+    with controller_lock(directory / 'controller.lock'), RunLogger(directory, experiment, device.upper() + '/research') as logger:
         if os.name == 'nt':
             ctypes.windll.kernel32.SetThreadExecutionState(0x80000001)
         torch.set_num_threads(4)
+        if device == 'cuda':
+            torch.set_float32_matmul_precision('highest')
+            torch.backends.cuda.matmul.allow_tf32 = False
         previous = read(directory / 'status.json') or {}
         if previous.get('status') == 'completed':
             return
-        state = dict(experiment='EXP-029', status='running', controller_pid=os.getpid(),
+        state = dict(experiment=experiment, device=device, status='running', controller_pid=os.getpid(),
                      controller_identity=process_identity(os.getpid()), started_at=datetime.now(timezone.utc).isoformat(),
                      completed=previous.get('completed', 0), failed=previous.get('failed', 0), phase='prepare',
-                     hypotheses=len(catalog), cache=str(cache), directory=str(directory))
+                     hypotheses=len(selected_plan['names']) if selected_plan else len(catalog),
+                     cache=str(cache), directory=str(directory))
         elapsed = previous.get('elapsed_seconds', 0.)
         started = time.monotonic()
         ledger = read(directory / 'ledger.json') or {}
@@ -140,6 +161,8 @@ def run(args):
             write_json(directory / 'status.json', state)
 
         def emit(event, **fields):
+            if event == 'device_cache_ready':
+                state['device_cache'] = fields
             update(progress=fields)
             logger.emit(event, phase=state['phase'], **fields)
 
@@ -175,6 +198,10 @@ def run(args):
 
         try:
             update()
+            active_root = getattr(args, 'active_root', None)
+            if active_root:
+                write_json(active_root / 'active-research.json', dict(directory=str(directory), experiment=experiment,
+                           task_name=getattr(args, 'task_name', 'AvitoMLPResearchGPU')))
             while not (cache / 'metadata.json').exists():
                 error_log = directory / 'prepare.err.log'
                 if error_log.exists() and 'Traceback' in error_log.read_text(encoding='utf-8', errors='replace'):
@@ -183,29 +210,37 @@ def run(args):
                     raise TimeoutError('Cache preparation safety budget reached')
                 update()
                 time.sleep(5)
-            trainer = Trainer(cache, directory, emit)
+            if selected_plan:
+                for name in ('fast', 'confirmation'):
+                    if sha256(cache / (name + '.npy')) != selected_plan[name + '_sha256']:
+                        raise ValueError('Frozen validation partition changed: ' + name)
+            trainer = Trainer(cache, directory, emit, device=device) if device != 'cpu' else Trainer(cache, directory, emit)
             write_json(directory / 'data-reference.json', dict(cache_sha256=trainer.fingerprint, data=trainer.info))
-            for hypothesis in catalog:
-                case(hypothesis['name'], 42, 200, 'screen_200')
-            for name in CONTROLS:
-                for seed in seeds[1:]:
-                    case(name, seed, 200, 'screen_200')
-            selected = promote([r for r in ledger['screen_200'].values() if r['seed'] == 42], catalog)
-            write_json(directory / 'promotion-800.json', dict(names=selected, criterion='family coverage plus slow learners'))
-            for name in selected:
-                case(name, 42, 800, 'screen_800')
-            for name in CONTROLS:
-                for seed in seeds[1:]:
-                    case(name, seed, 800, 'screen_800')
-            chosen = finalists([r for r in ledger['screen_800'].values() if r['seed'] == 42], catalog)
-            if not all(ledger['screen_800'].get(f'{name}-s42', {}).get('status') == 'completed' for name in CONTROLS):
-                raise RuntimeError('Controls did not complete; architecture comparison is incomplete')
+            if selected_plan:
+                chosen = selected_plan['names']
+            else:
+                for hypothesis in catalog:
+                    case(hypothesis['name'], 42, 200, 'screen_200')
+                for name in CONTROLS:
+                    for seed in seeds[1:]:
+                        case(name, seed, 200, 'screen_200')
+                selected = promote([r for r in ledger['screen_200'].values() if r['seed'] == 42], catalog)
+                write_json(directory / 'promotion-800.json', dict(names=selected, criterion='family coverage plus slow learners'))
+                for name in selected:
+                    case(name, 42, 800, 'screen_800')
+                for name in CONTROLS:
+                    for seed in seeds[1:]:
+                        case(name, seed, 800, 'screen_800')
+                chosen = finalists([r for r in ledger['screen_800'].values() if r['seed'] == 42], catalog)
+                if not all(ledger['screen_800'].get(f'{name}-s42', {}).get('status') == 'completed' for name in CONTROLS):
+                    raise RuntimeError('Controls did not complete; architecture comparison is incomplete')
             write_json(directory / 'finalists.json', dict(names=chosen, seeds=list(seeds),
                        criterion='fast partition only; confirmation still sealed'))
             for name in chosen:
                 for seed in seeds:
                     case(name, seed, 3200, 'confirm_3200')
-            controls = [r['fast_ndcg'] for r in ledger['screen_800'].values()
+            noise_stage = 'confirm_3200' if selected_plan else 'screen_800'
+            controls = [r['fast_ndcg'] for r in ledger[noise_stage].values()
                         if r['name'] == 'history_control' and r['status'] == 'completed']
             noise = float(np.std(controls)) if controls else float('inf')
             rising = [r for r in ledger['confirm_3200'].values() if r['status'] == 'completed' and
@@ -230,7 +265,7 @@ def run(args):
                     output = directory / 'runs' / f'{name}-s{seed}'
                     if not (output / 'final.json').exists():
                         trainer.final(by_name[name], seed)
-            result = report(directory, trainer, chosen, catalog, seeds, ledger, incomplete)
+            result = report(directory, trainer, chosen, catalog, seeds, ledger, incomplete, experiment=experiment)
             update(status='completed_with_errors' if incomplete or state['failed'] else 'completed', phase='completed', current=None,
                    decision=result['decision'], report=str(directory / 'report.json'))
         except InterruptedError as error:

@@ -16,6 +16,22 @@ def statistics():
 
 
 class ResearchModelContracts(unittest.TestCase):
+    def test_vectorized_listwise_loss_matches_reference_values_and_gradients(self):
+        counts = torch.tensor([3, 4, 2])
+        targets = torch.tensor([1., 0., 1., 0., 1., 0., 0., 0., 0.])
+        values = torch.tensor([80., 78., 81., -90., -88., -87., -86., 2., 3.], requires_grad=True)
+        reference = values.detach().clone().requires_grad_()
+        inputs = dict(target=targets, counts=counts, weights=torch.tensor([1 / 3] * 3 + [1 / 4] * 4 + [.5] * 2))
+        expected = []
+        for scores, labels in zip(reference.split(counts.tolist()), targets.split(counts.tolist())):
+            expected.append((torch.logsumexp(scores, 0) - (scores * labels).sum() / labels.sum().clamp_min(1)) * (labels.sum() > 0))
+        expected = torch.stack(expected).mean()
+        actual = loss(values, inputs, 'softmax')
+        torch.testing.assert_close(actual, expected, atol=1e-5, rtol=1e-5)
+        actual.backward()
+        expected.backward()
+        torch.testing.assert_close(values.grad, reference.grad, atol=1e-6, rtol=1e-5)
+
     def test_all_models_gradients_and_candidate_permutation(self):
         torch.set_num_threads(2)
         torch.manual_seed(42)

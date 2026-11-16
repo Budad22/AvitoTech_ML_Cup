@@ -99,7 +99,7 @@ def execute(client, script):
 def main():
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['deploy', 'status', 'suite-status', 'fetch', 'sync'])
+    parser.add_argument('action', choices=['deploy', 'status', 'suite-status', 'research-status', 'fetch', 'sync'])
     parser.add_argument('--host', required=True)
     parser.add_argument('--user', required=True)
     parser.add_argument('-v', '--verbose', action='store_true', help='Show task, paths and process details')
@@ -120,6 +120,23 @@ def main():
                    look_for_keys=False, allow_agent=False)
     client.get_transport().set_keepalive(15)
     try:
+        if args.action in ('status', 'suite-status', 'research-status'):
+            from research_status import read_research, render_research
+            research = read_research(client, args.logs)
+            if research:
+                try:
+                    while True:
+                        print(json.dumps(research, ensure_ascii=False) if args.json else render_research(research), flush=True)
+                        if not args.watch or not interval:
+                            break
+                        time.sleep(interval)
+                        research = read_research(client, args.logs)
+                except KeyboardInterrupt:
+                    print('\nПросмотр завершён. Серверное обучение продолжает работать.')
+                return
+            if args.action == 'research-status':
+                print('На сервере ещё не зарегистрирована GPU research-очередь.')
+                return
         if args.action == 'suite-status':
             from suite_status import read_suite, render_suite
             snapshot = read_suite(client)

@@ -51,7 +51,9 @@ $logs=@(foreach($p in ($paths|Select-Object -Unique)){if(Test-Path $p){$content=
 EVENTS = {'run_initializing': 'Подготовка модели', 'training_started': 'Обучение началось',
           'batch_completed': 'Обработан батч', 'validation_started': 'Проверка на selection',
           'epoch_completed': 'Эпоха завершена', 'training_completed': 'Обучение варианта завершено',
-          'checkpoint_saved': 'Checkpoint сохранён', 'run_failed': 'ОШИБКА ОБУЧЕНИЯ'}
+          'checkpoint_saved': 'Checkpoint сохранён', 'run_failed': 'ОШИБКА ОБУЧЕНИЯ',
+          'validation_completed': 'Проверка fast val завершена', 'case_failed': 'ОШИБКА ОПЫТА',
+          'device_cache_ready': 'Кеш GPU готов'}
 
 
 def readable_line(line):
@@ -61,8 +63,13 @@ def readable_line(line):
         return line
     if not isinstance(value, dict) or 'event' not in value:
         return line
-    metrics = value.get('metrics') or {}
+    metrics = value.get('metrics') or {key: value[source] for key, source in
+              [('train_loss', 'loss'), ('val_ndcg', 'fast_ndcg')] if source in value}
     fields = [value.get('timestamp', ''), EVENTS.get(value['event'], value['event'])]
+    if value.get('name'):
+        fields.append(value['name'])
+    if value.get('step'):
+        fields.append(f"шаг {value['step']}/{value.get('total', '?')}")
     if value.get('epoch'):
         fields.append(f"эпоха {value['epoch']}")
     if value.get('batch'):

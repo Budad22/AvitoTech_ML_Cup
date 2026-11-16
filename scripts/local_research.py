@@ -11,7 +11,8 @@ def status(directory, logs):
     from scripts.gpu_suite import process_identity
     state_path = directory / 'status.json'
     state = json.loads(state_path.read_text(encoding='utf-8')) if state_path.exists() else {}
-    print('EXP-029 · CPU ноутбука · ' + state.get('status', 'подготовка/контроллер ещё не запущен'))
+    print(state.get('experiment', 'EXP-029') + ' · ' + state.get('device', 'cpu').upper() + ' · ' +
+          state.get('status', 'подготовка/контроллер ещё не запущен'))
     if state.get('error'):
         print('ОШИБКА: ' + state['error'])
     ledger_path = directory / 'ledger.json'
@@ -83,6 +84,11 @@ def main():
     parser.add_argument('--cache', type=Path)
     parser.add_argument('--logs', type=int, nargs='?', const=30, default=0)
     parser.add_argument('--maximum-hours', type=float, default=8.)
+    parser.add_argument('--device', choices=['cpu', 'cuda'], default='cpu')
+    parser.add_argument('--experiment', default='EXP-029')
+    parser.add_argument('--finalists', type=Path, help='Frozen plan from an already completed screen')
+    parser.add_argument('--active-root', type=Path)
+    parser.add_argument('--task-name', default='AvitoMLPResearchGPU')
     args = parser.parse_args()
     if not 0 <= args.logs <= 2000:
         parser.error('--logs must be between 0 and 2000')

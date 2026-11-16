@@ -1,6 +1,7 @@
 """The whole campaign must freeze finalists before opening confirmation labels."""
 from argparse import Namespace
 import json
+import hashlib
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
@@ -13,6 +14,12 @@ from mlp_research.runner import run
 
 class ResearchRunnerContracts(unittest.TestCase):
     def test_stages_resume_and_confirmation_is_last(self):
+        self.exercise_campaign(False)
+
+    def test_frozen_finalists_do_not_repeat_the_completed_screen(self):
+        self.exercise_campaign(True)
+
+    def exercise_campaign(self, frozen):
         with TemporaryDirectory() as temporary:
             root = Path(temporary)
             cache = root / 'cache'
@@ -44,6 +51,15 @@ class ResearchRunnerContracts(unittest.TestCase):
                     pass
 
             args = Namespace(directory=root / 'run', cache=cache, maximum_hours=1.)
+            if frozen:
+                plan = dict(names=['baseline', 'history_control', 'plr_softmax', 'plr_history',
+                                   'numeric_linear', 'mlp_softmax', 'cross_network'], seeds=[42, 43, 44])
+                for name in ('fast', 'confirmation'):
+                    np.save(cache / (name + '.npy'), np.arange(2))
+                    plan[name + '_sha256'] = hashlib.sha256((cache / (name + '.npy')).read_bytes()).hexdigest()
+                args.finalists = root / 'frozen.json'
+                args.finalists.write_text(json.dumps(plan))
+                args.experiment = 'EXP-030'
             with patch('mlp_research.runner.Trainer', FakeTrainer), \
                     patch('mlp_research.runner.report', return_value=dict(decision='fixture')):
                 run(args)
@@ -54,5 +70,5 @@ class ResearchRunnerContracts(unittest.TestCase):
             self.assertTrue(all(event[0] == 'train' for event in events[:first_confirmation]))
             self.assertTrue(all(event[0] == 'evaluate_confirmation' for event in events[first_confirmation:]))
             self.assertEqual(len(events[first_confirmation:]), 21)  # Seven finalists, three seeds each.
-            self.assertEqual({event[3] for event in events[:first_confirmation]}, {200, 800, 3200})
+            self.assertEqual({event[3] for event in events[:first_confirmation]}, {3200} if frozen else {200, 800, 3200})
             self.assertEqual(json.loads((args.directory / 'status.json').read_text())['status'], 'completed')

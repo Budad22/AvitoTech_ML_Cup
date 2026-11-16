@@ -9,7 +9,8 @@ import numpy as np
 import torch
 
 from mlp.metrics import ndcg
-from mlp_research.cache import CachedSplit, sha256
+from mlp_research.cache import sha256
+from mlp_research.device_data import DeviceSplit
 from mlp_research.models import ResearchRanker, loss
 from mlp_trials.state import write_json
 
@@ -41,10 +42,10 @@ def evaluate(model, dataset, feeds, config, batch_size=32, predictions=False):
     for start in range(0, len(feeds), batch_size):
         chosen = feeds[start:start + batch_size]
         inputs = dataset.batch(chosen, history=config['history'], context=config['context'])
-        scores = model(inputs).numpy().astype('float32')
+        scores = model(inputs).cpu().numpy().astype('float32')
         if not np.isfinite(scores).all():
             raise ValueError('Nonfinite research predictions')
-        labels = inputs['target'].numpy()
+        labels = inputs['target'].cpu().numpy()
         offsets = np.r_[0, inputs['counts'].numpy().cumsum()]
         metrics.extend(ndcg(labels[a:b], scores[a:b]) for a, b in zip(offsets[:-1], offsets[1:]))
         if predictions:
@@ -57,17 +58,23 @@ def evaluate(model, dataset, feeds, config, batch_size=32, predictions=False):
 
 
 class Trainer:
-    def __init__(self, cache, directory, emit, batch_size=16):
+    def __init__(self, cache, directory, emit, batch_size=16, device='cpu'):
         self.cache, self.directory, self.emit = Path(cache), Path(directory), emit
+        self.device = device
+        if device == 'cuda' and not torch.cuda.is_available():
+            raise RuntimeError('CUDA was requested but is unavailable')
         self.info = json.loads((self.cache / 'metadata.json').read_text(encoding='utf-8'))
         self.fingerprint = sha256(self.cache / 'metadata.json')
-        self.train = CachedSplit(cache, 'train')
-        self.validation = CachedSplit(cache, 'val')
+        self.train = DeviceSplit(cache, 'train', device)
+        self.validation = DeviceSplit(cache, 'val', device)
         with np.load(self.cache / 'statistics.npz') as statistics:
             self.statistics = {key: statistics[key].copy() for key in statistics.files}
         self.fast = np.load(self.cache / 'fast.npy')
         self.confirmation = np.load(self.cache / 'confirmation.npy')
         self.batch_size = batch_size
+        if device == 'cuda':
+            emit('device_cache_ready', device=device, gpu=torch.cuda.get_device_name(),
+                 train_resident_bytes=self.train.resident_bytes, val_resident_bytes=self.validation.resident_bytes)
 
     def close(self):
         self.train.close()
@@ -77,8 +84,10 @@ class Trainer:
         output = self.directory / 'runs' / f"{config['name']}-s{seed}"
         output.mkdir(parents=True, exist_ok=True)
         identity = dict(config=config, seed=seed, cache=self.fingerprint, batch_size=self.batch_size)
+        if self.device != 'cpu':
+            identity['device'] = self.device
         torch.manual_seed(seed)
-        model = ResearchRanker(len(self.info['categories']), config, self.statistics)
+        model = ResearchRanker(len(self.info['categories']), config, self.statistics).to(self.device)
         optimizer = torch.optim.AdamW(model.parameters(), lr=config['learning_rate'], weight_decay=config['weight_decay'])
         step, best, history, seconds = 0, -1., [], 0.
         if (output / 'last.pt').exists():
@@ -88,6 +97,8 @@ class Trainer:
             model.load_state_dict(state['model'])
             optimizer.load_state_dict(state['optimizer'])
             torch.set_rng_state(state['torch_rng'])
+            if self.device == 'cuda':
+                torch.cuda.set_rng_state_all(state['cuda_rng'])
             step, best, history, seconds = (state[key] for key in ('step', 'best', 'history', 'seconds'))
         started = last_report = time.monotonic()
         initial_step = step
@@ -97,6 +108,7 @@ class Trainer:
         def state():
             return dict(identity=identity, model=model.state_dict(), optimizer=optimizer.state_dict(),
                         torch_rng=torch.get_rng_state(), step=step, best=best, history=history,
+                        cuda_rng=torch.cuda.get_rng_state_all() if self.device == 'cuda' else None,
                         seconds=seconds + time.monotonic() - started)
 
         for index in range(step, target):
@@ -121,6 +133,7 @@ class Trainer:
             compute += time.monotonic() - before
             if step == 1 or step == 20 or time.monotonic() - last_report >= 10:
                 self.emit('batch_completed', name=config['name'], seed=seed, step=step, total=target,
+                          device=self.device,
                           loss=last_loss, steps_per_second=(step - initial_step) /
                           max(time.monotonic() - started, 1e-9), loader_wait_pct=100 * wait / max(wait + compute, 1e-9))
                 last_report = time.monotonic()
@@ -140,6 +153,7 @@ class Trainer:
                 save(output / 'last.pt', state())
                 raise InterruptedError('Paused through checkpoint at owner request')
         result = dict(name=config['name'], seed=seed, status='completed', steps=step, fast_ndcg=best,
+                      device=self.device,
                       history=history, seconds=seconds + time.monotonic() - started,
                       parameters=sum(parameter.numel() for parameter in model.parameters()), output=str(output))
         write_json(output / 'result.json', result)
@@ -148,7 +162,7 @@ class Trainer:
     def final(self, config, seed):
         output = self.directory / 'runs' / f"{config['name']}-s{seed}"
         state = torch.load(output / 'best.pt', map_location='cpu', weights_only=False)
-        model = ResearchRanker(len(self.info['categories']), config, self.statistics)
+        model = ResearchRanker(len(self.info['categories']), config, self.statistics).to(self.device)
         model.load_state_dict(state['model'])
         metrics = evaluate(model, self.validation, np.arange(self.validation.feeds), config, predictions=True)
         np.save(output / 'selection_logits.npy', metrics['scores'])

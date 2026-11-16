@@ -172,9 +172,14 @@ def loss(logits, inputs, kind):
     bce = bce / len(inputs['counts'])
     if kind == 'bce':
         return bce
-    terms = []
-    for scores, targets in zip(logits.split(inputs['counts'].tolist()), inputs['target'].split(inputs['counts'].tolist())):
-        positives = targets.sum()
-        terms.append((torch.logsumexp(scores, dim=0) - (scores * targets).sum() / positives.clamp_min(1)) * (positives > 0))
-    listwise = torch.stack(terms).mean()
+    feed = torch.repeat_interleave(torch.arange(len(inputs['counts']), device=logits.device),
+                                   inputs['counts'].to(logits.device), output_size=len(logits))
+    # Detached maxima provide stable logsumexp without per-feed Python/CUDA synchronization.
+    maximum = logits.new_full((len(inputs['counts']),), -torch.inf)
+    maximum.scatter_reduce_(0, feed, logits.detach(), reduce='amax', include_self=True)
+    exponential = logits.new_zeros(len(maximum)).scatter_add_(0, feed, (logits - maximum[feed]).exp())
+    positives = logits.new_zeros(len(maximum)).scatter_add_(0, feed, inputs['target'])
+    positive_scores = logits.new_zeros(len(maximum)).scatter_add_(0, feed, logits * inputs['target'])
+    terms = maximum + exponential.log() - positive_scores / positives.clamp_min(1)
+    listwise = (terms * (positives > 0)).mean()
     return listwise if kind == 'softmax' else bce + .1 * listwise
