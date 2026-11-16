@@ -34,9 +34,19 @@ if (__LINES__ -gt 0) {
  $logs=@(foreach($path in ($paths|Select-Object -Unique)){$content=Tail $path;if($content){@{path=$path;text=$content}}})
 }
 $report=if(Test-Path "$root\report.json"){Get-Content "$root\report.json" -Raw | ConvertFrom-Json}
+$summary=@{}
+if($report.final_runs){
+ $best=@($report.final_runs|Where-Object {$_.name -eq $report.best_mlp})
+ $reference=@($report.final_runs|Where-Object {$_.name -eq $report.baseline})
+ $summary=@{name=$report.best_mlp;confirmation_ndcg=($best|Measure-Object confirmation_ndcg -Average).Average;
+ reference_ndcg=($reference|Measure-Object confirmation_ndcg -Average).Average;
+ delta=$report.differences.($report.best_mlp).delta;confirmation_feeds=$report.confirmation_feeds}
+}
+$config=Get-Content "$root\research-config.json" -Raw | ConvertFrom-Json
 @{research=$state;alive=$alive;stages=$stages;task=(Get-ScheduledTask $active.task_name).State.ToString();
 gpu=@(& nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits);
-logs=$logs;decision=$report.decision;explanation=$report.explanation}|ConvertTo-Json -Depth 12 -Compress
+logs=$logs;decision=$report.decision;explanation=$report.explanation;summary=$summary;
+budget_seconds=$config.maximum_hours*3600}|ConvertTo-Json -Depth 12 -Compress
 """.replace('__LINES__', str(lines))
     payload = base64.b64encode(gzip.compress(script.encode())).decode()
     wrapper = (f"$m=[IO.MemoryStream]::new([Convert]::FromBase64String('{payload}'));"
@@ -87,3 +97,99 @@ def render_research(snapshot):
         lines.append(render_diagnostics(dict(status=state['status'], error=state.get('error'),
                                              failed=state['failed'], logs=snapshot['logs'])))
     return '\n'.join(lines)
+
+
+def build_research_view(snapshot, host):
+    """Translate research state into the shared Rich dashboard contract."""
+    state = snapshot['research']
+    current, measured = state.get('current') or {}, state.get('progress') or {}
+    status = state['status']
+    phase, label = {'completed': ('complete', 'Обучение завершено'),
+                    'completed_with_errors': ('error', 'Завершено с ошибками'),
+                    'paused': ('stopped', 'Приостановлено'), 'error': ('error', 'Ошибка обучения')}.get(
+                        status, ('initializing', 'Подготовка данных') if state['phase'] == 'prepare' else
+                        ('evaluation', 'Проверка отложенных лент') if state['phase'] == 'confirmation_evaluation' else
+                        ('training', 'Обучение на GPU'))
+    warnings = []
+    if state.get('error'):
+        warnings.append('ОШИБКА: ' + state['error'])
+    if status == 'running' and not snapshot['alive']:
+        phase, label = 'error', 'Контроллер остановлен'
+        warnings.append('Сохранённый running устарел: живой процесс не обнаружен.')
+    run_id = state['experiment']
+    metrics = {}
+    if current:
+        run_id += '/' + current['name'] + '/s' + str(current['seed'])
+        progress = dict(current=measured.get('step', 0), total=current.get('target', 0),
+                        unit='шагов', title='Обучение · seed ' + str(current['seed']))
+        for source, target in [('loss', 'train_loss'), ('fast_ndcg', 'val_ndcg'),
+                               ('best_ndcg', 'best_ndcg'), ('loader_wait_pct', 'loader_wait_pct')]:
+            if source in measured:
+                metrics[target] = measured[source]
+    else:
+        total = sum(state.get('hypotheses', 0) * 3 if stage.startswith('confirm_') else count['completed']
+                    for stage, count in snapshot.get('stages', {}).items())
+        progress = dict(current=state['completed'], total=total, unit='этапов', title='Результаты всей очереди')
+    summary = snapshot.get('summary') or {}
+    if phase == 'complete' and summary:
+        metrics.update(confirmation_ndcg=summary['confirmation_ndcg'], reference_ndcg=summary['reference_ndcg'],
+                       confirmation_delta=summary['delta'])
+        warnings.append('Лидер: ' + summary['name'] + ' · среднее по трём seed')
+    warnings.append(f"Очередь: завершено этапов {state['completed']} · ошибок {state['failed']} · {state['phase']}")
+    if snapshot.get('explanation'):
+        warnings.append(snapshot['explanation'])
+    gpu = None
+    for row in snapshot.get('gpu', []):
+        fields = [value.strip() for value in row.split(',')]
+        if len(fields) == 4:
+            gpu = dict(name=fields[0], utilization=float(fields[1]), used=float(fields[2]), total=float(fields[3]))
+            break
+    return dict(run_id=run_id, architecture='MLP research', host=host, phase=phase, label=label,
+                progress=progress, metrics=metrics, gpu=gpu, warnings=warnings, source='research state',
+                elapsed_seconds=state.get('elapsed_seconds', 0), budget_seconds=snapshot.get('budget_seconds', 0),
+                steps_per_second=measured.get('steps_per_second'), speed_source='window',
+                freshness='Состояние очереди: ' + state.get('updated_at', '?'),
+                metric_labels={'val_ndcg': 'Fast NDCG (2 000 лент)', 'best_ndcg': 'Лучший fast NDCG',
+                               'confirmation_ndcg': 'NDCG на отложенных лентах', 'reference_ndcg': 'Контрольная MLP',
+                               'confirmation_delta': 'Δ к контрольной MLP'})
+
+
+def display_research(client, snapshot, args, interval):
+    """Reuse the existing panels, GPU gauge, and animations; logs remain scrollable."""
+    import time
+    from contextlib import ExitStack
+    from rich.live import Live
+    from training_logs.animation import AnimatedDashboard
+    from training_logs.dashboard import dashboard
+    from training_logs.terminal import create_console
+    from scripts.diagnostics import render_diagnostics
+
+    console = create_console(args.format)
+    pretty = not args.json and (args.format == 'rich' or args.format == 'auto' and console.is_terminal)
+    animated = AnimatedDashboard(enabled=not args.no_animation)
+    try:
+        with ExitStack() as stack:
+            live = stack.enter_context(Live(animated, console=console, auto_refresh=True,
+                                           refresh_per_second=12 if not args.no_animation else 1)) if pretty and interval and not args.logs else None
+            while True:
+                view = build_research_view(snapshot, args.host)
+                if args.json:
+                    print(json.dumps(snapshot, ensure_ascii=False), flush=True)
+                elif pretty:
+                    details = render_diagnostics(dict(status=snapshot['research']['status'],
+                        error=snapshot['research'].get('error'), failed=snapshot['research']['failed'],
+                        logs=snapshot.get('logs') or [])) if args.logs else None
+                    if live:
+                        animated.update(view)
+                    else:
+                        console.print(dashboard(view, width=console.width))
+                        if details:
+                            console.print(details, markup=False, highlight=False, soft_wrap=True)
+                else:
+                    print(render_research(snapshot), flush=True)
+                if not interval or view['phase'] in ('complete', 'error', 'stopped'):
+                    break
+                time.sleep(interval)
+                snapshot = read_research(client, args.logs)
+    except KeyboardInterrupt:
+        print('\nПросмотр завершён. Серверное обучение продолжает работать.')

@@ -65,7 +65,7 @@ def number(value):
 
 def dashboard(view, *, width=100, height=None, details=None):
     """A renderable independent of console/TTY, framework and architecture."""
-    status_color = 'green' if view['phase'] == 'training' else 'red' if view['phase'] in ('stopped', 'error') else CYAN
+    status_color = 'green' if view['phase'] in ('training', 'complete') else 'red' if view['phase'] in ('stopped', 'error') else CYAN
     header = Text('TRAINING  ', style=f'bold {CYAN}')
     header.append(str(view.get('architecture', 'Model')), 'bold white')
     header.append('  /  ' + str(view.get('run_id', 'run')), MUTED)
@@ -75,7 +75,8 @@ def dashboard(view, *, width=100, height=None, details=None):
     compact = width < 90 and height is not None and height <= 30
     current, total = progress.get('current', 0), progress.get('total', 0)
     epoch = progress.get('epoch')
-    title = Text(f"Эпоха {epoch} / {progress.get('epochs', '?')}" if epoch else 'Ожидание данных прогресса', style='bold white')
+    title = Text(progress.get('title') or (f"Эпоха {epoch} / {progress.get('epochs', '?')}" if epoch else
+                 'Ожидание данных прогресса'), style='bold white')
     if total:
         percent = min(100, current / total * 100)
         caption = Text(f"{number(current)} / {number(total)} {progress.get('unit', 'шагов')}  ·  {percent:.2f}%", style=CYAN)
@@ -96,6 +97,7 @@ def dashboard(view, *, width=100, height=None, details=None):
               'full_val_ndcg': 'Полный val NDCG', 'control_ndcg': 'Поздний control NDCG',
               'batches_per_second': 'Батчей/с, текущее окно', 'loader_wait_pct': 'Ожидание данных, %',
               'candidates_per_second': 'Кандидатов/с'}
+    labels.update(view.get('metric_labels') or {})
     values = view.get('metrics') or {}
     if not values:
         metrics.add_row('Метрики', 'ожидаются')

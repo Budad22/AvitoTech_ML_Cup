@@ -121,18 +121,10 @@ def main():
     client.get_transport().set_keepalive(15)
     try:
         if args.action in ('status', 'suite-status', 'research-status'):
-            from research_status import read_research, render_research
+            from research_status import read_research, display_research
             research = read_research(client, args.logs)
             if research:
-                try:
-                    while True:
-                        print(json.dumps(research, ensure_ascii=False) if args.json else render_research(research), flush=True)
-                        if not args.watch or not interval:
-                            break
-                        time.sleep(interval)
-                        research = read_research(client, args.logs)
-                except KeyboardInterrupt:
-                    print('\nПросмотр завершён. Серверное обучение продолжает работать.')
+                display_research(client, research, args, interval)
                 return
             if args.action == 'research-status':
                 print('На сервере ещё не зарегистрирована GPU research-очередь.')
