@@ -5,7 +5,8 @@ param(
 )
 $ErrorActionPreference='Stop'
 $root=[IO.Path]::GetFullPath($Directory)
-$code=(Resolve-Path (Join-Path $root 'code')).Path
+$folder=if(Test-Path "$root/source-audit-v2.json") {'code-audit-v2'} else {'code'}
+$code=(Resolve-Path (Join-Path $root $folder)).Path
 if(Test-Path "$root/status.json") {
     $state=Get-Content "$root/status.json" -Raw | ConvertFrom-Json
     if($state.status -eq 'running' -and (Get-Process -Id $state.pid -ErrorAction SilentlyContinue)) {

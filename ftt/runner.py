@@ -56,6 +56,9 @@ class Queue:
 
     def emit(self, event, **values):
         elapsed = self.previous_seconds + time.monotonic() - self.started
+        if any(k in values and values[k] != self.state.get(k) for k in ('model', 'seed', 'phase')):
+            for key in ('best_ndcg', 'ndcg', 'loss', 'step', 'target', 'error'):
+                self.state.pop(key, None)
         self.state.update(values, event=event, heartbeat=time.time(), elapsed_seconds=elapsed,
                           completed=len(self.ledger), budget_seconds=self.args.hours * 3600)
         write_json(self.root / 'status.json', self.state)
@@ -96,8 +99,28 @@ class Queue:
             return dict(identity=identity, model=model.state_dict(), optimizer=optimizer.state_dict(),
                         rng=torch.get_rng_state(), cuda_rng=torch.cuda.get_rng_state_all() if self.args.device == 'cuda' else None,
                         step=step, best=best, history=history, seconds=seconds+time.monotonic()-started, micro=micro)
+        def validate():
+            nonlocal best
+            # Emit before expensive validation so status never suggests training is hung.
+            self.emit('evaluating', phase=size, model=config['name'], seed=seed, step=step, target=target)
+            values = evaluate(model, validation, self.fast, self.args.device)
+            score = float(values.mean())
+            if not np.isfinite(score):
+                raise ValueError('Nonfinite or empty validation metric')
+            history.append(dict(step=step, ndcg=score))
+            if score > best:
+                best = score
+                save(output / 'best.pt', checkpoint())
+            save(output / 'last.pt', checkpoint())
+            self.emit('validation', phase=size, model=config['name'], seed=seed, step=step,
+                      target=target, best_ndcg=best, ndcg=score)
+        def validation_due(current):
+            return ((current % 2000 == 0 or current % batches == 0 or current == target) if size == 'full' else
+                    (current in (200, 400, 800, 1600, 3200, 6400) or current % 400 == 0 or current == target))
         save(output / 'last.pt', checkpoint())
         batches = math.ceil(train.feeds / 16)
+        if target > 20 and step and validation_due(step) and not any(v['step'] == step for v in history):
+            validate()
         while step < target:
             epoch, cursor = divmod(step, batches)
             chosen = (np.arange(cursor*16, min((cursor+1)*16, train.feeds)) if size == 'full' else
@@ -105,6 +128,9 @@ class Queue:
             model.train()
             optimizer.zero_grad(set_to_none=True)
             loss_value = 0.
+            batch = value = None
+            rng = torch.get_rng_state()
+            cuda_rng = torch.cuda.get_rng_state_all() if self.args.device == 'cuda' else None
             try:
                 for start in range(0, len(chosen), micro):
                     subset = chosen[start:start+micro]
@@ -118,9 +144,11 @@ class Queue:
                 if micro == 1:
                     raise
                 micro = max(1, micro // 2)
-                del batch
+                batch = value = None
                 optimizer.zero_grad(set_to_none=True)
                 torch.cuda.empty_cache()
+                torch.set_rng_state(rng)
+                torch.cuda.set_rng_state_all(cuda_rng)
                 continue
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1., error_if_nonfinite=True)
             for group in optimizer.param_groups:
@@ -134,24 +162,16 @@ class Queue:
                 self.emit('training', phase=size, model=config['name'], seed=seed, step=step,
                           target=target, loss=loss_value, microbatch=micro)
                 last_emit = time.monotonic()
-            validation_due = ((step % 2000 == 0 or step % batches == 0 or step == target) if size == 'full' else
-                              (step in (200, 400, 800, 1600, 3200, 6400) or step % 400 == 0 or step == target))
-            if target > 20 and validation_due:
-                values = evaluate(model, validation, self.fast, self.args.device)
-                score = float(values.mean())
-                history.append(dict(step=step, ndcg=score))
-                if score > best:
-                    best = score
-                    save(output / 'best.pt', checkpoint())
-                save(output / 'last.pt', checkpoint())
-                self.emit('validation', phase=size, model=config['name'], seed=seed, step=step,
-                          target=target, best_ndcg=best, ndcg=score)
+            if target > 20 and validation_due(step):
+                validate()
                 if size == 'full' and step >= 6000 and len(history) >= 4:
                     if max(v['ndcg'] for v in history[-3:]) <= max(v['ndcg'] for v in history[:-3]):
                         break
             if seconds+time.monotonic()-started > 7200:
                 save(output / 'last.pt', checkpoint())
                 if size == 'full':
+                    if not history or history[-1]['step'] != step:
+                        validate()
                     break
                 raise TimeoutError('Trial budget exhausted')
         result = dict(number=number, seed=seed, target=target, steps=step, best=best, history=history,
@@ -219,6 +239,10 @@ class Queue:
         target = 6400 if growing else 3200
         if growing:
             medium = [r for n in [1, *finalists] if (r := self.screen_trial(n, target, 'medium'))]
+        if not any(r['number'] != 1 for r in medium):
+            write_json(self.root / 'report.json', dict(decision='inconclusive', reason='No viable medium finalists'))
+            self.emit('completed', status='completed')
+            return
         winner = min([r for r in medium if r['number'] != 1], key=rank)['number']
         for seed in (43, 44):
             for n in (1, winner):
@@ -229,6 +253,7 @@ class Queue:
             for seed in (42, 43, 44):
                 result = self.trial(n, seed, target, 'medium')
                 state = torch.load(Path(result['directory']) / 'best.pt', map_location='cpu', weights_only=False)
+                self.emit('confirmation', phase='confirmation', model=f'FTT-{n:03d}', seed=seed)
                 train = Cache(self.root / 'cache', 'train', 'medium')
                 model = Ranker(configuration(n), *train.statistics()).to(self.args.device)
                 model.load_state_dict(state['model'])

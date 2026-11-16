@@ -19,6 +19,7 @@ def snapshot(client, lines=0):
 $root='Q:/AVITOCUP/experiments/FTT-NIGHT-001'
 if (!(Test-Path "$root/status.json")) {throw 'FTT has no status yet'}
 $s=Get-Content "$root/status.json" -Raw | ConvertFrom-Json
+$s | Add-Member -NotePropertyName server_time -NotePropertyValue ([DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()/1000) -Force
 $p=Get-Process -Id $s.pid -ErrorAction SilentlyContinue
 $s | Add-Member -NotePropertyName process_alive -NotePropertyValue ([bool]$p) -Force
 $s | Add-Member -NotePropertyName gpu -NotePropertyValue (@(& nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits)) -Force
@@ -57,10 +58,11 @@ def main():
     try:
         while True:
             state = snapshot(client,args.logs)
-            age = round(time.time()-state.get('heartbeat',0),1)
-            keys = ('experiment','status','phase','model','seed','step','target','best_ndcg','completed','error')
+            age = round(max(0, state.get('server_time',time.time())-state.get('heartbeat',0)),1)
+            keys = ('experiment','status','phase','event','model','seed','step','target','best_ndcg','completed','error')
             compact = {k:state[k] for k in keys if k in state}
-            compact.update(heartbeat_age_seconds=age,process_alive=state['process_alive'],gpu=state['gpu'])
+            compact.update(heartbeat_age_seconds=age,heartbeat_stale=age>120,
+                           process_alive=state['process_alive'],gpu=state['gpu'])
             if args.json:
                 print(json.dumps(state if args.details else compact,ensure_ascii=False))
             else:

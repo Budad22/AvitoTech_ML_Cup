@@ -3,6 +3,7 @@ import unittest
 import tempfile
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import numpy as np
 import torch
@@ -109,6 +110,38 @@ class TransformerTests(unittest.TestCase):
             straight = torch.load(other/'small/FTT-002-s42/last.pt',weights_only=False)
             for key in resumed['model']:
                 torch.testing.assert_close(resumed['model'][key],straight['model'][key],rtol=0,atol=0)
+            # A crash after the last step was saved must not skip the pending validation.
+            with patch('ftt.runner.evaluate', side_effect=RuntimeError('validation interrupted')):
+                with self.assertRaisesRegex(RuntimeError, 'interrupted'):
+                    q.trial(2,42,21,'small')
+            last = torch.load(other/'small/FTT-002-s42/last.pt',weights_only=False)
+            self.assertEqual(last['step'],21)
+            with patch('ftt.runner.evaluate', return_value=np.array([.7])) as evaluator:
+                recovered = q.trial(2,42,21,'small')
+            evaluator.assert_called_once()
+            self.assertEqual(recovered['best'],.7)
+            self.assertTrue((other/'small/FTT-002-s42/best.pt').exists())
+            q.emit('validation',model='FTT-001',phase='small',seed=42,best_ndcg=.8,ndcg=.8)
+            q.emit('training',model='FTT-002',phase='small',seed=42,step=1)
+            self.assertNotIn('best_ndcg',q.state)
+            self.assertNotIn('ndcg',q.state)
+            if torch.cuda.is_available():
+                args.device='cuda'
+                gpu = Queue(args)
+                gpu.validation=q.validation
+                gpu.fast=np.array([0])
+                original=Cache.batch
+                attempts=[]
+                def out_of_memory_once(dataset, chosen, device):
+                    attempts.append(len(chosen))
+                    if len(attempts)==1:
+                        raise torch.cuda.OutOfMemoryError('synthetic allocation failure')
+                    return original(dataset,chosen,device)
+                with patch.object(Cache,'batch',out_of_memory_once):
+                    result=gpu.trial(1,44,1,'smoke')
+                self.assertEqual(result['steps'],1)
+                saved=torch.load(other/'smoke/FTT-001-s44/last.pt',weights_only=False)
+                self.assertEqual(saved['micro'],8)
         finally:
             if 'cache' in locals():
                 cache.close()
