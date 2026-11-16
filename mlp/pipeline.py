@@ -23,13 +23,14 @@ def pack(batch, categories, pin=False):
 
 
 @contextmanager
-def prepared_batches(source, categories, *, device='cpu', prefetch=2):
+def prepared_batches(source, categories, *, device='cpu', prefetch=2, packer=None):
     """At most two completed/in-flight batches; one CPU producer, no RNG use."""
     iterator = iter(source)
     pin = device == 'cuda'
+    transform = pack if packer is None else packer
     def next_pack():
         try:
-            return pack(next(iterator), categories, pin)
+            return transform(next(iterator), categories, pin)
         except StopIteration:
             return None
     if not prefetch:

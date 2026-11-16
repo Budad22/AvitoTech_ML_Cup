@@ -99,7 +99,7 @@ def execute(client, script):
 def main():
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['deploy', 'status', 'fetch', 'sync'])
+    parser.add_argument('action', choices=['deploy', 'status', 'suite-status', 'fetch', 'sync'])
     parser.add_argument('--host', required=True)
     parser.add_argument('--user', required=True)
     parser.add_argument('-v', '--verbose', action='store_true', help='Show task, paths and process details')
@@ -120,6 +120,11 @@ def main():
                    look_for_keys=False, allow_agent=False)
     client.get_transport().set_keepalive(15)
     try:
+        if args.action == 'suite-status':
+            from suite_status import read_suite, render_suite
+            snapshot = read_suite(client)
+            print(json.dumps(snapshot, ensure_ascii=False) if args.json else render_suite(snapshot), flush=True)
+            return
         remote_base, run_id = active_workspace(client)
         if args.action == 'status':
             from mlp_status import read_snapshot, render, stage, progress_events
@@ -174,7 +179,8 @@ def main():
         if args.action == 'fetch':
             local = ROOT / 'runs' / run_id
             local.mkdir(parents=True, exist_ok=True)
-            remote = remote_base + '/AvitoTech_ML_Cup/runs/' + run_id
+            from mlp_status import read_snapshot
+            remote = read_snapshot(client, ROOT)['run_directory'].replace('\\', '/')
             for entry in sftp.listdir_attr(remote):
                 if entry.filename.endswith(('.json', '.pt', '.log')):
                     sftp.get(remote + '/' + entry.filename, str(local / entry.filename))

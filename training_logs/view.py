@@ -24,6 +24,10 @@ def build_view(snapshot, *, host, phase, label, legacy_events=()):
         view['metrics']['train_loss'] = latest['loss']
         stamp = (snapshot.get('log') or {}).get('modified')
     history = [e for e in snapshot.get('history', []) if isinstance(e, dict) and 'ndcg' in e]
+    suite = snapshot.get('suite') or {}
+    if suite:
+        current = suite.get('current') or {}
+        view['warnings'].append(f"Очередь: {suite.get('completed', 0)}/{suite.get('total', '?')} завершено · ошибок {suite.get('failed', 0)} · {current.get('kind', suite.get('status', '?'))}")
     if history:
         view['metrics']['best_ndcg'] = max(e['ndcg'] for e in history)
         view['metrics']['val_ndcg'] = history[-1]['ndcg']

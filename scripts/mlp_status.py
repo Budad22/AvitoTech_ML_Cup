@@ -29,6 +29,7 @@ def read_snapshot(client, root, *, fast=False, previous=None):
     snapshot = json.loads(payload.decode('utf-8-sig'))
     if fast and previous:
         changed = (snapshot['task']['state'] != previous['task']['state'] or
+                   snapshot.get('run_id') != previous.get('run_id') or
                    (snapshot.get('training_state') or {}).get('phase') != (previous.get('training_state') or {}).get('phase') or
                    snapshot.get('last_command') != previous.get('last_command'))
         if changed:
@@ -45,7 +46,7 @@ def stage(snapshot):
     if not running:
         code = snapshot['task'].get('result')
         return 'stopped', f'Задача не работает (код завершения: {code})'
-    commands = ' '.join(p.get('CommandLine') or '' for p in snapshot.get('processes', []))
+    commands = ' '.join(p.get('CommandLine') or '' for p in snapshot.get('processes', [])).replace('-m mlp_trials ', '-m mlp ')
     for pattern, key, label in (
         ('-m mlp train', 'training', 'Обучение MLP'),
         ('-m mlp evaluate', 'evaluation', 'Оценка лучшей модели'),

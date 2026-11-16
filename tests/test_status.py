@@ -35,6 +35,20 @@ class StatusTests(unittest.TestCase):
         self.assertIn('training_started', render(value, 'server', logs=10))
         self.assertIn('PID 123', render(value, 'server', verbose=True))
 
+    def test_trial_process_is_training_and_queue_progress_is_visible(self):
+        from training_logs.view import build_view
+        from scripts.suite_status import render_suite
+        value = snapshot(processes=[{'CommandLine': 'python -m mlp_trials train --kind baseline'}],
+                         worker=['{"event":"training_started"}'],
+                         suite=dict(completed=2, total=11, failed=0, current=dict(kind='history_pool')))
+        phase, label = stage(value)
+        self.assertEqual(phase, 'training')
+        view = build_view(value, host='server', phase=phase, label=label)
+        self.assertIn('2/11', view['warnings'][0])
+        result = render_suite(dict(suite=dict(suite_id='test', directory='Q:/test', status='completed', total=11,
+                                              completed=11, failed=0, cases=[], current=None), task='Ready', gpu=[]))
+        self.assertIn('11/11', result)
+
     def test_preparation_and_initialization_are_not_training(self):
         for command, expected in (('python -m recsys_data', 'preparation'), ('python -m mlp train', 'initializing')):
             self.assertEqual(stage(snapshot(processes=[{'CommandLine': command}]))[0], expected)

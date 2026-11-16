@@ -11,6 +11,14 @@ if (Test-Path 'Q:\AVITOCUP\active-workspace.json') {
 }
 $repo="$base\AvitoTech_ML_Cup"
 $run="$repo\runs\$runId"
+$taskName='AvitoMLP'
+if ($active.task_name -eq 'AvitoMLPSuite') {
+    $candidate=[IO.Path]::GetFullPath($active.run_directory)
+    if ($candidate.StartsWith('Q:\AVITOCUP\experiments\',[StringComparison]::OrdinalIgnoreCase)) {
+        $run=$candidate
+        $taskName='AvitoMLPSuite'
+    }
+}
 function Tail($path,$count) {
     if (!(Test-Path $path)) { return }
     $stream=[IO.File]::Open($path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::ReadWrite)
@@ -35,14 +43,19 @@ function FileInfo($path) {
     $f=Get-Item $path
     if ($f) { @{bytes=$f.Length; modified=$f.LastWriteTimeUtc.ToString('o')} }
 }
+$suite=if ($taskName -eq 'AvitoMLPSuite') { JsonFile "$($active.suite_directory)\status.json" }
+$done=if ($suite) { $suite.status -in @('completed','completed_with_errors') } else { Test-Path "$run\checksums.json" }
 if ($quick) {
     $worker=@(Tail "$run\worker.log" 40)
     $snapshot=@{
         checked_at=[DateTime]::UtcNow.ToString('o')
-        task=@{state=(Get-ScheduledTask AvitoMLP).State.ToString()}
+        run_id=$runId
+        run_directory=$run
+        task=@{state=(Get-ScheduledTask $taskName).State.ToString()}
         training_state=JsonFile "$run\progress.json"
         history=@(JsonFile "$run\history.json")
-        complete=(Test-Path "$run\checksums.json")
+        complete=$done
+        suite=$suite
         worker=$worker
         last_command=@($worker | Where-Object { $_.StartsWith('COMMAND') } | Select-Object -Last 1)
         errors=@(Tail "$run\worker.err.log" 5)
@@ -52,8 +65,8 @@ if ($quick) {
     $snapshot | ConvertTo-Json -Depth 8 -Compress
     exit
 }
-$task=Get-ScheduledTask -TaskName AvitoMLP
-$info=Get-ScheduledTaskInfo -TaskName AvitoMLP
+$task=Get-ScheduledTask -TaskName $taskName
+$info=Get-ScheduledTaskInfo -TaskName $taskName
 $awake=Get-ScheduledTask -TaskName AvitoMLPAwake
 $config=JsonFile "$run\config.json"
 $data=if ($config.data) {JsonFile "$($config.data)\manifest.json"}
@@ -61,7 +74,7 @@ $batchSize=if ($config.batch_size) {$config.batch_size} else {64}
 $batches=0
 foreach ($file in $data.splits.train.files) { $batches += [Math]::Ceiling($file.feeds / $batchSize) }
 $processes=@(Get-CimInstance Win32_Process | Where-Object {
-    $_.Name -match '^(python|uv|powershell)\.exe$' -and $_.CommandLine -match 'AvitoTech_ML_Cup|scripts.server_run.py'
+    $_.Name -match '^(python|uv|powershell)\.exe$' -and $_.CommandLine -match 'AvitoTech_ML_Cup|scripts.server_run.py|mlp_trials|gpu_suite.py'
 } | Select-Object ProcessId,CommandLine)
 $snapshot=@{
     workspace=$base
@@ -80,7 +93,8 @@ $snapshot=@{
     history=@(JsonFile "$run\history.json")
     config=$config
     metrics=JsonFile "$run\metrics.json"
-    complete=(Test-Path "$run\checksums.json")
+    complete=$done
+    suite=$suite
     processes=$processes
     io=@(Get-CimInstance Win32_PerfFormattedData_PerfProc_Process | Where-Object { $_.IDProcess -in $processes.ProcessId } | Select-Object IOReadBytesPersec,IOWriteBytesPersec)
     worker=@(Tail "$run\worker.log" 250)

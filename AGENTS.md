@@ -15,6 +15,7 @@
 - Проверка: `python -m unittest discover -s tests -v`. Соблюдать четыре пробела, `snake_case`, явные контракты и существующий Python-стиль. Данные не скачивать для тестов.
 - Мониторинг сервера: `python scripts/remote.py status --host 25.9.106.39 --user bl1tz2200`; `--once` даёт один снимок, `--json` — машинный вывод. Ctrl+C останавливает только просмотр.
 - Локальная очередь: `python scripts/local_ablation.py status --directory ../local-experiments/EXP-016-local-r01`. Завершение подтверждает `completed` вместе с итоговым `report.json`, а не окончание отдельной эпохи.
+- GPU-очередь: `python scripts/remote.py suite-status --host 25.9.106.39 --user bl1tz2200`. Код: `mlp_trials/`, управление: `scripts/gpu_suite.py`, протокол и восстановление: `docs/MLP_SUITE.md`. Не изменять замороженный снимок действующей очереди.
 
 ## Данные, изоляция и ресурсы
 
