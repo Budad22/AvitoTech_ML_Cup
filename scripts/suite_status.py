@@ -37,11 +37,13 @@ def render_suite(snapshot):
             lines.append(f"Loss {metrics['train_loss']:.5f} · {metrics.get('batches_per_second', 0):.1f} батч/с · ожидание данных {metrics.get('loader_wait_pct', 0):.1f}%")
     for case in suite.get('cases', []):
         score = f"selection NDCG {case['selection_ndcg']:.6f}" if case.get('status') == 'completed' else case.get('error', '')
-        lines.append(f"  {case['kind']}: {case['status']} · {score}")
+        name = (case['stage'] + '/' if case.get('stage') else '') + case['kind']
+        lines.append(f"  {name}: {case['status']} · {score}")
     if suite.get('winner'):
         lines.append('Лидер: ' + suite['winner'])
     if suite.get('error'):
         lines.append('Ошибка очереди: ' + suite['error'])
-    lines.append('GPU: нагрузка %, память МиБ / всего МиБ: ' + '; '.join(snapshot.get('gpu') or []))
+    if snapshot.get('gpu'):
+        lines.append('GPU: нагрузка %, память МиБ / всего МиБ: ' + '; '.join(snapshot['gpu']))
     lines.append('Артефакты: ' + suite['directory'])
     return '\n'.join(lines)

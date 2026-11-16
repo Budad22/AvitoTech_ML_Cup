@@ -186,3 +186,17 @@ class TrialContracts(unittest.TestCase):
         self.assertEqual(sum('train' in c for c in commands), len(VARIANTS))
         self.assertEqual(sum('control' in c for c in commands), 1)
         self.assertEqual(json.loads((directory / 'report.json').read_text())['winner']['kind'], 'baseline')
+        screening = self.root / 'screening'
+        screening.mkdir()
+        (screening / 'schema.json').write_text('{"fingerprint":"fixture"}')
+        args.directory = screening
+        args.selection_only = True
+        args.run_prefix = 'EXP-026-small'
+        args.device = 'cpu'
+        commands.clear()
+        with patch('scripts.gpu_suite.subprocess.Popen', Child):
+            run_suite(args)
+        self.assertFalse(any('evaluate' in command or 'predict' in command for command in commands))
+        self.assertTrue(all(command[command.index('--device') + 1] == 'cpu' for command in commands))
+        self.assertTrue((screening / 'report.json').exists())
+        self.assertFalse((screening / 'submission-audit.json').exists())

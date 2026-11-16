@@ -28,6 +28,11 @@ def build_view(snapshot, *, host, phase, label, legacy_events=()):
     if suite:
         current = suite.get('current') or {}
         view['warnings'].append(f"Очередь: {suite.get('completed', 0)}/{suite.get('total', '?')} завершено · ошибок {suite.get('failed', 0)} · {current.get('kind', suite.get('status', '?'))}")
+        if state.get('phase') == 'completed' and suite.get('status') == 'running':
+            view.update(phase='transition', label='Вариант завершён; очередь продолжает работу')
+    error = suite.get('error') or state.get('error')
+    if error:
+        view['warnings'].insert(0, 'ОШИБКА: ' + str(error) + ' · Подробности: --logs')
     if history:
         view['metrics']['best_ndcg'] = max(e['ndcg'] for e in history)
         view['metrics']['val_ndcg'] = history[-1]['ndcg']

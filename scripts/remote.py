@@ -103,14 +103,14 @@ def main():
     parser.add_argument('--host', required=True)
     parser.add_argument('--user', required=True)
     parser.add_argument('-v', '--verbose', action='store_true', help='Show task, paths and process details')
-    parser.add_argument('--logs', type=int, nargs='?', const=20, default=0, metavar='N', help='Show the last N log lines (default: 20)')
+    parser.add_argument('--logs', type=int, nargs='?', const=30, default=0, metavar='N', help='Print errors and trainer/controller log tails once (default: 30 lines/file); --watch repeats snapshots')
     parser.add_argument('--json', action='store_true', help='Print the status snapshot as JSON')
     from training_logs.terminal import add_refresh_options, refresh_interval
     add_refresh_options(parser)
     parser.add_argument('--format', choices=['auto', 'rich', 'plain'], default='auto', help='Terminal dashboard or plain text; auto uses Rich only for a TTY')
     args = parser.parse_args()
     interval = refresh_interval(args)
-    if args.logs < 0 or interval < 0 or 0 < interval < 1:
+    if not 0 <= args.logs <= 2000 or interval < 0 or 0 < interval < 1:
         parser.error('logs must be nonnegative; refresh interval must be at least 1 second')
     client = paramiko.SSHClient()
     client.load_system_host_keys()
@@ -123,7 +123,12 @@ def main():
         if args.action == 'suite-status':
             from suite_status import read_suite, render_suite
             snapshot = read_suite(client)
+            if args.logs:
+                from diagnostics import read_diagnostics, render_diagnostics
+                snapshot['diagnostics'] = read_diagnostics(client, args.logs)
             print(json.dumps(snapshot, ensure_ascii=False) if args.json else render_suite(snapshot), flush=True)
+            if args.logs and not args.json:
+                print(render_diagnostics(snapshot['diagnostics']), flush=True)
             return
         remote_base, run_id = active_workspace(client)
         if args.action == 'status':
@@ -142,7 +147,7 @@ def main():
             try:
                 with ExitStack() as stack:
                     live = stack.enter_context(Live(animated, console=console, auto_refresh=True,
-                                                   refresh_per_second=12 if not args.no_animation else 1)) if pretty and interval else None
+                                                   refresh_per_second=12 if not args.no_animation else 1)) if pretty and interval and not args.logs and not args.verbose else None
                     while True:
                         poll_started = time.monotonic()
                         fast = bool(pretty and interval and previous and not args.verbose and not args.logs and poll_started - full_at < 10)
@@ -154,14 +159,22 @@ def main():
                                           legacy_events=progress_events(snapshot))
                         if args.json:
                             snapshot.update(stage=phase, stage_label=label, training_view=view)
+                            if args.logs:
+                                from diagnostics import read_diagnostics
+                                snapshot['diagnostics'] = read_diagnostics(client, args.logs)
                             print(json.dumps(snapshot, ensure_ascii=False), flush=True)
                         else:
-                            details = render(snapshot, args.host, args.verbose, args.logs, previous) if args.verbose or args.logs else None
-                            panel = dashboard(view, width=console.width, height=console.height, details=details)
+                            details = render(snapshot, args.host, args.verbose, 0, previous) if args.verbose else None
+                            if args.logs:
+                                from diagnostics import read_diagnostics, render_diagnostics
+                                details = render_diagnostics(read_diagnostics(client, args.logs))
+                            panel = dashboard(view, width=console.width, height=console.height if live else None)
                             if live:
                                 animated.update(view, details)
                             elif pretty:
                                 console.print(panel)
+                                if details:
+                                    console.print(details, markup=False, highlight=False, soft_wrap=True)
                             else:
                                 from training_logs.view import plain_view
                                 print(plain_view(view), flush=True)

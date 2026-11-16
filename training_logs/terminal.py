@@ -19,6 +19,8 @@ def refresh_interval(args):
         return 0
     if args.watch is not None:
         return args.watch
+    if getattr(args, 'logs', 0) or getattr(args, 'verbose', False):
+        return 0.
     return 1. if sys.stdout.isatty() and not args.json and args.format != 'plain' else 0.
 
 

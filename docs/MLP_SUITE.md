@@ -56,8 +56,8 @@ Windows `AvitoMLPSuite` (S4U, unlimited execution, IgnoreNew).
 Из локального репозитория:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/remote.py suite-status --host 25.9.106.39 --user bl1tz2200
-.\.venv\Scripts\python.exe scripts/remote.py status --host 25.9.106.39 --user bl1tz2200
+.\.venv\Scripts\python.exe scripts/remote.py suite-status --host 26.27.122.189 --user bl1tz2200
+.\.venv\Scripts\python.exe scripts/remote.py status --host 26.27.122.189 --user bl1tz2200
 ```
 
 Первая команда показывает всю очередь; `--json` добавляет полную историю.

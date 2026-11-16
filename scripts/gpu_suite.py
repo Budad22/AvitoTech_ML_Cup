@@ -49,6 +49,10 @@ def process_identity(pid):
 
 
 def run(args):
+    variants = getattr(args, 'variants', None) or VARIANTS
+    selection_only = getattr(args, 'selection_only', False)
+    run_prefix = getattr(args, 'run_prefix', 'EXP-024')
+    device = getattr(args, 'device', 'cuda')
     directory = args.directory.resolve()
     directory.mkdir(parents=True, exist_ok=True)
     lock = (directory / 'controller.lock').open('a+b')
@@ -66,7 +70,8 @@ def run(args):
         import fcntl
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     config = dict(data=str(args.data.resolve()), code=str(ROOT), python=sys.executable,
-                  variants=list(VARIANTS), seed=42, epochs=args.epochs, hours=args.hours, batch_size=args.batch_size)
+                  variants=list(variants), seed=42, epochs=args.epochs, hours=args.hours, batch_size=args.batch_size,
+                  selection_only=selection_only, run_prefix=run_prefix, device=device)
     existing = read(directory / 'suite-config.json')
     if existing and existing != config:
         raise ValueError('Immutable suite configuration changed; choose another directory')
@@ -79,7 +84,7 @@ def run(args):
         raise ValueError('Frozen code changed; refusing to mix versions')
     write_json(directory / 'code-hashes.json', hashes)
     state = read(directory / 'status.json') or dict(suite_id=directory.name, cases=[], created_at=datetime.now(timezone.utc).isoformat())
-    state.update(controller_pid=os.getpid(), status='running', total=len(VARIANTS), directory=str(directory))
+    state.update(controller_pid=os.getpid(), status='running', total=len(variants), directory=str(directory))
 
     def update(**fields):
         state.update(fields, updated_at=datetime.now(timezone.utc).isoformat())
@@ -115,8 +120,8 @@ def run(args):
         if not reference.exists():
             command(['-m', 'mlp_trials', 'schema', '--data', str(args.data), '--output', str(reference)],
                     directory / 'schema.log', 'inspect')
-        for index, kind in enumerate(VARIANTS):
-            run_id = f'EXP-024-{kind.replace("_", "-")}-r01'
+        for index, kind in enumerate(variants):
+            run_id = f'{run_prefix}-{kind.replace("_", "-")}-r01'
             output = directory / 'runs' / run_id
             output.mkdir(parents=True, exist_ok=True)
             prior = next((c for c in state['cases'] if c['kind'] == kind), None)
@@ -136,7 +141,7 @@ def run(args):
                 result = read(output / 'result.json')
                 if not result:
                     arguments = ['-m', 'mlp_trials', 'train', '--data', str(args.data), '--schema', str(reference),
-                                 '--output', str(output), '--kind', kind, '--device', 'cuda',
+                                 '--output', str(output), '--kind', kind, '--device', device,
                                  '--epochs', str(args.epochs), '--hours', str(args.hours),
                                  '--batch-size', str(args.batch_size), '--seed', '42',
                                  '--history-window', '128' if kind == 'history_stats' else '64',
@@ -156,10 +161,14 @@ def run(args):
             state['cases'] = [c for c in state['cases'] if c['kind'] != kind] + [case]
             update()
         best = winner(state['cases'])
-        if best:
+        if best and selection_only:
+            update(winner=best['run_id'])
+            write_json(directory / 'report.json', dict(winner=best, cases=state['cases'],
+                                                       data_fingerprint=read(reference)['fingerprint']))
+        if best and not selection_only:
             update(winner=best['run_id'], phase='final_evaluation')
             checkpoint = Path(best['output']) / 'best.pt'
-            common = ['--data', str(args.data), '--model', str(checkpoint), '--batch-size', str(args.batch_size)]
+            common = ['--data', str(args.data), '--model', str(checkpoint), '--batch-size', str(args.batch_size), '--device', device]
             final = {}
             for part in ('selection', 'control', 'all'):
                 target = directory / f'winner-{part}.json'
@@ -194,6 +203,10 @@ def main():
     parser.add_argument('--epochs', type=int, default=5)
     parser.add_argument('--hours', type=float, default=2)
     parser.add_argument('--batch-size', type=int, default=64)
+    parser.add_argument('--variants', nargs='+', choices=VARIANTS)
+    parser.add_argument('--selection-only', action='store_true', help='Keep control/test sealed during screening')
+    parser.add_argument('--run-prefix', default='EXP-024')
+    parser.add_argument('--device', choices=['cpu', 'cuda'], default='cuda')
     args = parser.parse_args()
     if min(args.epochs, args.hours, args.batch_size) <= 0:
         parser.error('Training limits must be positive')
