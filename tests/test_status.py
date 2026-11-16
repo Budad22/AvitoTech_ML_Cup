@@ -49,6 +49,12 @@ class StatusTests(unittest.TestCase):
                                               completed=11, failed=0, cases=[], current=None), task='Ready', gpu=[]))
         self.assertIn('11/11', result)
 
+    def test_structured_trial_logs_support_verbose_legacy_rendering(self):
+        value = snapshot(processes=[{'ProcessId': 123, 'CommandLine': 'python -m mlp_trials train'}],
+                         worker=['{"event":"training_started"}',
+                                 '{"epoch":1,"batch":5,"elapsed_seconds":20,"metrics":{"train_loss":0.125}}'])
+        self.assertIn('loss: 0.12500', render(value, 'server', verbose=True))
+
     def test_preparation_and_initialization_are_not_training(self):
         for command, expected in (('python -m recsys_data', 'preparation'), ('python -m mlp train', 'initializing')):
             self.assertEqual(stage(snapshot(processes=[{'CommandLine': command}]))[0], expected)

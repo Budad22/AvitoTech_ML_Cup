@@ -78,6 +78,10 @@ def progress_events(snapshot):
         try:
             item = json.loads(line)
             if isinstance(item, dict):
+                # Adapt structured producers to the legacy text renderer.
+                if 'batch' in item and 'train_loss' in (item.get('metrics') or {}):
+                    item.setdefault('loss', item['metrics']['train_loss'])
+                    item.setdefault('seconds', item.get('elapsed_seconds', 0))
                 events.append(item)
         except (ValueError, TypeError):
             pass
