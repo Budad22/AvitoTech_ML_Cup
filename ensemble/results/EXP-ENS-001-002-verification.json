@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "rows": 1389971,
+  "exact_saved_scores": true,
+  "within_feed_permutation_exact": true,
+  "input_alignment_and_hashes": true,
+  "test_read": false,
+  "submission_created": false,
+  "code_snapshot_sha256": "dfe44f710d2f689263579a2a6dbf477564f96ba5f0c14b3aaf0d6195b0149de8"
+}

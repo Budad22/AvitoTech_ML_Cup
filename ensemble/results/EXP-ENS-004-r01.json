@@ -1,0 +1,78 @@
+{
+  "decision": {
+    "experiment": "EXP-ENS-004-r01",
+    "weights_short_long": [
+      0.25,
+      0.25
+    ],
+    "cat_seed_weights": {
+      "42": 0.5,
+      "17": 0.5
+    },
+    "baseline_selection": 0.36957159721267946,
+    "candidate_selection": 0.3694149366153196,
+    "delta": -0.00015666059735985893,
+    "accepted": false,
+    "minimum_delta": 0.001
+  },
+  "metrics": {
+    "selection": {
+      "baseline_ndcg": 0.36957159721268895,
+      "candidate_ndcg": 0.36941493661532837,
+      "delta": -0.00015666059736064802,
+      "feeds": 11534
+    },
+    "meta_fit": {
+      "baseline_ndcg": 0.3664130694134487,
+      "candidate_ndcg": 0.366261665553707,
+      "delta": -0.00015140385974172252,
+      "feeds": 8076
+    },
+    "meta_tune": {
+      "baseline_ndcg": 0.37694819365764687,
+      "candidate_ndcg": 0.37677925619128383,
+      "delta": -0.00016893746636308956,
+      "feeds": 3458
+    },
+    "late_control": {
+      "baseline_ndcg": 0.365434105162793,
+      "candidate_ndcg": 0.3663251828398363,
+      "delta": 0.0008910776770432627,
+      "feeds": 2889
+    },
+    "full_diagnostic": {
+      "baseline_ndcg": 0.36874283658507,
+      "candidate_ndcg": 0.36879604327431775,
+      "delta": 5.320668924774809e-05,
+      "feeds": 14423
+    }
+  },
+  "bootstrap": {
+    "meta_tune": {
+      "unit": "user_id",
+      "repetitions": 1000,
+      "seed": 42,
+      "delta_ndcg": -0.00016893746636308956,
+      "interval_95": [
+        -0.0008575213741022888,
+        0.00047424085942312843
+      ],
+      "limitation": "Conditional on fixed checkpoints; excludes model/weight selection uncertainty"
+    },
+    "late_control": {
+      "unit": "user_id",
+      "repetitions": 1000,
+      "seed": 42,
+      "delta_ndcg": 0.0008910776770432627,
+      "interval_95": [
+        3.206520541837558e-05,
+        0.0018299750818985931
+      ],
+      "limitation": "Conditional on fixed checkpoints; excludes model/weight selection uncertainty"
+    }
+  },
+  "full_val_contains_meta_training": false,
+  "test_read": false,
+  "submission_created": false,
+  "candidate_predictions_sha256": "1105d7596c66b35cd0525afc0fc9fe3f2fe0b87d3dbc941a266b157b611b45ff"
+}
