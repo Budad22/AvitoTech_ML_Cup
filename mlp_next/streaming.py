@@ -26,25 +26,30 @@ class StreamingSplit:
         self.loaded = {}
 
     def batch(self, feeds, *, history=True, context=False):
-        features, labels = [], []
+        features, labels, positions = [], [], []
         for index in feeds:
             shard = int(np.searchsorted(self.offsets, index, side='right') - 1)
             if shard not in self.loaded:
                 name = self.files[shard]['name']
-                self.loaded = {shard: tuple(pq.read_table(self.dataset.root / 'train' / kind / name)
-                                            for kind in ('features', 'labels'))}
-            f, y = self.loaded[shard]
+                kinds = ('features', 'labels', 'diagnostics') if self.config.get('position_nuisance') else ('features', 'labels')
+                self.loaded = {shard: tuple(pq.read_table(self.dataset.root / 'train' / kind / name) for kind in kinds)}
+            f, y = self.loaded[shard][:2]
             row = int(index - self.offsets[shard])
             features.append(f.slice(row, 1))
             labels.append(y.slice(row, 1))
+            if self.config.get('position_nuisance'):
+                positions.extend(self.loaded[shard][2]['pos'][row].as_py())
         batch = FeedBatch(pa.concat_tables(features), pa.concat_tables(labels), None, self.dataset.embeddings)
-        tensors = pack(batch, self.categories, kind='history_stats', history_window=256)['tensors']
+        window = 256 if self.config.get('sequence') else 128
+        tensors = pack(batch, self.categories, kind='history_stats', history_window=window)['tensors']
         # Statistics must use the same original window128 as the research cache.
         statistics_inputs = {k: v[:, :128] if k.startswith('h_') and v.ndim >= 2 else v
                              for k, v in tensors.items()}
         stats = history_stats(statistics_inputs)
         result = {k: tensors[k] for k in ('dense', 'category', 'target', 'counts', 'weights')}
         result['history'] = stats
+        if self.config.get('position_nuisance'):
+            result['position_bucket'] = torch.from_numpy(np.searchsorted([1, 5, 20, 50, 100], positions, side='right').astype('int64'))
         if context:
             result['context'] = torch.from_numpy(context_features(tensors['dense'].numpy(),
                                                     tensors['category'].numpy(), tensors['counts'].numpy()))

@@ -59,10 +59,12 @@ def evaluate(model, dataset, feeds, config, batch_size=32, predictions=False):
 
 class Trainer:
     def __init__(self, cache, directory, emit, batch_size=16, device='cpu',
-                 model_class=ResearchRanker, split_class=DeviceSplit, order_fn=feed_order):
+                 model_class=ResearchRanker, split_class=DeviceSplit, order_fn=feed_order,
+                 loss_fn=loss):
         self.cache, self.directory, self.emit = Path(cache), Path(directory), emit
         self.device = device
         self.model_class, self.order_fn = model_class, order_fn
+        self.loss_fn = loss_fn
         if device == 'cuda' and not torch.cuda.is_available():
             raise RuntimeError('CUDA was requested but is unavailable')
         self.info = json.loads((self.cache / 'metadata.json').read_text(encoding='utf-8'))
@@ -124,11 +126,17 @@ class Trainer:
             before = time.monotonic()
             model.train()
             optimizer.zero_grad(set_to_none=True)
-            objective = loss(model(inputs), inputs, config['loss'])
+            objective = self.loss_fn(model(inputs), inputs, config['loss'])
             if not torch.isfinite(objective):
                 raise ValueError('Nonfinite research training loss')
             objective.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 5., error_if_nonfinite=True)
+            if config.get('schedule_steps'):
+                warmup = config.get('warmup_steps', 200)
+                progress = min(1., max(0., (step - warmup) / max(1, config['schedule_steps'] - warmup)))
+                factor = min(1., (step + 1) / max(1, warmup)) * (.1 + .9 * (1 + math.cos(math.pi * progress)) / 2)
+                for group in optimizer.param_groups:
+                    group['lr'] = config['learning_rate'] * factor
             optimizer.step()
             last_loss = float(objective.detach())
             step = index + 1
@@ -149,12 +157,20 @@ class Trainer:
                 save(output / 'last.pt', state())
                 self.emit('validation_completed', name=config['name'], seed=seed, step=step,
                           total=target, fast_ndcg=metric['ndcg'], best_ndcg=best)
+                patience = config.get('early_stop_patience', 0)
+                if (patience and step >= config.get('minimum_steps', 0) and len(history) > patience
+                        and max(r['fast_ndcg'] for r in history[-patience:])
+                        <= max(r['fast_ndcg'] for r in history[:-patience])):
+                    self.emit('early_stopping', name=config['name'], seed=seed, step=step,
+                              total=target, best_ndcg=best, reason='No fast improvement after minimum data coverage')
+                    break
             elif step % 200 == 0:
                 save(output / 'last.pt', state())
             if (self.directory / 'STOP_AFTER_CHECKPOINT').exists():
                 save(output / 'last.pt', state())
                 raise InterruptedError('Paused through checkpoint at owner request')
         result = dict(name=config['name'], seed=seed, status='completed', steps=step, fast_ndcg=best,
+                      stopped_early=step < target,
                       device=self.device,
                       history=history, seconds=seconds + time.monotonic() - started,
                       parameters=sum(parameter.numel() for parameter in model.parameters()), output=str(output))

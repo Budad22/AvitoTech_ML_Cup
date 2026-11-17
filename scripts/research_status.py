@@ -18,6 +18,14 @@ if ($process) {$alive=$process.StartTime.ToUniversalTime().ToFileTimeUtc() -eq $
 $stages=@{}
 $ledger=if (Test-Path "$root\ledger.json") {Get-Content "$root\ledger.json" -Raw | ConvertFrom-Json}
 foreach ($stage in $ledger.PSObject.Properties) {
+ if($stage.Value.status){
+  $name=($stage.Name -split '/')[0]
+  if(!$stages.ContainsKey($name)){$stages[$name]=@{completed=0;failed=0;partial=0}}
+  if($stage.Value.status -eq 'completed'){$stages[$name].completed++}
+  elseif($stage.Value.status -eq 'failed'){$stages[$name].failed++}
+  else{$stages[$name].partial++}
+  continue
+ }
  $records=@($stage.Value.PSObject.Properties | ForEach-Object {$_.Value})
  $stages[$stage.Name]=@{completed=@($records|Where-Object {$_.status -eq 'completed'}).Count;failed=@($records|Where-Object {$_.status -eq 'failed'}).Count}
 }
@@ -30,7 +38,14 @@ function Tail($path) {
 $logs=@()
 if (__LINES__ -gt 0) {
  $paths=@("$root\failure.txt","$root\worker.err.log","$root\worker.log","$root\prepare.err.log")
- foreach($stage in $ledger.PSObject.Properties){foreach($record in $stage.Value.PSObject.Properties){if($record.Value.status -eq 'failed'){$paths+= "$root\runs\$($record.Value.name)-s$($record.Value.seed)\failure.txt"}}}
+ foreach($stage in $ledger.PSObject.Properties){
+  if($stage.Value.status){
+   if($stage.Value.status -eq 'failed'){
+    $phase=($stage.Name -split '/')[0]
+    $paths+="$root/$phase/runs/$($stage.Value.name)-s$($stage.Value.seed)/failure.txt"
+   }
+  }else{foreach($record in $stage.Value.PSObject.Properties){if($record.Value.status -eq 'failed'){$paths+= "$root\runs\$($record.Value.name)-s$($record.Value.seed)\failure.txt"}}}
+ }
  $logs=@(foreach($path in ($paths|Select-Object -Unique)){$content=Tail $path;if($content){@{path=$path;text=$content}}})
 }
 $report=if(Test-Path "$root\report.json"){Get-Content "$root\report.json" -Raw | ConvertFrom-Json}
@@ -44,9 +59,14 @@ if($report.final_runs){
 }
 $config=Get-Content "$root\research-config.json" -Raw | ConvertFrom-Json
 $task=if($active.task_name){(Get-ScheduledTask $active.task_name).State.ToString()}else{'detached'}
+$queued=$null
+if(Test-Path 'Q:/AVITOCUP/active-research-queue.json'){
+ $candidate=Get-Content 'Q:/AVITOCUP/active-research-queue.json' -Raw|ConvertFrom-Json
+ if($candidate.experiment -ne $state.experiment){$queued=$candidate}
+}
 @{research=$state;alive=$alive;stages=$stages;task=$task;
 gpu=@(& nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits);
-logs=$logs;decision=$report.decision;explanation=$report.explanation;summary=$summary;
+logs=$logs;decision=$report.decision;explanation=$report.explanation;summary=$summary;queued=$queued;
 budget_seconds=$config.maximum_hours*3600}|ConvertTo-Json -Depth 12 -Compress
 """.replace('__LINES__', str(lines))
     payload = base64.b64encode(gzip.compress(script.encode())).decode()
@@ -71,6 +91,9 @@ def render_research(snapshot):
     if state['status'] == 'running' and not snapshot['alive']:
         lines.append('ОШИБКА: процесс контроллера остановлен; сохранённый running устарел.')
     lines.append(f"Завершено этапов: {state['completed']} · ошибок: {state['failed']}")
+    if snapshot.get('queued'):
+        queued = snapshot['queued']
+        lines.append(f"Следующая очередь: {queued['experiment']} · {queued['hypotheses']} новых гипотез · окно {queued['minimum_hours']} ч + резерв")
     for stage, counts in snapshot.get('stages', {}).items():
         total = '/' + str(state['hypotheses'] * 3) if stage.startswith('confirm_') and 'hypotheses' in state else ''
         lines.append(f"  {stage}: готово {counts['completed']}{total}, ошибок {counts['failed']}")
@@ -137,6 +160,9 @@ def build_research_view(snapshot, host):
                        confirmation_delta=summary['delta'])
         warnings.append('Лидер: ' + summary['name'] + ' · среднее по трём seed')
     warnings.append(f"Очередь: завершено этапов {state['completed']} · ошибок {state['failed']} · {state['phase']}")
+    if snapshot.get('queued'):
+        queued = snapshot['queued']
+        warnings.append(f"Далее: {queued['experiment']} · {queued['hypotheses']} новых гипотез · {queued['minimum_hours']} ч + резерв")
     if snapshot.get('explanation'):
         warnings.append(snapshot['explanation'])
     gpu = None
