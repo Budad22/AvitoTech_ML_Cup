@@ -13,6 +13,21 @@ from scripts.research_status import build_research_view, display_research
 
 
 class ResearchStatusContracts(unittest.TestCase):
+    def test_watch_follows_live_successor_after_predecessor_completes(self):
+        snapshot=self.completed()
+        snapshot['queued']=dict(experiment='EXP-032',hypotheses=26,minimum_hours=12,
+                                alive=True,state=dict(status='waiting'))
+        successor=self.completed()
+        successor['research']['experiment']='EXP-032'
+        args=SimpleNamespace(format='auto',json=True,no_animation=True,logs=0,host='gpu')
+        output=io.StringIO()
+        with patch('sys.stdout',output),patch('time.sleep'), \
+                patch('scripts.research_status.read_research',return_value=successor) as poll:
+            display_research(None,snapshot,args,1)
+        self.assertEqual(poll.call_count,1)
+        self.assertEqual([json.loads(line)['research']['experiment'] for line in output.getvalue().splitlines()],
+                         ['EXP-030','EXP-032'])
+
     def completed(self):
         return dict(research=dict(experiment='EXP-030', device='cuda', status='completed', completed=42,
                     failed=0, directory='Q:/research', phase='completed', current=None, progress={},

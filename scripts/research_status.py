@@ -62,7 +62,19 @@ $task=if($active.task_name){(Get-ScheduledTask $active.task_name).State.ToString
 $queued=$null
 if(Test-Path 'Q:/AVITOCUP/active-research-queue.json'){
  $candidate=Get-Content 'Q:/AVITOCUP/active-research-queue.json' -Raw|ConvertFrom-Json
- if($candidate.experiment -ne $state.experiment){$queued=$candidate}
+ if($candidate.experiment -ne $state.experiment){
+  $queued=$candidate
+  $queueRoot=[IO.Path]::GetFullPath($candidate.directory)
+  if(!$queueRoot.StartsWith('Q:\AVITOCUP\experiments\',[StringComparison]::OrdinalIgnoreCase)){throw 'Invalid successor directory'}
+  if(Test-Path "$queueRoot/status.json"){
+   $qs=Get-Content "$queueRoot/status.json" -Raw|ConvertFrom-Json
+   $qp=Get-Process -Id $qs.controller_pid -ErrorAction SilentlyContinue
+   $qa=$false
+   if($qp){$qa=$qp.StartTime.ToUniversalTime().ToFileTimeUtc() -eq $qs.controller_identity}
+   $queued|Add-Member -NotePropertyName state -NotePropertyValue $qs -Force
+   $queued|Add-Member -NotePropertyName alive -NotePropertyValue $qa -Force
+  }
+ }
 }
 @{research=$state;alive=$alive;stages=$stages;task=$task;
 gpu=@(& nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits);
@@ -94,6 +106,8 @@ def render_research(snapshot):
     if snapshot.get('queued'):
         queued = snapshot['queued']
         lines.append(f"Следующая очередь: {queued['experiment']} · {queued['hypotheses']} новых гипотез · окно {queued['minimum_hours']} ч + резерв")
+        if (queued.get('state') or {}).get('error'):
+            lines.append('ОШИБКА СЛЕДУЮЩЕЙ ОЧЕРЕДИ: ' + queued['state']['error'])
     for stage, counts in snapshot.get('stages', {}).items():
         total = '/' + str(state['hypotheses'] * 3) if stage.startswith('confirm_') and 'hypotheses' in state else ''
         lines.append(f"  {stage}: готово {counts['completed']}{total}, ошибок {counts['failed']}")
@@ -163,6 +177,8 @@ def build_research_view(snapshot, host):
     if snapshot.get('queued'):
         queued = snapshot['queued']
         warnings.append(f"Далее: {queued['experiment']} · {queued['hypotheses']} новых гипотез · {queued['minimum_hours']} ч + резерв")
+        if (queued.get('state') or {}).get('error'):
+            warnings.append('ОШИБКА СЛЕДУЮЩЕЙ ОЧЕРЕДИ: ' + queued['state']['error'])
     if snapshot.get('explanation'):
         warnings.append(snapshot['explanation'])
     gpu = None
@@ -214,7 +230,9 @@ def display_research(client, snapshot, args, interval):
                             console.print(details, markup=False, highlight=False, soft_wrap=True)
                 else:
                     print(render_research(snapshot), flush=True)
-                if not interval or view['phase'] in ('complete', 'error', 'stopped'):
+                pending = snapshot.get('queued') or {}
+                handoff = pending.get('alive') and (pending.get('state') or {}).get('status') in ('waiting','running')
+                if not interval or view['phase'] in ('error', 'stopped') or view['phase']=='complete' and not handoff:
                     break
                 time.sleep(interval)
                 snapshot = read_research(client, args.logs)
