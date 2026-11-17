@@ -28,6 +28,30 @@ def gpu_busy():
     return any(float(row.split(',')[0]) > 10 or float(row.split(',')[1]) > 1000 for row in rows)
 
 
+def import_control(root, source):
+    """Copy only after the preceding writer has exited; never overwrite a resumed run."""
+    root,source=Path(root),Path(source)
+    if (root/'ledger.json').exists():
+        return
+    prior=json.loads((source/'ledger.json').read_text(encoding='utf-8'))
+    ledger={}
+    copied={}
+    for key,result in prior.items():
+        phase=key.split('/')[0]
+        if result['number']!=9 or phase not in ('smoke','small','medium'):
+            continue
+        relative=Path(phase)/f"FTT-009-s{result['seed']}"
+        destination=root/relative
+        if str(relative) not in copied:
+            shutil.copytree(source/relative,destination,dirs_exist_ok=True)
+            copied[str(relative)]={p.name:digest(p) for p in destination.glob('*.pt')}
+        ledger[key]=dict(result,directory=str(destination))
+    if not ledger:
+        raise ValueError('Predecessor has no reusable FTT-009 control')
+    write_json(root/'control-source.json',dict(source=str(source),files=copied))
+    write_json(root/'ledger.json',ledger)
+
+
 class Followup(Queue):
     def remaining(self):
         return self.args.hours*3600-self.previous_seconds-(time.monotonic()-self.started)
@@ -154,6 +178,7 @@ def main():
     parser.add_argument('--device',default='cuda')
     parser.add_argument('--hours',type=float,default=4)
     parser.add_argument('--experiment',default='FTT-NIGHT-003')
+    parser.add_argument('--control-source',default='Q:/AVITOCUP/experiments/FTT-NIGHT-002')
     args=parser.parse_args()
     root=Path(args.output)
     root.mkdir(parents=True,exist_ok=True)
@@ -179,6 +204,7 @@ def main():
             write_json(root/'status.json',dict(experiment=args.experiment,status='failed',
                        error='CUDA preflight failed; see tests.err.log',pid=os.getpid(),heartbeat=time.time()))
             return
+        import_control(root,args.control_source)
         queue=Followup(args)
         try:
             queue.run()
