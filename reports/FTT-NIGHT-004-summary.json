@@ -1,0 +1,86 @@
+{
+  "experiment": "FTT-NIGHT-004",
+  "status": "completed",
+  "completed_stages": 37,
+  "elapsed_seconds": 12268.563000000024,
+  "train_medium_feeds": 172356,
+  "train_fraction_percent": 5.4695,
+  "confirmation": {
+    "control": 0.36079653159218217,
+    "winner": 0.3608777842578532,
+    "delta": 0.00008125266567108088,
+    "per_seed": [
+      -0.000026074082002656298,
+      0.00009275318913549733,
+      0.00017707888988040174
+    ],
+    "interval": [
+      -0.00023913999212589723,
+      0.00037927688679614537
+    ],
+    "checkpoints": [
+      {
+        "number": 17,
+        "seed": 42,
+        "step": 12000,
+        "sha256": "0363fa6317302bc3c0268e029bd73308b4f6ed096877e3d0f00a14b02f1dc86c",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-004\\medium\\FTT-017-s42\\confirmed-best.pt"
+      },
+      {
+        "number": 17,
+        "seed": 43,
+        "step": 10800,
+        "sha256": "5b377d2ed20f0180b8146d5ace8a9ce6f74f61a94db6e23f1c7f68b0bcfcda46",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-004\\medium\\FTT-017-s43\\confirmed-best.pt"
+      },
+      {
+        "number": 17,
+        "seed": 44,
+        "step": 8800,
+        "sha256": "9d02a927134eb6ff27618c6100b215ab7680c7608be17e3f7b31172d8602c66c",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-004\\medium\\FTT-017-s44\\confirmed-best.pt"
+      },
+      {
+        "number": 23,
+        "seed": 42,
+        "step": 12000,
+        "sha256": "5bcdf6ce04c22775d9984a8bfd79d701b48e0e48532482a4282cf311cc57d85e",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-004\\medium\\FTT-023-s42\\confirmed-best.pt"
+      },
+      {
+        "number": 23,
+        "seed": 43,
+        "step": 10800,
+        "sha256": "2c49f0c15d22fde3894465c4668479d2a7f6ef54b651e04a3cdc6ee1cc8d0bef",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-004\\medium\\FTT-023-s43\\confirmed-best.pt"
+      },
+      {
+        "number": 23,
+        "seed": 44,
+        "step": 8800,
+        "sha256": "12b8593a64147ee7e10ca9b42c2cd876169921e74abde2fc88d258eb0fd4b4fb",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-004\\medium\\FTT-023-s44\\confirmed-best.pt"
+      }
+    ],
+    "feeds": 9534
+  },
+  "longest_matched_steps": 51200,
+  "long_curves": [
+    {
+      "best_step": 35200,
+      "key": "medium/FTT-017-s42/51200",
+      "steps": 51200,
+      "best": 0.36646766507720496
+    },
+    {
+      "best_step": 35200,
+      "key": "medium/FTT-023-s42/51200",
+      "steps": 51200,
+      "best": 0.3664758532658671
+    }
+  ],
+  "full_val_evaluated": false,
+  "test_predicted": false,
+  "repair_commit": "fd3c9f4",
+  "decision": "No confirmed improvement over FTT-017; keep existing exported model."
+}
