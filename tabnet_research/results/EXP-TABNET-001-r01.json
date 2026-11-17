@@ -1,0 +1,153 @@
+{
+  "experiment": "EXP-TABNET-001-r01",
+  "status": "completed",
+  "models": {
+    "mlp": {
+      "selection": 0.3613337358564908,
+      "fast": 0.361120068954366,
+      "confirmation": 0.36137855794630097,
+      "training": {
+        "kind": "mlp",
+        "seed": 42,
+        "status": "completed",
+        "steps": 6400,
+        "fast_ndcg": 0.361120068954366,
+        "seconds": 96.84400000000096,
+        "history": [
+          {
+            "step": 200,
+            "fast_ndcg": 0.35946004591272424,
+            "loss": 3.3851265907287598
+          },
+          {
+            "step": 800,
+            "fast_ndcg": 0.3568881130035924,
+            "loss": 3.6891427040100098
+          },
+          {
+            "step": 1600,
+            "fast_ndcg": 0.35535596046642803,
+            "loss": 3.1674182415008545
+          },
+          {
+            "step": 3200,
+            "fast_ndcg": 0.3591935460718438,
+            "loss": 3.572110176086426
+          },
+          {
+            "step": 4800,
+            "fast_ndcg": 0.35917314135878625,
+            "loss": 3.9936585426330566
+          },
+          {
+            "step": 6400,
+            "fast_ndcg": 0.361120068954366,
+            "loss": 3.5077013969421387
+          }
+        ],
+        "parameters": 328433
+      },
+      "predictions_sha256": "5fa4218096e567f3dbf6cbfbe7dea2bfac4f43dedd5f7dd3c9ea6eea27f4520a"
+    },
+    "tabnet": {
+      "selection": 0.3344101750341997,
+      "fast": 0.33610724314177925,
+      "confirmation": 0.33405417165522355,
+      "training": {
+        "kind": "tabnet",
+        "seed": 42,
+        "status": "completed",
+        "steps": 6400,
+        "fast_ndcg": 0.33610724314177925,
+        "seconds": 365.34400000000096,
+        "history": [
+          {
+            "step": 200,
+            "fast_ndcg": 0.2851313374186807,
+            "loss": 3.506727695465088
+          },
+          {
+            "step": 800,
+            "fast_ndcg": 0.2912877401199536,
+            "loss": 3.8495309352874756
+          },
+          {
+            "step": 1600,
+            "fast_ndcg": 0.2932301046731275,
+            "loss": 3.3210957050323486
+          },
+          {
+            "step": 3200,
+            "fast_ndcg": 0.32868514757482015,
+            "loss": 3.774017095565796
+          },
+          {
+            "step": 4800,
+            "fast_ndcg": 0.32561143833638606,
+            "loss": 4.085142612457275
+          },
+          {
+            "step": 6400,
+            "fast_ndcg": 0.33610724314177925,
+            "loss": 3.5475895404815674
+          }
+        ],
+        "parameters": 347950
+      },
+      "predictions_sha256": "2f49b70fc8e9ee6f397f91f8fc0d1973639cb26791983a4f5e6e7b90966485fe"
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "exact_cached_truth": true,
+    "same_cohort": true,
+    "cache_config_hashes_verified": true,
+    "source_hashes_verified": true,
+    "finite_float32_predictions": true,
+    "per_feed_and_report_metrics_reproduced": true,
+    "feeds": 11534,
+    "rows": 1101295,
+    "test_read": false
+  },
+  "report": {
+    "status": "completed",
+    "runs": [
+      {
+        "kind": "mlp",
+        "seed": 42,
+        "best_step": 6400,
+        "selection_ndcg": 0.3613337358564908,
+        "confirmation_ndcg": 0.36137855794630097,
+        "checkpoint_sha256": "643e791f7d318fc87192a3057af61f4f9a44e07aba6e3b9db08be4d6cca801ee"
+      },
+      {
+        "kind": "tabnet",
+        "seed": 42,
+        "best_step": 6400,
+        "selection_ndcg": 0.3344101750341997,
+        "confirmation_ndcg": 0.33405417165522355,
+        "checkpoint_sha256": "31df0333ccc4ba62dbc7d2dd6fa78de14d7dce113a35b933343e59ecc8f49001"
+      }
+    ],
+    "fast_delta": -0.025012825812586736,
+    "practical_fast_threshold": 0.001,
+    "confirmation_comparison": {
+      "delta": -0.027324386291077432,
+      "lower": -0.03155342318467749,
+      "upper": -0.022937499342984745,
+      "per_seed": [
+        -0.027324386291077432
+      ],
+      "positive_seeds": 0,
+      "comparisons": 1,
+      "bootstrap_repetitions": 10000,
+      "evidence": false
+    },
+    "promote_candidate": false,
+    "independent_confirmation": false,
+    "note": "Historical selection reused; one seed is preliminary; larger train not evaluated",
+    "test_read": false,
+    "submission_created": false
+  },
+  "note": "One seed, train4, fixed 6400 steps. Best checkpoint at budget edge for both; convergence not established."
+}

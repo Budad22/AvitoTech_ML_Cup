@@ -1,0 +1,3594 @@
+{
+  "experiment": "EXP-TRF-002-r01",
+  "url": "https://storage.yandexcloud.net/avitotech-mlcup-2026/competition.zip",
+  "etag": "\"d3288eba5c8598d86d984dc211832c84-1836\"",
+  "archive_bytes": 19246962474,
+  "members": [
+    {
+      "name": "competition/train/impressions/part-00000-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18930322,
+      "compressed_bytes": 18930322,
+      "method": 0,
+      "crc32": "6002b549"
+    },
+    {
+      "name": "competition/train/impressions/part-00001-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18707251,
+      "compressed_bytes": 18707251,
+      "method": 0,
+      "crc32": "fa9bdf4c"
+    },
+    {
+      "name": "competition/train/impressions/part-00002-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19170650,
+      "compressed_bytes": 19170650,
+      "method": 0,
+      "crc32": "371cf1dc"
+    },
+    {
+      "name": "competition/train/impressions/part-00003-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19101518,
+      "compressed_bytes": 19101518,
+      "method": 0,
+      "crc32": "92bf8838"
+    },
+    {
+      "name": "competition/train/impressions/part-00004-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19078045,
+      "compressed_bytes": 19078045,
+      "method": 0,
+      "crc32": "2e0bb364"
+    },
+    {
+      "name": "competition/train/impressions/part-00005-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19056603,
+      "compressed_bytes": 19056603,
+      "method": 0,
+      "crc32": "448ad635"
+    },
+    {
+      "name": "competition/train/impressions/part-00006-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19038645,
+      "compressed_bytes": 19038645,
+      "method": 0,
+      "crc32": "a5ba0a33"
+    },
+    {
+      "name": "competition/train/impressions/part-00007-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18954355,
+      "compressed_bytes": 18954355,
+      "method": 0,
+      "crc32": "7f8e5139"
+    },
+    {
+      "name": "competition/train/impressions/part-00008-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19158245,
+      "compressed_bytes": 19158245,
+      "method": 0,
+      "crc32": "a22829c9"
+    },
+    {
+      "name": "competition/train/impressions/part-00009-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19097515,
+      "compressed_bytes": 19097515,
+      "method": 0,
+      "crc32": "283ea9d7"
+    },
+    {
+      "name": "competition/train/impressions/part-00010-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18940640,
+      "compressed_bytes": 18940640,
+      "method": 0,
+      "crc32": "e5b97f60"
+    },
+    {
+      "name": "competition/train/impressions/part-00011-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18761374,
+      "compressed_bytes": 18761374,
+      "method": 0,
+      "crc32": "9657dd2b"
+    },
+    {
+      "name": "competition/train/impressions/part-00012-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18985706,
+      "compressed_bytes": 18985706,
+      "method": 0,
+      "crc32": "2632d5fb"
+    },
+    {
+      "name": "competition/train/impressions/part-00013-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19023287,
+      "compressed_bytes": 19023287,
+      "method": 0,
+      "crc32": "651573b6"
+    },
+    {
+      "name": "competition/train/impressions/part-00014-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19027108,
+      "compressed_bytes": 19027108,
+      "method": 0,
+      "crc32": "1eccbad4"
+    },
+    {
+      "name": "competition/train/impressions/part-00015-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19152927,
+      "compressed_bytes": 19152927,
+      "method": 0,
+      "crc32": "d698ae03"
+    },
+    {
+      "name": "competition/train/impressions/part-00016-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18967625,
+      "compressed_bytes": 18967625,
+      "method": 0,
+      "crc32": "66a3abe2"
+    },
+    {
+      "name": "competition/train/impressions/part-00017-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19035414,
+      "compressed_bytes": 19035414,
+      "method": 0,
+      "crc32": "715d75bc"
+    },
+    {
+      "name": "competition/train/impressions/part-00018-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18888023,
+      "compressed_bytes": 18888023,
+      "method": 0,
+      "crc32": "c0901745"
+    },
+    {
+      "name": "competition/train/impressions/part-00019-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19003536,
+      "compressed_bytes": 19003536,
+      "method": 0,
+      "crc32": "2db5d56b"
+    },
+    {
+      "name": "competition/train/impressions/part-00020-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19136833,
+      "compressed_bytes": 19136833,
+      "method": 0,
+      "crc32": "1a894e4f"
+    },
+    {
+      "name": "competition/train/impressions/part-00021-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19046038,
+      "compressed_bytes": 19046038,
+      "method": 0,
+      "crc32": "1f7075d6"
+    },
+    {
+      "name": "competition/train/impressions/part-00022-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18857289,
+      "compressed_bytes": 18857289,
+      "method": 0,
+      "crc32": "9ca8e635"
+    },
+    {
+      "name": "competition/train/impressions/part-00023-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18996504,
+      "compressed_bytes": 18996504,
+      "method": 0,
+      "crc32": "aa6b822a"
+    },
+    {
+      "name": "competition/train/impressions/part-00024-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19193238,
+      "compressed_bytes": 19193238,
+      "method": 0,
+      "crc32": "ff5c2991"
+    },
+    {
+      "name": "competition/train/impressions/part-00025-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19369942,
+      "compressed_bytes": 19369942,
+      "method": 0,
+      "crc32": "7811473c"
+    },
+    {
+      "name": "competition/train/impressions/part-00026-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18713651,
+      "compressed_bytes": 18713651,
+      "method": 0,
+      "crc32": "c7d0e2f3"
+    },
+    {
+      "name": "competition/train/impressions/part-00027-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18929109,
+      "compressed_bytes": 18929109,
+      "method": 0,
+      "crc32": "11385e8b"
+    },
+    {
+      "name": "competition/train/impressions/part-00028-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18956195,
+      "compressed_bytes": 18956195,
+      "method": 0,
+      "crc32": "2824c3b3"
+    },
+    {
+      "name": "competition/train/impressions/part-00029-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19268081,
+      "compressed_bytes": 19268081,
+      "method": 0,
+      "crc32": "11e3253d"
+    },
+    {
+      "name": "competition/train/impressions/part-00030-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19122195,
+      "compressed_bytes": 19122195,
+      "method": 0,
+      "crc32": "bca22583"
+    },
+    {
+      "name": "competition/train/impressions/part-00031-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19205633,
+      "compressed_bytes": 19205633,
+      "method": 0,
+      "crc32": "d53bd47d"
+    },
+    {
+      "name": "competition/train/impressions/part-00032-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18951736,
+      "compressed_bytes": 18951736,
+      "method": 0,
+      "crc32": "9745d63d"
+    },
+    {
+      "name": "competition/train/impressions/part-00033-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18987237,
+      "compressed_bytes": 18987237,
+      "method": 0,
+      "crc32": "3d71360d"
+    },
+    {
+      "name": "competition/train/impressions/part-00034-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19113737,
+      "compressed_bytes": 19113737,
+      "method": 0,
+      "crc32": "935479e3"
+    },
+    {
+      "name": "competition/train/impressions/part-00035-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19004036,
+      "compressed_bytes": 19004036,
+      "method": 0,
+      "crc32": "bd536a05"
+    },
+    {
+      "name": "competition/train/impressions/part-00036-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18963213,
+      "compressed_bytes": 18963213,
+      "method": 0,
+      "crc32": "041695c7"
+    },
+    {
+      "name": "competition/train/impressions/part-00037-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18927370,
+      "compressed_bytes": 18927370,
+      "method": 0,
+      "crc32": "35b12424"
+    },
+    {
+      "name": "competition/train/impressions/part-00038-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18991617,
+      "compressed_bytes": 18991617,
+      "method": 0,
+      "crc32": "bc4b13e6"
+    },
+    {
+      "name": "competition/train/impressions/part-00039-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18983144,
+      "compressed_bytes": 18983144,
+      "method": 0,
+      "crc32": "0a424add"
+    },
+    {
+      "name": "competition/train/impressions/part-00040-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19092040,
+      "compressed_bytes": 19092040,
+      "method": 0,
+      "crc32": "1eec06a3"
+    },
+    {
+      "name": "competition/train/impressions/part-00041-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19044030,
+      "compressed_bytes": 19044030,
+      "method": 0,
+      "crc32": "d21e743b"
+    },
+    {
+      "name": "competition/train/impressions/part-00042-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19095932,
+      "compressed_bytes": 19095932,
+      "method": 0,
+      "crc32": "ea5dbd2b"
+    },
+    {
+      "name": "competition/train/impressions/part-00043-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18910830,
+      "compressed_bytes": 18910830,
+      "method": 0,
+      "crc32": "9509007e"
+    },
+    {
+      "name": "competition/train/impressions/part-00044-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19230287,
+      "compressed_bytes": 19230287,
+      "method": 0,
+      "crc32": "6835dd06"
+    },
+    {
+      "name": "competition/train/impressions/part-00045-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19148184,
+      "compressed_bytes": 19148184,
+      "method": 0,
+      "crc32": "a6587a7a"
+    },
+    {
+      "name": "competition/train/impressions/part-00046-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19142058,
+      "compressed_bytes": 19142058,
+      "method": 0,
+      "crc32": "18493b3f"
+    },
+    {
+      "name": "competition/train/impressions/part-00047-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19208542,
+      "compressed_bytes": 19208542,
+      "method": 0,
+      "crc32": "2aabcd7c"
+    },
+    {
+      "name": "competition/train/impressions/part-00048-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19072972,
+      "compressed_bytes": 19072972,
+      "method": 0,
+      "crc32": "ef4e8a6b"
+    },
+    {
+      "name": "competition/train/impressions/part-00049-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18967417,
+      "compressed_bytes": 18967417,
+      "method": 0,
+      "crc32": "018ed703"
+    },
+    {
+      "name": "competition/train/impressions/part-00050-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19065422,
+      "compressed_bytes": 19065422,
+      "method": 0,
+      "crc32": "cf47ce10"
+    },
+    {
+      "name": "competition/train/impressions/part-00051-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18960517,
+      "compressed_bytes": 18960517,
+      "method": 0,
+      "crc32": "6acdadf5"
+    },
+    {
+      "name": "competition/train/impressions/part-00052-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19105258,
+      "compressed_bytes": 19105258,
+      "method": 0,
+      "crc32": "eb48cf38"
+    },
+    {
+      "name": "competition/train/impressions/part-00053-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19359780,
+      "compressed_bytes": 19359780,
+      "method": 0,
+      "crc32": "0bf664a5"
+    },
+    {
+      "name": "competition/train/impressions/part-00054-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19209774,
+      "compressed_bytes": 19209774,
+      "method": 0,
+      "crc32": "f2a0a002"
+    },
+    {
+      "name": "competition/train/impressions/part-00055-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19076055,
+      "compressed_bytes": 19076055,
+      "method": 0,
+      "crc32": "675c9c31"
+    },
+    {
+      "name": "competition/train/impressions/part-00056-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18972373,
+      "compressed_bytes": 18972373,
+      "method": 0,
+      "crc32": "cfcaa604"
+    },
+    {
+      "name": "competition/train/impressions/part-00057-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18980694,
+      "compressed_bytes": 18980694,
+      "method": 0,
+      "crc32": "4bbe4956"
+    },
+    {
+      "name": "competition/train/impressions/part-00058-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19021574,
+      "compressed_bytes": 19021574,
+      "method": 0,
+      "crc32": "3c59c21d"
+    },
+    {
+      "name": "competition/train/impressions/part-00059-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18958120,
+      "compressed_bytes": 18958120,
+      "method": 0,
+      "crc32": "57334aec"
+    },
+    {
+      "name": "competition/train/impressions/part-00060-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19093294,
+      "compressed_bytes": 19093294,
+      "method": 0,
+      "crc32": "555c9c51"
+    },
+    {
+      "name": "competition/train/impressions/part-00061-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19132681,
+      "compressed_bytes": 19132681,
+      "method": 0,
+      "crc32": "dedab2f3"
+    },
+    {
+      "name": "competition/train/impressions/part-00062-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18972346,
+      "compressed_bytes": 18972346,
+      "method": 0,
+      "crc32": "f4e7b93a"
+    },
+    {
+      "name": "competition/train/impressions/part-00063-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18909191,
+      "compressed_bytes": 18909191,
+      "method": 0,
+      "crc32": "e0ada275"
+    },
+    {
+      "name": "competition/train/impressions/part-00064-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19195421,
+      "compressed_bytes": 19195421,
+      "method": 0,
+      "crc32": "0a3be8b1"
+    },
+    {
+      "name": "competition/train/impressions/part-00065-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19374763,
+      "compressed_bytes": 19374763,
+      "method": 0,
+      "crc32": "be79df84"
+    },
+    {
+      "name": "competition/train/impressions/part-00066-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19188842,
+      "compressed_bytes": 19188842,
+      "method": 0,
+      "crc32": "93a97600"
+    },
+    {
+      "name": "competition/train/impressions/part-00067-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19381228,
+      "compressed_bytes": 19381228,
+      "method": 0,
+      "crc32": "05784848"
+    },
+    {
+      "name": "competition/train/impressions/part-00068-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19044718,
+      "compressed_bytes": 19044718,
+      "method": 0,
+      "crc32": "89ab7324"
+    },
+    {
+      "name": "competition/train/impressions/part-00069-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19169669,
+      "compressed_bytes": 19169669,
+      "method": 0,
+      "crc32": "617add33"
+    },
+    {
+      "name": "competition/train/impressions/part-00070-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18844095,
+      "compressed_bytes": 18844095,
+      "method": 0,
+      "crc32": "f4b9a977"
+    },
+    {
+      "name": "competition/train/impressions/part-00071-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19187597,
+      "compressed_bytes": 19187597,
+      "method": 0,
+      "crc32": "23e7d0b2"
+    },
+    {
+      "name": "competition/train/impressions/part-00072-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18926510,
+      "compressed_bytes": 18926510,
+      "method": 0,
+      "crc32": "a8805137"
+    },
+    {
+      "name": "competition/train/impressions/part-00073-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19243339,
+      "compressed_bytes": 19243339,
+      "method": 0,
+      "crc32": "193f1085"
+    },
+    {
+      "name": "competition/train/impressions/part-00074-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19188948,
+      "compressed_bytes": 19188948,
+      "method": 0,
+      "crc32": "250f6219"
+    },
+    {
+      "name": "competition/train/impressions/part-00075-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19125738,
+      "compressed_bytes": 19125738,
+      "method": 0,
+      "crc32": "b92bc4ab"
+    },
+    {
+      "name": "competition/train/impressions/part-00076-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19212177,
+      "compressed_bytes": 19212177,
+      "method": 0,
+      "crc32": "cfa7290f"
+    },
+    {
+      "name": "competition/train/impressions/part-00077-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18935634,
+      "compressed_bytes": 18935634,
+      "method": 0,
+      "crc32": "2a75c2a4"
+    },
+    {
+      "name": "competition/train/impressions/part-00078-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19106079,
+      "compressed_bytes": 19106079,
+      "method": 0,
+      "crc32": "efbbcf85"
+    },
+    {
+      "name": "competition/train/impressions/part-00079-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18864769,
+      "compressed_bytes": 18864769,
+      "method": 0,
+      "crc32": "3cde05c1"
+    },
+    {
+      "name": "competition/train/impressions/part-00080-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19248982,
+      "compressed_bytes": 19248982,
+      "method": 0,
+      "crc32": "8b7f926a"
+    },
+    {
+      "name": "competition/train/impressions/part-00081-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18927330,
+      "compressed_bytes": 18927330,
+      "method": 0,
+      "crc32": "382bf402"
+    },
+    {
+      "name": "competition/train/impressions/part-00082-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19136091,
+      "compressed_bytes": 19136091,
+      "method": 0,
+      "crc32": "de733854"
+    },
+    {
+      "name": "competition/train/impressions/part-00083-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19175761,
+      "compressed_bytes": 19175761,
+      "method": 0,
+      "crc32": "47d0420f"
+    },
+    {
+      "name": "competition/train/impressions/part-00084-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19091975,
+      "compressed_bytes": 19091975,
+      "method": 0,
+      "crc32": "4296aac0"
+    },
+    {
+      "name": "competition/train/impressions/part-00085-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19288364,
+      "compressed_bytes": 19288364,
+      "method": 0,
+      "crc32": "29b66199"
+    },
+    {
+      "name": "competition/train/impressions/part-00086-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19188647,
+      "compressed_bytes": 19188647,
+      "method": 0,
+      "crc32": "6d43e29d"
+    },
+    {
+      "name": "competition/train/impressions/part-00087-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18874920,
+      "compressed_bytes": 18874920,
+      "method": 0,
+      "crc32": "fce2b0f7"
+    },
+    {
+      "name": "competition/train/impressions/part-00088-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18916889,
+      "compressed_bytes": 18916889,
+      "method": 0,
+      "crc32": "10af6467"
+    },
+    {
+      "name": "competition/train/impressions/part-00089-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19340156,
+      "compressed_bytes": 19340156,
+      "method": 0,
+      "crc32": "ebaeeaff"
+    },
+    {
+      "name": "competition/train/impressions/part-00090-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18995434,
+      "compressed_bytes": 18995434,
+      "method": 0,
+      "crc32": "bad0d4c3"
+    },
+    {
+      "name": "competition/train/impressions/part-00091-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19192805,
+      "compressed_bytes": 19192805,
+      "method": 0,
+      "crc32": "04900c56"
+    },
+    {
+      "name": "competition/train/impressions/part-00092-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19043757,
+      "compressed_bytes": 19043757,
+      "method": 0,
+      "crc32": "7f18d40e"
+    },
+    {
+      "name": "competition/train/impressions/part-00093-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19316158,
+      "compressed_bytes": 19316158,
+      "method": 0,
+      "crc32": "7b929e88"
+    },
+    {
+      "name": "competition/train/impressions/part-00094-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19236766,
+      "compressed_bytes": 19236766,
+      "method": 0,
+      "crc32": "e027429d"
+    },
+    {
+      "name": "competition/train/impressions/part-00095-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18954642,
+      "compressed_bytes": 18954642,
+      "method": 0,
+      "crc32": "657a2a27"
+    },
+    {
+      "name": "competition/train/impressions/part-00096-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19131793,
+      "compressed_bytes": 19131793,
+      "method": 0,
+      "crc32": "79ce48e8"
+    },
+    {
+      "name": "competition/train/impressions/part-00097-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19224378,
+      "compressed_bytes": 19224378,
+      "method": 0,
+      "crc32": "603879d7"
+    },
+    {
+      "name": "competition/train/impressions/part-00098-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19365447,
+      "compressed_bytes": 19365447,
+      "method": 0,
+      "crc32": "0f1f1ceb"
+    },
+    {
+      "name": "competition/train/impressions/part-00099-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18905584,
+      "compressed_bytes": 18905584,
+      "method": 0,
+      "crc32": "c2779dbb"
+    },
+    {
+      "name": "competition/train/impressions/part-00100-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19244782,
+      "compressed_bytes": 19244782,
+      "method": 0,
+      "crc32": "b45150f8"
+    },
+    {
+      "name": "competition/train/impressions/part-00101-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19399349,
+      "compressed_bytes": 19399349,
+      "method": 0,
+      "crc32": "7e48e516"
+    },
+    {
+      "name": "competition/train/impressions/part-00102-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19283279,
+      "compressed_bytes": 19283279,
+      "method": 0,
+      "crc32": "9147cb23"
+    },
+    {
+      "name": "competition/train/impressions/part-00103-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19328495,
+      "compressed_bytes": 19328495,
+      "method": 0,
+      "crc32": "3eb43e2d"
+    },
+    {
+      "name": "competition/train/impressions/part-00104-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18969743,
+      "compressed_bytes": 18969743,
+      "method": 0,
+      "crc32": "f8d3e883"
+    },
+    {
+      "name": "competition/train/impressions/part-00105-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19302184,
+      "compressed_bytes": 19302184,
+      "method": 0,
+      "crc32": "11b91325"
+    },
+    {
+      "name": "competition/train/impressions/part-00106-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19234203,
+      "compressed_bytes": 19234203,
+      "method": 0,
+      "crc32": "663abc7c"
+    },
+    {
+      "name": "competition/train/impressions/part-00107-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19279142,
+      "compressed_bytes": 19279142,
+      "method": 0,
+      "crc32": "e9e6cb68"
+    },
+    {
+      "name": "competition/train/impressions/part-00108-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19082054,
+      "compressed_bytes": 19082054,
+      "method": 0,
+      "crc32": "d3297d62"
+    },
+    {
+      "name": "competition/train/impressions/part-00109-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19026969,
+      "compressed_bytes": 19026969,
+      "method": 0,
+      "crc32": "4dbec270"
+    },
+    {
+      "name": "competition/train/impressions/part-00110-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19140368,
+      "compressed_bytes": 19140368,
+      "method": 0,
+      "crc32": "5196d6cd"
+    },
+    {
+      "name": "competition/train/impressions/part-00111-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19184248,
+      "compressed_bytes": 19184248,
+      "method": 0,
+      "crc32": "4ed9c249"
+    },
+    {
+      "name": "competition/train/impressions/part-00112-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19131054,
+      "compressed_bytes": 19131054,
+      "method": 0,
+      "crc32": "324cd928"
+    },
+    {
+      "name": "competition/train/impressions/part-00113-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19017137,
+      "compressed_bytes": 19017137,
+      "method": 0,
+      "crc32": "be438839"
+    },
+    {
+      "name": "competition/train/impressions/part-00114-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19222649,
+      "compressed_bytes": 19222649,
+      "method": 0,
+      "crc32": "196fec42"
+    },
+    {
+      "name": "competition/train/impressions/part-00115-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19240650,
+      "compressed_bytes": 19240650,
+      "method": 0,
+      "crc32": "53754f37"
+    },
+    {
+      "name": "competition/train/impressions/part-00116-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19248200,
+      "compressed_bytes": 19248200,
+      "method": 0,
+      "crc32": "cbce70c7"
+    },
+    {
+      "name": "competition/train/impressions/part-00117-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18973792,
+      "compressed_bytes": 18973792,
+      "method": 0,
+      "crc32": "4d9be665"
+    },
+    {
+      "name": "competition/train/impressions/part-00118-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19278715,
+      "compressed_bytes": 19278715,
+      "method": 0,
+      "crc32": "59144a87"
+    },
+    {
+      "name": "competition/train/impressions/part-00119-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19210008,
+      "compressed_bytes": 19210008,
+      "method": 0,
+      "crc32": "bfc9b739"
+    },
+    {
+      "name": "competition/train/impressions/part-00120-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19264729,
+      "compressed_bytes": 19264729,
+      "method": 0,
+      "crc32": "3f8192fa"
+    },
+    {
+      "name": "competition/train/impressions/part-00121-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19160856,
+      "compressed_bytes": 19160856,
+      "method": 0,
+      "crc32": "0b74ba84"
+    },
+    {
+      "name": "competition/train/impressions/part-00122-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19219249,
+      "compressed_bytes": 19219249,
+      "method": 0,
+      "crc32": "10695004"
+    },
+    {
+      "name": "competition/train/impressions/part-00123-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19067906,
+      "compressed_bytes": 19067906,
+      "method": 0,
+      "crc32": "7d4ecef4"
+    },
+    {
+      "name": "competition/train/impressions/part-00124-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19316413,
+      "compressed_bytes": 19316413,
+      "method": 0,
+      "crc32": "32f343e1"
+    },
+    {
+      "name": "competition/train/impressions/part-00125-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19193463,
+      "compressed_bytes": 19193463,
+      "method": 0,
+      "crc32": "12427a0e"
+    },
+    {
+      "name": "competition/train/impressions/part-00126-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19162514,
+      "compressed_bytes": 19162514,
+      "method": 0,
+      "crc32": "1cde6e63"
+    },
+    {
+      "name": "competition/train/impressions/part-00127-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19289885,
+      "compressed_bytes": 19289885,
+      "method": 0,
+      "crc32": "b1e6dbae"
+    },
+    {
+      "name": "competition/train/impressions/part-00128-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19069657,
+      "compressed_bytes": 19069657,
+      "method": 0,
+      "crc32": "689806b2"
+    },
+    {
+      "name": "competition/train/impressions/part-00129-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19262076,
+      "compressed_bytes": 19262076,
+      "method": 0,
+      "crc32": "ba553228"
+    },
+    {
+      "name": "competition/train/impressions/part-00130-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19279108,
+      "compressed_bytes": 19279108,
+      "method": 0,
+      "crc32": "cf5ed7ad"
+    },
+    {
+      "name": "competition/train/impressions/part-00131-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19324959,
+      "compressed_bytes": 19324959,
+      "method": 0,
+      "crc32": "78d9c212"
+    },
+    {
+      "name": "competition/train/impressions/part-00132-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19299858,
+      "compressed_bytes": 19299858,
+      "method": 0,
+      "crc32": "a2fda64f"
+    },
+    {
+      "name": "competition/train/impressions/part-00133-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19411518,
+      "compressed_bytes": 19411518,
+      "method": 0,
+      "crc32": "4f1650b2"
+    },
+    {
+      "name": "competition/train/impressions/part-00134-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18875336,
+      "compressed_bytes": 18875336,
+      "method": 0,
+      "crc32": "ec184c62"
+    },
+    {
+      "name": "competition/train/impressions/part-00135-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19237117,
+      "compressed_bytes": 19237117,
+      "method": 0,
+      "crc32": "d371a948"
+    },
+    {
+      "name": "competition/train/impressions/part-00136-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19181624,
+      "compressed_bytes": 19181624,
+      "method": 0,
+      "crc32": "df4a8fec"
+    },
+    {
+      "name": "competition/train/impressions/part-00137-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19277716,
+      "compressed_bytes": 19277716,
+      "method": 0,
+      "crc32": "33c36798"
+    },
+    {
+      "name": "competition/train/impressions/part-00138-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19187974,
+      "compressed_bytes": 19187974,
+      "method": 0,
+      "crc32": "512dd248"
+    },
+    {
+      "name": "competition/train/impressions/part-00139-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19053788,
+      "compressed_bytes": 19053788,
+      "method": 0,
+      "crc32": "11579b6b"
+    },
+    {
+      "name": "competition/train/impressions/part-00140-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19156265,
+      "compressed_bytes": 19156265,
+      "method": 0,
+      "crc32": "d47e5b6f"
+    },
+    {
+      "name": "competition/train/impressions/part-00141-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19190603,
+      "compressed_bytes": 19190603,
+      "method": 0,
+      "crc32": "491f7552"
+    },
+    {
+      "name": "competition/train/impressions/part-00142-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19091487,
+      "compressed_bytes": 19091487,
+      "method": 0,
+      "crc32": "2dcd75c5"
+    },
+    {
+      "name": "competition/train/impressions/part-00143-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19236974,
+      "compressed_bytes": 19236974,
+      "method": 0,
+      "crc32": "56caa343"
+    },
+    {
+      "name": "competition/train/impressions/part-00144-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19093752,
+      "compressed_bytes": 19093752,
+      "method": 0,
+      "crc32": "c5428239"
+    },
+    {
+      "name": "competition/train/impressions/part-00145-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19333683,
+      "compressed_bytes": 19333683,
+      "method": 0,
+      "crc32": "7f57f12e"
+    },
+    {
+      "name": "competition/train/impressions/part-00146-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19012083,
+      "compressed_bytes": 19012083,
+      "method": 0,
+      "crc32": "e70bc2de"
+    },
+    {
+      "name": "competition/train/impressions/part-00147-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19431217,
+      "compressed_bytes": 19431217,
+      "method": 0,
+      "crc32": "d80abaa8"
+    },
+    {
+      "name": "competition/train/impressions/part-00148-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19260421,
+      "compressed_bytes": 19260421,
+      "method": 0,
+      "crc32": "05748292"
+    },
+    {
+      "name": "competition/train/impressions/part-00149-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19442648,
+      "compressed_bytes": 19442648,
+      "method": 0,
+      "crc32": "508940b9"
+    },
+    {
+      "name": "competition/train/impressions/part-00150-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18829084,
+      "compressed_bytes": 18829084,
+      "method": 0,
+      "crc32": "d9bcb979"
+    },
+    {
+      "name": "competition/train/impressions/part-00151-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19218186,
+      "compressed_bytes": 19218186,
+      "method": 0,
+      "crc32": "c79964f5"
+    },
+    {
+      "name": "competition/train/impressions/part-00152-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19548887,
+      "compressed_bytes": 19548887,
+      "method": 0,
+      "crc32": "2895ffeb"
+    },
+    {
+      "name": "competition/train/impressions/part-00153-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19141364,
+      "compressed_bytes": 19141364,
+      "method": 0,
+      "crc32": "c86ecede"
+    },
+    {
+      "name": "competition/train/impressions/part-00154-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19052388,
+      "compressed_bytes": 19052388,
+      "method": 0,
+      "crc32": "2a55c188"
+    },
+    {
+      "name": "competition/train/impressions/part-00155-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19082838,
+      "compressed_bytes": 19082838,
+      "method": 0,
+      "crc32": "f134a6d8"
+    },
+    {
+      "name": "competition/train/impressions/part-00156-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19201754,
+      "compressed_bytes": 19201754,
+      "method": 0,
+      "crc32": "25f89789"
+    },
+    {
+      "name": "competition/train/impressions/part-00157-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19229521,
+      "compressed_bytes": 19229521,
+      "method": 0,
+      "crc32": "6c4c9a44"
+    },
+    {
+      "name": "competition/train/impressions/part-00158-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19195357,
+      "compressed_bytes": 19195357,
+      "method": 0,
+      "crc32": "b2bf25e9"
+    },
+    {
+      "name": "competition/train/impressions/part-00159-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19246433,
+      "compressed_bytes": 19246433,
+      "method": 0,
+      "crc32": "feea0690"
+    },
+    {
+      "name": "competition/train/impressions/part-00160-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19372281,
+      "compressed_bytes": 19372281,
+      "method": 0,
+      "crc32": "cd69a9b6"
+    },
+    {
+      "name": "competition/train/impressions/part-00161-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19513345,
+      "compressed_bytes": 19513345,
+      "method": 0,
+      "crc32": "5414e184"
+    },
+    {
+      "name": "competition/train/impressions/part-00162-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19315856,
+      "compressed_bytes": 19315856,
+      "method": 0,
+      "crc32": "311b32e9"
+    },
+    {
+      "name": "competition/train/impressions/part-00163-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19119768,
+      "compressed_bytes": 19119768,
+      "method": 0,
+      "crc32": "528c83a8"
+    },
+    {
+      "name": "competition/train/impressions/part-00164-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19089878,
+      "compressed_bytes": 19089878,
+      "method": 0,
+      "crc32": "898cace0"
+    },
+    {
+      "name": "competition/train/impressions/part-00165-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19356300,
+      "compressed_bytes": 19356300,
+      "method": 0,
+      "crc32": "1e050d7b"
+    },
+    {
+      "name": "competition/train/impressions/part-00166-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19287955,
+      "compressed_bytes": 19287955,
+      "method": 0,
+      "crc32": "564d2ee6"
+    },
+    {
+      "name": "competition/train/impressions/part-00167-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19299782,
+      "compressed_bytes": 19299782,
+      "method": 0,
+      "crc32": "ee83ec0d"
+    },
+    {
+      "name": "competition/train/impressions/part-00168-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19335870,
+      "compressed_bytes": 19335870,
+      "method": 0,
+      "crc32": "d5389812"
+    },
+    {
+      "name": "competition/train/impressions/part-00169-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19279830,
+      "compressed_bytes": 19279830,
+      "method": 0,
+      "crc32": "58d37d6a"
+    },
+    {
+      "name": "competition/train/impressions/part-00170-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19212696,
+      "compressed_bytes": 19212696,
+      "method": 0,
+      "crc32": "821c1c4b"
+    },
+    {
+      "name": "competition/train/impressions/part-00171-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19135617,
+      "compressed_bytes": 19135617,
+      "method": 0,
+      "crc32": "82b2ce59"
+    },
+    {
+      "name": "competition/train/impressions/part-00172-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19398508,
+      "compressed_bytes": 19398508,
+      "method": 0,
+      "crc32": "3b38e922"
+    },
+    {
+      "name": "competition/train/impressions/part-00173-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19292458,
+      "compressed_bytes": 19292458,
+      "method": 0,
+      "crc32": "9d3f6dfd"
+    },
+    {
+      "name": "competition/train/impressions/part-00174-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18995549,
+      "compressed_bytes": 18995549,
+      "method": 0,
+      "crc32": "19163022"
+    },
+    {
+      "name": "competition/train/impressions/part-00175-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19112881,
+      "compressed_bytes": 19112881,
+      "method": 0,
+      "crc32": "d71dd8df"
+    },
+    {
+      "name": "competition/train/impressions/part-00176-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19249185,
+      "compressed_bytes": 19249185,
+      "method": 0,
+      "crc32": "f0554371"
+    },
+    {
+      "name": "competition/train/impressions/part-00177-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19393758,
+      "compressed_bytes": 19393758,
+      "method": 0,
+      "crc32": "94e6edb8"
+    },
+    {
+      "name": "competition/train/impressions/part-00178-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19408189,
+      "compressed_bytes": 19408189,
+      "method": 0,
+      "crc32": "a6b2cede"
+    },
+    {
+      "name": "competition/train/impressions/part-00179-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19398587,
+      "compressed_bytes": 19398587,
+      "method": 0,
+      "crc32": "8a29fc08"
+    },
+    {
+      "name": "competition/train/impressions/part-00180-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19203351,
+      "compressed_bytes": 19203351,
+      "method": 0,
+      "crc32": "bdc18363"
+    },
+    {
+      "name": "competition/train/impressions/part-00181-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19141306,
+      "compressed_bytes": 19141306,
+      "method": 0,
+      "crc32": "189c9171"
+    },
+    {
+      "name": "competition/train/impressions/part-00182-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18838051,
+      "compressed_bytes": 18838051,
+      "method": 0,
+      "crc32": "adc9edaf"
+    },
+    {
+      "name": "competition/train/impressions/part-00183-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19163403,
+      "compressed_bytes": 19163403,
+      "method": 0,
+      "crc32": "8782d559"
+    },
+    {
+      "name": "competition/train/impressions/part-00184-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19205147,
+      "compressed_bytes": 19205147,
+      "method": 0,
+      "crc32": "8c3cd607"
+    },
+    {
+      "name": "competition/train/impressions/part-00185-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19226651,
+      "compressed_bytes": 19226651,
+      "method": 0,
+      "crc32": "421f58b1"
+    },
+    {
+      "name": "competition/train/impressions/part-00186-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18954355,
+      "compressed_bytes": 18954355,
+      "method": 0,
+      "crc32": "7d9353bc"
+    },
+    {
+      "name": "competition/train/impressions/part-00187-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19078961,
+      "compressed_bytes": 19078961,
+      "method": 0,
+      "crc32": "1130b612"
+    },
+    {
+      "name": "competition/train/impressions/part-00188-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19178694,
+      "compressed_bytes": 19178694,
+      "method": 0,
+      "crc32": "a1025d34"
+    },
+    {
+      "name": "competition/train/impressions/part-00189-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19209756,
+      "compressed_bytes": 19209756,
+      "method": 0,
+      "crc32": "91ee58dc"
+    },
+    {
+      "name": "competition/train/impressions/part-00190-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19102170,
+      "compressed_bytes": 19102170,
+      "method": 0,
+      "crc32": "adf03806"
+    },
+    {
+      "name": "competition/train/impressions/part-00191-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19137800,
+      "compressed_bytes": 19137800,
+      "method": 0,
+      "crc32": "3c4917bb"
+    },
+    {
+      "name": "competition/train/impressions/part-00192-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19166140,
+      "compressed_bytes": 19166140,
+      "method": 0,
+      "crc32": "19581c48"
+    },
+    {
+      "name": "competition/train/impressions/part-00193-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19256220,
+      "compressed_bytes": 19256220,
+      "method": 0,
+      "crc32": "a2a12701"
+    },
+    {
+      "name": "competition/train/impressions/part-00194-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19088774,
+      "compressed_bytes": 19088774,
+      "method": 0,
+      "crc32": "3ce3e4ac"
+    },
+    {
+      "name": "competition/train/impressions/part-00195-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19143926,
+      "compressed_bytes": 19143926,
+      "method": 0,
+      "crc32": "f37319a1"
+    },
+    {
+      "name": "competition/train/impressions/part-00196-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19041395,
+      "compressed_bytes": 19041395,
+      "method": 0,
+      "crc32": "0d0024ef"
+    },
+    {
+      "name": "competition/train/impressions/part-00197-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19167270,
+      "compressed_bytes": 19167270,
+      "method": 0,
+      "crc32": "c48b0db1"
+    },
+    {
+      "name": "competition/train/impressions/part-00198-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18837110,
+      "compressed_bytes": 18837110,
+      "method": 0,
+      "crc32": "d2f08432"
+    },
+    {
+      "name": "competition/train/impressions/part-00199-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19059003,
+      "compressed_bytes": 19059003,
+      "method": 0,
+      "crc32": "19109afc"
+    },
+    {
+      "name": "competition/train/impressions/part-00200-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19010416,
+      "compressed_bytes": 19010416,
+      "method": 0,
+      "crc32": "438559f1"
+    },
+    {
+      "name": "competition/train/impressions/part-00201-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18927801,
+      "compressed_bytes": 18927801,
+      "method": 0,
+      "crc32": "b9dcf4de"
+    },
+    {
+      "name": "competition/train/impressions/part-00202-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18875002,
+      "compressed_bytes": 18875002,
+      "method": 0,
+      "crc32": "d5bfa560"
+    },
+    {
+      "name": "competition/train/impressions/part-00203-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19287213,
+      "compressed_bytes": 19287213,
+      "method": 0,
+      "crc32": "eb0f69a2"
+    },
+    {
+      "name": "competition/train/impressions/part-00204-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19287839,
+      "compressed_bytes": 19287839,
+      "method": 0,
+      "crc32": "2b9cf20e"
+    },
+    {
+      "name": "competition/train/impressions/part-00205-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19109200,
+      "compressed_bytes": 19109200,
+      "method": 0,
+      "crc32": "422b68c1"
+    },
+    {
+      "name": "competition/train/impressions/part-00206-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19099158,
+      "compressed_bytes": 19099158,
+      "method": 0,
+      "crc32": "b88216d8"
+    },
+    {
+      "name": "competition/train/impressions/part-00207-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19077087,
+      "compressed_bytes": 19077087,
+      "method": 0,
+      "crc32": "10c12bfd"
+    },
+    {
+      "name": "competition/train/impressions/part-00208-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19431666,
+      "compressed_bytes": 19431666,
+      "method": 0,
+      "crc32": "570082d3"
+    },
+    {
+      "name": "competition/train/impressions/part-00209-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19133537,
+      "compressed_bytes": 19133537,
+      "method": 0,
+      "crc32": "cd4917d4"
+    },
+    {
+      "name": "competition/train/impressions/part-00210-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19180857,
+      "compressed_bytes": 19180857,
+      "method": 0,
+      "crc32": "b1d7ecaf"
+    },
+    {
+      "name": "competition/train/impressions/part-00211-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19116213,
+      "compressed_bytes": 19116213,
+      "method": 0,
+      "crc32": "404113db"
+    },
+    {
+      "name": "competition/train/impressions/part-00212-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19202483,
+      "compressed_bytes": 19202483,
+      "method": 0,
+      "crc32": "7eb40db8"
+    },
+    {
+      "name": "competition/train/impressions/part-00213-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19110356,
+      "compressed_bytes": 19110356,
+      "method": 0,
+      "crc32": "04e014aa"
+    },
+    {
+      "name": "competition/train/impressions/part-00214-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19226209,
+      "compressed_bytes": 19226209,
+      "method": 0,
+      "crc32": "5cfc3177"
+    },
+    {
+      "name": "competition/train/impressions/part-00215-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19055028,
+      "compressed_bytes": 19055028,
+      "method": 0,
+      "crc32": "3a8fb3da"
+    },
+    {
+      "name": "competition/train/impressions/part-00216-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19082515,
+      "compressed_bytes": 19082515,
+      "method": 0,
+      "crc32": "673633ab"
+    },
+    {
+      "name": "competition/train/impressions/part-00217-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19024052,
+      "compressed_bytes": 19024052,
+      "method": 0,
+      "crc32": "2b2a4c85"
+    },
+    {
+      "name": "competition/train/impressions/part-00218-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19104727,
+      "compressed_bytes": 19104727,
+      "method": 0,
+      "crc32": "37b0a2a4"
+    },
+    {
+      "name": "competition/train/impressions/part-00219-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19055445,
+      "compressed_bytes": 19055445,
+      "method": 0,
+      "crc32": "04351f32"
+    },
+    {
+      "name": "competition/train/impressions/part-00220-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18907865,
+      "compressed_bytes": 18907865,
+      "method": 0,
+      "crc32": "2ff04fd9"
+    },
+    {
+      "name": "competition/train/impressions/part-00221-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19293269,
+      "compressed_bytes": 19293269,
+      "method": 0,
+      "crc32": "aaf3329c"
+    },
+    {
+      "name": "competition/train/impressions/part-00222-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19248066,
+      "compressed_bytes": 19248066,
+      "method": 0,
+      "crc32": "ba30011c"
+    },
+    {
+      "name": "competition/train/impressions/part-00223-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18945859,
+      "compressed_bytes": 18945859,
+      "method": 0,
+      "crc32": "e4d683ba"
+    },
+    {
+      "name": "competition/train/impressions/part-00224-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19243047,
+      "compressed_bytes": 19243047,
+      "method": 0,
+      "crc32": "da981b29"
+    },
+    {
+      "name": "competition/train/impressions/part-00225-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19298455,
+      "compressed_bytes": 19298455,
+      "method": 0,
+      "crc32": "26f779a3"
+    },
+    {
+      "name": "competition/train/impressions/part-00226-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19097007,
+      "compressed_bytes": 19097007,
+      "method": 0,
+      "crc32": "711caa8e"
+    },
+    {
+      "name": "competition/train/impressions/part-00227-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19193045,
+      "compressed_bytes": 19193045,
+      "method": 0,
+      "crc32": "3bbee479"
+    },
+    {
+      "name": "competition/train/impressions/part-00228-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19043211,
+      "compressed_bytes": 19043211,
+      "method": 0,
+      "crc32": "358950c1"
+    },
+    {
+      "name": "competition/train/impressions/part-00229-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19264112,
+      "compressed_bytes": 19264112,
+      "method": 0,
+      "crc32": "18b628e7"
+    },
+    {
+      "name": "competition/train/impressions/part-00230-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19251006,
+      "compressed_bytes": 19251006,
+      "method": 0,
+      "crc32": "9c628024"
+    },
+    {
+      "name": "competition/train/impressions/part-00231-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19365833,
+      "compressed_bytes": 19365833,
+      "method": 0,
+      "crc32": "f985fa95"
+    },
+    {
+      "name": "competition/train/impressions/part-00232-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19198555,
+      "compressed_bytes": 19198555,
+      "method": 0,
+      "crc32": "bac96579"
+    },
+    {
+      "name": "competition/train/impressions/part-00233-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19363147,
+      "compressed_bytes": 19363147,
+      "method": 0,
+      "crc32": "46372d02"
+    },
+    {
+      "name": "competition/train/impressions/part-00234-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19050988,
+      "compressed_bytes": 19050988,
+      "method": 0,
+      "crc32": "f4913061"
+    },
+    {
+      "name": "competition/train/impressions/part-00235-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19117725,
+      "compressed_bytes": 19117725,
+      "method": 0,
+      "crc32": "36409dd2"
+    },
+    {
+      "name": "competition/train/impressions/part-00236-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19139717,
+      "compressed_bytes": 19139717,
+      "method": 0,
+      "crc32": "b2d92a3a"
+    },
+    {
+      "name": "competition/train/impressions/part-00237-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19056067,
+      "compressed_bytes": 19056067,
+      "method": 0,
+      "crc32": "b356a2b5"
+    },
+    {
+      "name": "competition/train/impressions/part-00238-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19234964,
+      "compressed_bytes": 19234964,
+      "method": 0,
+      "crc32": "39c711ea"
+    },
+    {
+      "name": "competition/train/impressions/part-00239-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19120269,
+      "compressed_bytes": 19120269,
+      "method": 0,
+      "crc32": "d1bc9d8d"
+    },
+    {
+      "name": "competition/train/impressions/part-00240-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19188145,
+      "compressed_bytes": 19188145,
+      "method": 0,
+      "crc32": "ed5dd939"
+    },
+    {
+      "name": "competition/train/impressions/part-00241-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19310107,
+      "compressed_bytes": 19310107,
+      "method": 0,
+      "crc32": "b705e827"
+    },
+    {
+      "name": "competition/train/impressions/part-00242-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19388669,
+      "compressed_bytes": 19388669,
+      "method": 0,
+      "crc32": "d4d6a799"
+    },
+    {
+      "name": "competition/train/impressions/part-00243-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19196947,
+      "compressed_bytes": 19196947,
+      "method": 0,
+      "crc32": "b2eaeea8"
+    },
+    {
+      "name": "competition/train/impressions/part-00244-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19372810,
+      "compressed_bytes": 19372810,
+      "method": 0,
+      "crc32": "5049e3a4"
+    },
+    {
+      "name": "competition/train/impressions/part-00245-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19441438,
+      "compressed_bytes": 19441438,
+      "method": 0,
+      "crc32": "e25df873"
+    },
+    {
+      "name": "competition/train/impressions/part-00246-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19167040,
+      "compressed_bytes": 19167040,
+      "method": 0,
+      "crc32": "0979caec"
+    },
+    {
+      "name": "competition/train/impressions/part-00247-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19281922,
+      "compressed_bytes": 19281922,
+      "method": 0,
+      "crc32": "a351299b"
+    },
+    {
+      "name": "competition/train/impressions/part-00248-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19127974,
+      "compressed_bytes": 19127974,
+      "method": 0,
+      "crc32": "6c8cd283"
+    },
+    {
+      "name": "competition/train/impressions/part-00249-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18911916,
+      "compressed_bytes": 18911916,
+      "method": 0,
+      "crc32": "3630d9a0"
+    },
+    {
+      "name": "competition/train/impressions/part-00250-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19364933,
+      "compressed_bytes": 19364933,
+      "method": 0,
+      "crc32": "9601c02a"
+    },
+    {
+      "name": "competition/train/impressions/part-00251-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19249409,
+      "compressed_bytes": 19249409,
+      "method": 0,
+      "crc32": "957ac6cc"
+    },
+    {
+      "name": "competition/train/impressions/part-00252-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19018777,
+      "compressed_bytes": 19018777,
+      "method": 0,
+      "crc32": "97b7970b"
+    },
+    {
+      "name": "competition/train/impressions/part-00253-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19215902,
+      "compressed_bytes": 19215902,
+      "method": 0,
+      "crc32": "07e52acf"
+    },
+    {
+      "name": "competition/train/impressions/part-00254-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19221756,
+      "compressed_bytes": 19221756,
+      "method": 0,
+      "crc32": "e897eab5"
+    },
+    {
+      "name": "competition/train/impressions/part-00255-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19202601,
+      "compressed_bytes": 19202601,
+      "method": 0,
+      "crc32": "41de700a"
+    },
+    {
+      "name": "competition/train/impressions/part-00256-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19221939,
+      "compressed_bytes": 19221939,
+      "method": 0,
+      "crc32": "ff5f328b"
+    },
+    {
+      "name": "competition/train/impressions/part-00257-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18967280,
+      "compressed_bytes": 18967280,
+      "method": 0,
+      "crc32": "b4080d4d"
+    },
+    {
+      "name": "competition/train/impressions/part-00258-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19324115,
+      "compressed_bytes": 19324115,
+      "method": 0,
+      "crc32": "e422d86b"
+    },
+    {
+      "name": "competition/train/impressions/part-00259-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19128782,
+      "compressed_bytes": 19128782,
+      "method": 0,
+      "crc32": "756d6f30"
+    },
+    {
+      "name": "competition/train/impressions/part-00260-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19241513,
+      "compressed_bytes": 19241513,
+      "method": 0,
+      "crc32": "a3f87b65"
+    },
+    {
+      "name": "competition/train/impressions/part-00261-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19216131,
+      "compressed_bytes": 19216131,
+      "method": 0,
+      "crc32": "c44bb175"
+    },
+    {
+      "name": "competition/train/impressions/part-00262-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19324772,
+      "compressed_bytes": 19324772,
+      "method": 0,
+      "crc32": "bc707091"
+    },
+    {
+      "name": "competition/train/impressions/part-00263-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19129352,
+      "compressed_bytes": 19129352,
+      "method": 0,
+      "crc32": "30d92a25"
+    },
+    {
+      "name": "competition/train/impressions/part-00264-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19265202,
+      "compressed_bytes": 19265202,
+      "method": 0,
+      "crc32": "cc50d82c"
+    },
+    {
+      "name": "competition/train/impressions/part-00265-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18998880,
+      "compressed_bytes": 18998880,
+      "method": 0,
+      "crc32": "ad22f67f"
+    },
+    {
+      "name": "competition/train/impressions/part-00266-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19164627,
+      "compressed_bytes": 19164627,
+      "method": 0,
+      "crc32": "c2cee754"
+    },
+    {
+      "name": "competition/train/impressions/part-00267-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19280393,
+      "compressed_bytes": 19280393,
+      "method": 0,
+      "crc32": "7b8e28f0"
+    },
+    {
+      "name": "competition/train/impressions/part-00268-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19435605,
+      "compressed_bytes": 19435605,
+      "method": 0,
+      "crc32": "e6c83c72"
+    },
+    {
+      "name": "competition/train/impressions/part-00269-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19163592,
+      "compressed_bytes": 19163592,
+      "method": 0,
+      "crc32": "576e40f6"
+    },
+    {
+      "name": "competition/train/impressions/part-00270-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19267438,
+      "compressed_bytes": 19267438,
+      "method": 0,
+      "crc32": "4c4d8e8a"
+    },
+    {
+      "name": "competition/train/impressions/part-00271-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19464517,
+      "compressed_bytes": 19464517,
+      "method": 0,
+      "crc32": "e024c89a"
+    },
+    {
+      "name": "competition/train/impressions/part-00272-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19104650,
+      "compressed_bytes": 19104650,
+      "method": 0,
+      "crc32": "70696a4c"
+    },
+    {
+      "name": "competition/train/impressions/part-00273-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18913814,
+      "compressed_bytes": 18913814,
+      "method": 0,
+      "crc32": "61c531fe"
+    },
+    {
+      "name": "competition/train/impressions/part-00274-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19033115,
+      "compressed_bytes": 19033115,
+      "method": 0,
+      "crc32": "df59d15c"
+    },
+    {
+      "name": "competition/train/impressions/part-00275-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19116534,
+      "compressed_bytes": 19116534,
+      "method": 0,
+      "crc32": "09520b77"
+    },
+    {
+      "name": "competition/train/impressions/part-00276-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19021179,
+      "compressed_bytes": 19021179,
+      "method": 0,
+      "crc32": "2afc013a"
+    },
+    {
+      "name": "competition/train/impressions/part-00277-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19100635,
+      "compressed_bytes": 19100635,
+      "method": 0,
+      "crc32": "c4131cfc"
+    },
+    {
+      "name": "competition/train/impressions/part-00278-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19186758,
+      "compressed_bytes": 19186758,
+      "method": 0,
+      "crc32": "72afcb6d"
+    },
+    {
+      "name": "competition/train/impressions/part-00279-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19131276,
+      "compressed_bytes": 19131276,
+      "method": 0,
+      "crc32": "080eda7d"
+    },
+    {
+      "name": "competition/train/impressions/part-00280-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19034317,
+      "compressed_bytes": 19034317,
+      "method": 0,
+      "crc32": "247aad2a"
+    },
+    {
+      "name": "competition/train/impressions/part-00281-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19226360,
+      "compressed_bytes": 19226360,
+      "method": 0,
+      "crc32": "7daabe43"
+    },
+    {
+      "name": "competition/train/impressions/part-00282-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19178633,
+      "compressed_bytes": 19178633,
+      "method": 0,
+      "crc32": "56efd8ee"
+    },
+    {
+      "name": "competition/train/impressions/part-00283-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19194013,
+      "compressed_bytes": 19194013,
+      "method": 0,
+      "crc32": "a99bf219"
+    },
+    {
+      "name": "competition/train/impressions/part-00284-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19184347,
+      "compressed_bytes": 19184347,
+      "method": 0,
+      "crc32": "199d3613"
+    },
+    {
+      "name": "competition/train/impressions/part-00285-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19180409,
+      "compressed_bytes": 19180409,
+      "method": 0,
+      "crc32": "351a7cb5"
+    },
+    {
+      "name": "competition/train/impressions/part-00286-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19100175,
+      "compressed_bytes": 19100175,
+      "method": 0,
+      "crc32": "bcc4f515"
+    },
+    {
+      "name": "competition/train/impressions/part-00287-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19231508,
+      "compressed_bytes": 19231508,
+      "method": 0,
+      "crc32": "8734cf82"
+    },
+    {
+      "name": "competition/train/impressions/part-00288-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19195773,
+      "compressed_bytes": 19195773,
+      "method": 0,
+      "crc32": "021e22fe"
+    },
+    {
+      "name": "competition/train/impressions/part-00289-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18996856,
+      "compressed_bytes": 18996856,
+      "method": 0,
+      "crc32": "65c52ffc"
+    },
+    {
+      "name": "competition/train/impressions/part-00290-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18910209,
+      "compressed_bytes": 18910209,
+      "method": 0,
+      "crc32": "ea0a089f"
+    },
+    {
+      "name": "competition/train/impressions/part-00291-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18978597,
+      "compressed_bytes": 18978597,
+      "method": 0,
+      "crc32": "0584dd83"
+    },
+    {
+      "name": "competition/train/impressions/part-00292-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19322680,
+      "compressed_bytes": 19322680,
+      "method": 0,
+      "crc32": "7f1ae124"
+    },
+    {
+      "name": "competition/train/impressions/part-00293-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19057158,
+      "compressed_bytes": 19057158,
+      "method": 0,
+      "crc32": "65341118"
+    },
+    {
+      "name": "competition/train/impressions/part-00294-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18738004,
+      "compressed_bytes": 18738004,
+      "method": 0,
+      "crc32": "31bc2da6"
+    },
+    {
+      "name": "competition/train/impressions/part-00295-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18968634,
+      "compressed_bytes": 18968634,
+      "method": 0,
+      "crc32": "601e3213"
+    },
+    {
+      "name": "competition/train/impressions/part-00296-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19015760,
+      "compressed_bytes": 19015760,
+      "method": 0,
+      "crc32": "927c53ef"
+    },
+    {
+      "name": "competition/train/impressions/part-00297-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19090039,
+      "compressed_bytes": 19090039,
+      "method": 0,
+      "crc32": "d04290d4"
+    },
+    {
+      "name": "competition/train/impressions/part-00298-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18951457,
+      "compressed_bytes": 18951457,
+      "method": 0,
+      "crc32": "61aa4adc"
+    },
+    {
+      "name": "competition/train/impressions/part-00299-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19261344,
+      "compressed_bytes": 19261344,
+      "method": 0,
+      "crc32": "9fe2f231"
+    },
+    {
+      "name": "competition/train/impressions/part-00300-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19109598,
+      "compressed_bytes": 19109598,
+      "method": 0,
+      "crc32": "8662a336"
+    },
+    {
+      "name": "competition/train/impressions/part-00301-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19062954,
+      "compressed_bytes": 19062954,
+      "method": 0,
+      "crc32": "46abcd61"
+    },
+    {
+      "name": "competition/train/impressions/part-00302-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18896562,
+      "compressed_bytes": 18896562,
+      "method": 0,
+      "crc32": "692aafe3"
+    },
+    {
+      "name": "competition/train/impressions/part-00303-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19010175,
+      "compressed_bytes": 19010175,
+      "method": 0,
+      "crc32": "8d92205e"
+    },
+    {
+      "name": "competition/train/impressions/part-00304-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18945573,
+      "compressed_bytes": 18945573,
+      "method": 0,
+      "crc32": "a2927039"
+    },
+    {
+      "name": "competition/train/impressions/part-00305-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19234759,
+      "compressed_bytes": 19234759,
+      "method": 0,
+      "crc32": "45db0520"
+    },
+    {
+      "name": "competition/train/impressions/part-00306-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19174955,
+      "compressed_bytes": 19174955,
+      "method": 0,
+      "crc32": "3056f4d8"
+    },
+    {
+      "name": "competition/train/impressions/part-00307-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18945117,
+      "compressed_bytes": 18945117,
+      "method": 0,
+      "crc32": "2fb8f609"
+    },
+    {
+      "name": "competition/train/impressions/part-00308-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18808139,
+      "compressed_bytes": 18808139,
+      "method": 0,
+      "crc32": "a3ff2037"
+    },
+    {
+      "name": "competition/train/impressions/part-00309-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19208538,
+      "compressed_bytes": 19208538,
+      "method": 0,
+      "crc32": "b0c2702d"
+    },
+    {
+      "name": "competition/train/impressions/part-00310-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18957478,
+      "compressed_bytes": 18957478,
+      "method": 0,
+      "crc32": "13f7641e"
+    },
+    {
+      "name": "competition/train/impressions/part-00311-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19102861,
+      "compressed_bytes": 19102861,
+      "method": 0,
+      "crc32": "f38e2daf"
+    },
+    {
+      "name": "competition/train/impressions/part-00312-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18967725,
+      "compressed_bytes": 18967725,
+      "method": 0,
+      "crc32": "1a1f30ae"
+    },
+    {
+      "name": "competition/train/impressions/part-00313-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19077348,
+      "compressed_bytes": 19077348,
+      "method": 0,
+      "crc32": "71834b93"
+    },
+    {
+      "name": "competition/train/impressions/part-00314-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19258589,
+      "compressed_bytes": 19258589,
+      "method": 0,
+      "crc32": "df8d4a89"
+    },
+    {
+      "name": "competition/train/impressions/part-00315-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19456763,
+      "compressed_bytes": 19456763,
+      "method": 0,
+      "crc32": "605679c6"
+    },
+    {
+      "name": "competition/train/impressions/part-00316-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18946205,
+      "compressed_bytes": 18946205,
+      "method": 0,
+      "crc32": "094f6dfc"
+    },
+    {
+      "name": "competition/train/impressions/part-00317-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19066785,
+      "compressed_bytes": 19066785,
+      "method": 0,
+      "crc32": "e2aa320c"
+    },
+    {
+      "name": "competition/train/impressions/part-00318-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19224317,
+      "compressed_bytes": 19224317,
+      "method": 0,
+      "crc32": "f1043fde"
+    },
+    {
+      "name": "competition/train/impressions/part-00319-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18829877,
+      "compressed_bytes": 18829877,
+      "method": 0,
+      "crc32": "ee50e432"
+    },
+    {
+      "name": "competition/train/impressions/part-00320-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19041979,
+      "compressed_bytes": 19041979,
+      "method": 0,
+      "crc32": "a3ba67dc"
+    },
+    {
+      "name": "competition/train/impressions/part-00321-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19055593,
+      "compressed_bytes": 19055593,
+      "method": 0,
+      "crc32": "b2669562"
+    },
+    {
+      "name": "competition/train/impressions/part-00322-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19268319,
+      "compressed_bytes": 19268319,
+      "method": 0,
+      "crc32": "0f17f957"
+    },
+    {
+      "name": "competition/train/impressions/part-00323-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19103383,
+      "compressed_bytes": 19103383,
+      "method": 0,
+      "crc32": "c49411c8"
+    },
+    {
+      "name": "competition/train/impressions/part-00324-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19196494,
+      "compressed_bytes": 19196494,
+      "method": 0,
+      "crc32": "189391b9"
+    },
+    {
+      "name": "competition/train/impressions/part-00325-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19041271,
+      "compressed_bytes": 19041271,
+      "method": 0,
+      "crc32": "de178914"
+    },
+    {
+      "name": "competition/train/impressions/part-00326-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19072736,
+      "compressed_bytes": 19072736,
+      "method": 0,
+      "crc32": "13807735"
+    },
+    {
+      "name": "competition/train/impressions/part-00327-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19232095,
+      "compressed_bytes": 19232095,
+      "method": 0,
+      "crc32": "a07cec17"
+    },
+    {
+      "name": "competition/train/impressions/part-00328-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18980271,
+      "compressed_bytes": 18980271,
+      "method": 0,
+      "crc32": "69cc4ce0"
+    },
+    {
+      "name": "competition/train/impressions/part-00329-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18773019,
+      "compressed_bytes": 18773019,
+      "method": 0,
+      "crc32": "2a51ab31"
+    },
+    {
+      "name": "competition/train/impressions/part-00330-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18959598,
+      "compressed_bytes": 18959598,
+      "method": 0,
+      "crc32": "4d86848c"
+    },
+    {
+      "name": "competition/train/impressions/part-00331-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19069223,
+      "compressed_bytes": 19069223,
+      "method": 0,
+      "crc32": "32bbc9d8"
+    },
+    {
+      "name": "competition/train/impressions/part-00332-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19169442,
+      "compressed_bytes": 19169442,
+      "method": 0,
+      "crc32": "e1f2e598"
+    },
+    {
+      "name": "competition/train/impressions/part-00333-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19309056,
+      "compressed_bytes": 19309056,
+      "method": 0,
+      "crc32": "b4e9ca56"
+    },
+    {
+      "name": "competition/train/impressions/part-00334-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19117712,
+      "compressed_bytes": 19117712,
+      "method": 0,
+      "crc32": "bca62cd2"
+    },
+    {
+      "name": "competition/train/impressions/part-00335-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19088150,
+      "compressed_bytes": 19088150,
+      "method": 0,
+      "crc32": "fa0b29ee"
+    },
+    {
+      "name": "competition/train/impressions/part-00336-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19031782,
+      "compressed_bytes": 19031782,
+      "method": 0,
+      "crc32": "7bc2258c"
+    },
+    {
+      "name": "competition/train/impressions/part-00337-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19158072,
+      "compressed_bytes": 19158072,
+      "method": 0,
+      "crc32": "2ac5ba74"
+    },
+    {
+      "name": "competition/train/impressions/part-00338-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19034142,
+      "compressed_bytes": 19034142,
+      "method": 0,
+      "crc32": "2c99e8ba"
+    },
+    {
+      "name": "competition/train/impressions/part-00339-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19113704,
+      "compressed_bytes": 19113704,
+      "method": 0,
+      "crc32": "a12da77a"
+    },
+    {
+      "name": "competition/train/impressions/part-00340-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19183738,
+      "compressed_bytes": 19183738,
+      "method": 0,
+      "crc32": "b02d6da9"
+    },
+    {
+      "name": "competition/train/impressions/part-00341-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19045444,
+      "compressed_bytes": 19045444,
+      "method": 0,
+      "crc32": "aad823ac"
+    },
+    {
+      "name": "competition/train/impressions/part-00342-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19050515,
+      "compressed_bytes": 19050515,
+      "method": 0,
+      "crc32": "c24013c9"
+    },
+    {
+      "name": "competition/train/impressions/part-00343-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19066560,
+      "compressed_bytes": 19066560,
+      "method": 0,
+      "crc32": "2d9be894"
+    },
+    {
+      "name": "competition/train/impressions/part-00344-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18877162,
+      "compressed_bytes": 18877162,
+      "method": 0,
+      "crc32": "95529f02"
+    },
+    {
+      "name": "competition/train/impressions/part-00345-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19213890,
+      "compressed_bytes": 19213890,
+      "method": 0,
+      "crc32": "82bddaa6"
+    },
+    {
+      "name": "competition/train/impressions/part-00346-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19116280,
+      "compressed_bytes": 19116280,
+      "method": 0,
+      "crc32": "617d29c1"
+    },
+    {
+      "name": "competition/train/impressions/part-00347-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18982277,
+      "compressed_bytes": 18982277,
+      "method": 0,
+      "crc32": "dc4fa315"
+    },
+    {
+      "name": "competition/train/impressions/part-00348-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19073030,
+      "compressed_bytes": 19073030,
+      "method": 0,
+      "crc32": "f66e9d5c"
+    },
+    {
+      "name": "competition/train/impressions/part-00349-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19339802,
+      "compressed_bytes": 19339802,
+      "method": 0,
+      "crc32": "91d2f47a"
+    },
+    {
+      "name": "competition/train/impressions/part-00350-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19207096,
+      "compressed_bytes": 19207096,
+      "method": 0,
+      "crc32": "7e1cd9ed"
+    },
+    {
+      "name": "competition/train/impressions/part-00351-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19129440,
+      "compressed_bytes": 19129440,
+      "method": 0,
+      "crc32": "f1fe29d0"
+    },
+    {
+      "name": "competition/train/impressions/part-00352-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18954308,
+      "compressed_bytes": 18954308,
+      "method": 0,
+      "crc32": "5dca78a4"
+    },
+    {
+      "name": "competition/train/impressions/part-00353-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19156138,
+      "compressed_bytes": 19156138,
+      "method": 0,
+      "crc32": "3cc7ce3d"
+    },
+    {
+      "name": "competition/train/impressions/part-00354-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19104481,
+      "compressed_bytes": 19104481,
+      "method": 0,
+      "crc32": "032c783a"
+    },
+    {
+      "name": "competition/train/impressions/part-00355-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18836028,
+      "compressed_bytes": 18836028,
+      "method": 0,
+      "crc32": "624f1a5f"
+    },
+    {
+      "name": "competition/train/impressions/part-00356-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19182022,
+      "compressed_bytes": 19182022,
+      "method": 0,
+      "crc32": "8c801311"
+    },
+    {
+      "name": "competition/train/impressions/part-00357-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18952866,
+      "compressed_bytes": 18952866,
+      "method": 0,
+      "crc32": "5ca605ea"
+    },
+    {
+      "name": "competition/train/impressions/part-00358-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19023156,
+      "compressed_bytes": 19023156,
+      "method": 0,
+      "crc32": "df45036f"
+    },
+    {
+      "name": "competition/train/impressions/part-00359-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19101376,
+      "compressed_bytes": 19101376,
+      "method": 0,
+      "crc32": "66fbc4ed"
+    },
+    {
+      "name": "competition/train/impressions/part-00360-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19142550,
+      "compressed_bytes": 19142550,
+      "method": 0,
+      "crc32": "31c85aa0"
+    },
+    {
+      "name": "competition/train/impressions/part-00361-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19170926,
+      "compressed_bytes": 19170926,
+      "method": 0,
+      "crc32": "741c9dfe"
+    },
+    {
+      "name": "competition/train/impressions/part-00362-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19102930,
+      "compressed_bytes": 19102930,
+      "method": 0,
+      "crc32": "ced65e56"
+    },
+    {
+      "name": "competition/train/impressions/part-00363-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19199113,
+      "compressed_bytes": 19199113,
+      "method": 0,
+      "crc32": "06908464"
+    },
+    {
+      "name": "competition/train/impressions/part-00364-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19291131,
+      "compressed_bytes": 19291131,
+      "method": 0,
+      "crc32": "7f2e6505"
+    },
+    {
+      "name": "competition/train/impressions/part-00365-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19213685,
+      "compressed_bytes": 19213685,
+      "method": 0,
+      "crc32": "bc3f1d6c"
+    },
+    {
+      "name": "competition/train/impressions/part-00366-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18936955,
+      "compressed_bytes": 18936955,
+      "method": 0,
+      "crc32": "a555c8a4"
+    },
+    {
+      "name": "competition/train/impressions/part-00367-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19193127,
+      "compressed_bytes": 19193127,
+      "method": 0,
+      "crc32": "bd250315"
+    },
+    {
+      "name": "competition/train/impressions/part-00368-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19384794,
+      "compressed_bytes": 19384794,
+      "method": 0,
+      "crc32": "2b883b3f"
+    },
+    {
+      "name": "competition/train/impressions/part-00369-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18938071,
+      "compressed_bytes": 18938071,
+      "method": 0,
+      "crc32": "e80d0bb3"
+    },
+    {
+      "name": "competition/train/impressions/part-00370-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19011552,
+      "compressed_bytes": 19011552,
+      "method": 0,
+      "crc32": "60c1ddd3"
+    },
+    {
+      "name": "competition/train/impressions/part-00371-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19052377,
+      "compressed_bytes": 19052377,
+      "method": 0,
+      "crc32": "45c51ba0"
+    },
+    {
+      "name": "competition/train/impressions/part-00372-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19047002,
+      "compressed_bytes": 19047002,
+      "method": 0,
+      "crc32": "19c455c4"
+    },
+    {
+      "name": "competition/train/impressions/part-00373-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19082341,
+      "compressed_bytes": 19082341,
+      "method": 0,
+      "crc32": "1f37f056"
+    },
+    {
+      "name": "competition/train/impressions/part-00374-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19088162,
+      "compressed_bytes": 19088162,
+      "method": 0,
+      "crc32": "714740d3"
+    },
+    {
+      "name": "competition/train/impressions/part-00375-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19148370,
+      "compressed_bytes": 19148370,
+      "method": 0,
+      "crc32": "a9775229"
+    },
+    {
+      "name": "competition/train/impressions/part-00376-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19007887,
+      "compressed_bytes": 19007887,
+      "method": 0,
+      "crc32": "954fb303"
+    },
+    {
+      "name": "competition/train/impressions/part-00377-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19316597,
+      "compressed_bytes": 19316597,
+      "method": 0,
+      "crc32": "4a770b55"
+    },
+    {
+      "name": "competition/train/impressions/part-00378-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18997414,
+      "compressed_bytes": 18997414,
+      "method": 0,
+      "crc32": "3d2b3a15"
+    },
+    {
+      "name": "competition/train/impressions/part-00379-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19046859,
+      "compressed_bytes": 19046859,
+      "method": 0,
+      "crc32": "b9073c69"
+    },
+    {
+      "name": "competition/train/impressions/part-00380-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19314913,
+      "compressed_bytes": 19314913,
+      "method": 0,
+      "crc32": "3458ec76"
+    },
+    {
+      "name": "competition/train/impressions/part-00381-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19172880,
+      "compressed_bytes": 19172880,
+      "method": 0,
+      "crc32": "0f578be4"
+    },
+    {
+      "name": "competition/train/impressions/part-00382-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19079799,
+      "compressed_bytes": 19079799,
+      "method": 0,
+      "crc32": "b499a19b"
+    },
+    {
+      "name": "competition/train/impressions/part-00383-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19188035,
+      "compressed_bytes": 19188035,
+      "method": 0,
+      "crc32": "18daf602"
+    },
+    {
+      "name": "competition/train/impressions/part-00384-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19342636,
+      "compressed_bytes": 19342636,
+      "method": 0,
+      "crc32": "3c171964"
+    },
+    {
+      "name": "competition/train/impressions/part-00385-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19315046,
+      "compressed_bytes": 19315046,
+      "method": 0,
+      "crc32": "588b4b37"
+    },
+    {
+      "name": "competition/train/impressions/part-00386-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19231639,
+      "compressed_bytes": 19231639,
+      "method": 0,
+      "crc32": "408473cb"
+    },
+    {
+      "name": "competition/train/impressions/part-00387-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19297972,
+      "compressed_bytes": 19297972,
+      "method": 0,
+      "crc32": "d3309265"
+    },
+    {
+      "name": "competition/train/impressions/part-00388-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19075284,
+      "compressed_bytes": 19075284,
+      "method": 0,
+      "crc32": "38127444"
+    },
+    {
+      "name": "competition/train/impressions/part-00389-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19370297,
+      "compressed_bytes": 19370297,
+      "method": 0,
+      "crc32": "482dabd3"
+    },
+    {
+      "name": "competition/train/impressions/part-00390-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18991604,
+      "compressed_bytes": 18991604,
+      "method": 0,
+      "crc32": "23e57e87"
+    },
+    {
+      "name": "competition/train/impressions/part-00391-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19048035,
+      "compressed_bytes": 19048035,
+      "method": 0,
+      "crc32": "baf998b1"
+    },
+    {
+      "name": "competition/train/impressions/part-00392-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19369342,
+      "compressed_bytes": 19369342,
+      "method": 0,
+      "crc32": "64c146b7"
+    },
+    {
+      "name": "competition/train/impressions/part-00393-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19160408,
+      "compressed_bytes": 19160408,
+      "method": 0,
+      "crc32": "e3da0c90"
+    },
+    {
+      "name": "competition/train/impressions/part-00394-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18989270,
+      "compressed_bytes": 18989270,
+      "method": 0,
+      "crc32": "5ffcb0a5"
+    },
+    {
+      "name": "competition/train/impressions/part-00395-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19122820,
+      "compressed_bytes": 19122820,
+      "method": 0,
+      "crc32": "8b38f634"
+    },
+    {
+      "name": "competition/train/impressions/part-00396-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19230266,
+      "compressed_bytes": 19230266,
+      "method": 0,
+      "crc32": "35f86443"
+    },
+    {
+      "name": "competition/train/impressions/part-00397-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19431531,
+      "compressed_bytes": 19431531,
+      "method": 0,
+      "crc32": "8cb2898e"
+    },
+    {
+      "name": "competition/train/impressions/part-00398-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18907919,
+      "compressed_bytes": 18907919,
+      "method": 0,
+      "crc32": "d7ed5eb0"
+    },
+    {
+      "name": "competition/train/impressions/part-00399-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18918514,
+      "compressed_bytes": 18918514,
+      "method": 0,
+      "crc32": "7d98d3ad"
+    },
+    {
+      "name": "competition/train/impressions/part-00400-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19239918,
+      "compressed_bytes": 19239918,
+      "method": 0,
+      "crc32": "c8781792"
+    },
+    {
+      "name": "competition/train/impressions/part-00401-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19069578,
+      "compressed_bytes": 19069578,
+      "method": 0,
+      "crc32": "7edfc9e2"
+    },
+    {
+      "name": "competition/train/impressions/part-00402-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19179561,
+      "compressed_bytes": 19179561,
+      "method": 0,
+      "crc32": "fae38186"
+    },
+    {
+      "name": "competition/train/impressions/part-00403-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18972666,
+      "compressed_bytes": 18972666,
+      "method": 0,
+      "crc32": "df38e155"
+    },
+    {
+      "name": "competition/train/impressions/part-00404-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19034859,
+      "compressed_bytes": 19034859,
+      "method": 0,
+      "crc32": "89ace8a0"
+    },
+    {
+      "name": "competition/train/impressions/part-00405-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18974558,
+      "compressed_bytes": 18974558,
+      "method": 0,
+      "crc32": "dfa9bd1c"
+    },
+    {
+      "name": "competition/train/impressions/part-00406-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19103255,
+      "compressed_bytes": 19103255,
+      "method": 0,
+      "crc32": "d4e08fa1"
+    },
+    {
+      "name": "competition/train/impressions/part-00407-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18991395,
+      "compressed_bytes": 18991395,
+      "method": 0,
+      "crc32": "52dd3435"
+    },
+    {
+      "name": "competition/train/impressions/part-00408-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19020097,
+      "compressed_bytes": 19020097,
+      "method": 0,
+      "crc32": "169fd05c"
+    },
+    {
+      "name": "competition/train/impressions/part-00409-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19288173,
+      "compressed_bytes": 19288173,
+      "method": 0,
+      "crc32": "05f614c7"
+    },
+    {
+      "name": "competition/train/impressions/part-00410-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19261826,
+      "compressed_bytes": 19261826,
+      "method": 0,
+      "crc32": "cdf8086a"
+    },
+    {
+      "name": "competition/train/impressions/part-00411-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19257751,
+      "compressed_bytes": 19257751,
+      "method": 0,
+      "crc32": "05c5a6f4"
+    },
+    {
+      "name": "competition/train/impressions/part-00412-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18874071,
+      "compressed_bytes": 18874071,
+      "method": 0,
+      "crc32": "ce870d75"
+    },
+    {
+      "name": "competition/train/impressions/part-00413-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19329800,
+      "compressed_bytes": 19329800,
+      "method": 0,
+      "crc32": "681f33ce"
+    },
+    {
+      "name": "competition/train/impressions/part-00414-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19243155,
+      "compressed_bytes": 19243155,
+      "method": 0,
+      "crc32": "168422e7"
+    },
+    {
+      "name": "competition/train/impressions/part-00415-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19407794,
+      "compressed_bytes": 19407794,
+      "method": 0,
+      "crc32": "3d0ba230"
+    },
+    {
+      "name": "competition/train/impressions/part-00416-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19252942,
+      "compressed_bytes": 19252942,
+      "method": 0,
+      "crc32": "7c330338"
+    },
+    {
+      "name": "competition/train/impressions/part-00417-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19129233,
+      "compressed_bytes": 19129233,
+      "method": 0,
+      "crc32": "9a02a4e2"
+    },
+    {
+      "name": "competition/train/impressions/part-00418-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19107607,
+      "compressed_bytes": 19107607,
+      "method": 0,
+      "crc32": "f9d95b28"
+    },
+    {
+      "name": "competition/train/impressions/part-00419-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19107636,
+      "compressed_bytes": 19107636,
+      "method": 0,
+      "crc32": "1749ffd5"
+    },
+    {
+      "name": "competition/train/impressions/part-00420-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19313726,
+      "compressed_bytes": 19313726,
+      "method": 0,
+      "crc32": "98416668"
+    },
+    {
+      "name": "competition/train/impressions/part-00421-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19446424,
+      "compressed_bytes": 19446424,
+      "method": 0,
+      "crc32": "8f4590f1"
+    },
+    {
+      "name": "competition/train/impressions/part-00422-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19124822,
+      "compressed_bytes": 19124822,
+      "method": 0,
+      "crc32": "d75f55fb"
+    },
+    {
+      "name": "competition/train/impressions/part-00423-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19181062,
+      "compressed_bytes": 19181062,
+      "method": 0,
+      "crc32": "957d4426"
+    },
+    {
+      "name": "competition/train/impressions/part-00424-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19164716,
+      "compressed_bytes": 19164716,
+      "method": 0,
+      "crc32": "86e6e6c5"
+    },
+    {
+      "name": "competition/train/impressions/part-00425-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19072375,
+      "compressed_bytes": 19072375,
+      "method": 0,
+      "crc32": "b36e4678"
+    },
+    {
+      "name": "competition/train/impressions/part-00426-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19187872,
+      "compressed_bytes": 19187872,
+      "method": 0,
+      "crc32": "6e9bb3fb"
+    },
+    {
+      "name": "competition/train/impressions/part-00427-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19136470,
+      "compressed_bytes": 19136470,
+      "method": 0,
+      "crc32": "a61843e8"
+    },
+    {
+      "name": "competition/train/impressions/part-00428-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19031147,
+      "compressed_bytes": 19031147,
+      "method": 0,
+      "crc32": "b65ef03c"
+    },
+    {
+      "name": "competition/train/impressions/part-00429-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19125610,
+      "compressed_bytes": 19125610,
+      "method": 0,
+      "crc32": "e4f5176d"
+    },
+    {
+      "name": "competition/train/impressions/part-00430-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19029851,
+      "compressed_bytes": 19029851,
+      "method": 0,
+      "crc32": "ced741d1"
+    },
+    {
+      "name": "competition/train/impressions/part-00431-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18960381,
+      "compressed_bytes": 18960381,
+      "method": 0,
+      "crc32": "2ef3d1c7"
+    },
+    {
+      "name": "competition/train/impressions/part-00432-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19266504,
+      "compressed_bytes": 19266504,
+      "method": 0,
+      "crc32": "fe4e2a9d"
+    },
+    {
+      "name": "competition/train/impressions/part-00433-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18752510,
+      "compressed_bytes": 18752510,
+      "method": 0,
+      "crc32": "5b7bbedb"
+    },
+    {
+      "name": "competition/train/impressions/part-00434-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19104776,
+      "compressed_bytes": 19104776,
+      "method": 0,
+      "crc32": "2f4ff823"
+    },
+    {
+      "name": "competition/train/impressions/part-00435-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19237449,
+      "compressed_bytes": 19237449,
+      "method": 0,
+      "crc32": "043d7314"
+    },
+    {
+      "name": "competition/train/impressions/part-00436-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19189551,
+      "compressed_bytes": 19189551,
+      "method": 0,
+      "crc32": "9115cccd"
+    },
+    {
+      "name": "competition/train/impressions/part-00437-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18908490,
+      "compressed_bytes": 18908490,
+      "method": 0,
+      "crc32": "ffb9b41f"
+    },
+    {
+      "name": "competition/train/impressions/part-00438-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19030661,
+      "compressed_bytes": 19030661,
+      "method": 0,
+      "crc32": "f8845836"
+    },
+    {
+      "name": "competition/train/impressions/part-00439-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19164077,
+      "compressed_bytes": 19164077,
+      "method": 0,
+      "crc32": "fa779caa"
+    },
+    {
+      "name": "competition/train/impressions/part-00440-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19209328,
+      "compressed_bytes": 19209328,
+      "method": 0,
+      "crc32": "4494ad12"
+    },
+    {
+      "name": "competition/train/impressions/part-00441-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18955876,
+      "compressed_bytes": 18955876,
+      "method": 0,
+      "crc32": "265b9d47"
+    },
+    {
+      "name": "competition/train/impressions/part-00442-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19151990,
+      "compressed_bytes": 19151990,
+      "method": 0,
+      "crc32": "3b3d2942"
+    },
+    {
+      "name": "competition/train/impressions/part-00443-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19414268,
+      "compressed_bytes": 19414268,
+      "method": 0,
+      "crc32": "ae275c77"
+    },
+    {
+      "name": "competition/train/impressions/part-00444-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19019007,
+      "compressed_bytes": 19019007,
+      "method": 0,
+      "crc32": "b30a0f17"
+    },
+    {
+      "name": "competition/train/impressions/part-00445-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18948622,
+      "compressed_bytes": 18948622,
+      "method": 0,
+      "crc32": "2798e04b"
+    },
+    {
+      "name": "competition/train/impressions/part-00446-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19286626,
+      "compressed_bytes": 19286626,
+      "method": 0,
+      "crc32": "033096d8"
+    },
+    {
+      "name": "competition/train/impressions/part-00447-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19134417,
+      "compressed_bytes": 19134417,
+      "method": 0,
+      "crc32": "db0b3540"
+    },
+    {
+      "name": "competition/train/impressions/part-00448-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19089037,
+      "compressed_bytes": 19089037,
+      "method": 0,
+      "crc32": "3aadb631"
+    },
+    {
+      "name": "competition/train/impressions/part-00449-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19314355,
+      "compressed_bytes": 19314355,
+      "method": 0,
+      "crc32": "ac068373"
+    },
+    {
+      "name": "competition/train/impressions/part-00450-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18997461,
+      "compressed_bytes": 18997461,
+      "method": 0,
+      "crc32": "6b0093a3"
+    },
+    {
+      "name": "competition/train/impressions/part-00451-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19216364,
+      "compressed_bytes": 19216364,
+      "method": 0,
+      "crc32": "ce2c7adf"
+    },
+    {
+      "name": "competition/train/impressions/part-00452-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18926591,
+      "compressed_bytes": 18926591,
+      "method": 0,
+      "crc32": "90ad4a28"
+    },
+    {
+      "name": "competition/train/impressions/part-00453-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19127781,
+      "compressed_bytes": 19127781,
+      "method": 0,
+      "crc32": "f86a5720"
+    },
+    {
+      "name": "competition/train/impressions/part-00454-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19011097,
+      "compressed_bytes": 19011097,
+      "method": 0,
+      "crc32": "aceca17a"
+    },
+    {
+      "name": "competition/train/impressions/part-00455-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19186174,
+      "compressed_bytes": 19186174,
+      "method": 0,
+      "crc32": "a827a978"
+    },
+    {
+      "name": "competition/train/impressions/part-00456-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19083816,
+      "compressed_bytes": 19083816,
+      "method": 0,
+      "crc32": "f5b96602"
+    },
+    {
+      "name": "competition/train/impressions/part-00457-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19043398,
+      "compressed_bytes": 19043398,
+      "method": 0,
+      "crc32": "80807183"
+    },
+    {
+      "name": "competition/train/impressions/part-00458-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18944420,
+      "compressed_bytes": 18944420,
+      "method": 0,
+      "crc32": "463380d8"
+    },
+    {
+      "name": "competition/train/impressions/part-00459-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19444260,
+      "compressed_bytes": 19444260,
+      "method": 0,
+      "crc32": "7142f6fa"
+    },
+    {
+      "name": "competition/train/impressions/part-00460-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19096691,
+      "compressed_bytes": 19096691,
+      "method": 0,
+      "crc32": "e9a3b3f7"
+    },
+    {
+      "name": "competition/train/impressions/part-00461-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19046636,
+      "compressed_bytes": 19046636,
+      "method": 0,
+      "crc32": "a1b39d37"
+    },
+    {
+      "name": "competition/train/impressions/part-00462-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19153479,
+      "compressed_bytes": 19153479,
+      "method": 0,
+      "crc32": "835d6343"
+    },
+    {
+      "name": "competition/train/impressions/part-00463-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19162115,
+      "compressed_bytes": 19162115,
+      "method": 0,
+      "crc32": "abafc466"
+    },
+    {
+      "name": "competition/train/impressions/part-00464-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19299992,
+      "compressed_bytes": 19299992,
+      "method": 0,
+      "crc32": "56a73467"
+    },
+    {
+      "name": "competition/train/impressions/part-00465-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19062894,
+      "compressed_bytes": 19062894,
+      "method": 0,
+      "crc32": "0e6bf43a"
+    },
+    {
+      "name": "competition/train/impressions/part-00466-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18661129,
+      "compressed_bytes": 18661129,
+      "method": 0,
+      "crc32": "b198dddd"
+    },
+    {
+      "name": "competition/train/impressions/part-00467-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19081506,
+      "compressed_bytes": 19081506,
+      "method": 0,
+      "crc32": "0fa4d54f"
+    },
+    {
+      "name": "competition/train/impressions/part-00468-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19147073,
+      "compressed_bytes": 19147073,
+      "method": 0,
+      "crc32": "0b961fc3"
+    },
+    {
+      "name": "competition/train/impressions/part-00469-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19240689,
+      "compressed_bytes": 19240689,
+      "method": 0,
+      "crc32": "3323ca37"
+    },
+    {
+      "name": "competition/train/impressions/part-00470-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18828111,
+      "compressed_bytes": 18828111,
+      "method": 0,
+      "crc32": "8acf4d47"
+    },
+    {
+      "name": "competition/train/impressions/part-00471-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19019100,
+      "compressed_bytes": 19019100,
+      "method": 0,
+      "crc32": "45b4a382"
+    },
+    {
+      "name": "competition/train/impressions/part-00472-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19022797,
+      "compressed_bytes": 19022797,
+      "method": 0,
+      "crc32": "46a00812"
+    },
+    {
+      "name": "competition/train/impressions/part-00473-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18889466,
+      "compressed_bytes": 18889466,
+      "method": 0,
+      "crc32": "dc5cee43"
+    },
+    {
+      "name": "competition/train/impressions/part-00474-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18984175,
+      "compressed_bytes": 18984175,
+      "method": 0,
+      "crc32": "32514577"
+    },
+    {
+      "name": "competition/train/impressions/part-00475-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19155081,
+      "compressed_bytes": 19155081,
+      "method": 0,
+      "crc32": "b677eb7d"
+    },
+    {
+      "name": "competition/train/impressions/part-00476-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18792841,
+      "compressed_bytes": 18792841,
+      "method": 0,
+      "crc32": "cda309c5"
+    },
+    {
+      "name": "competition/train/impressions/part-00477-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18862825,
+      "compressed_bytes": 18862825,
+      "method": 0,
+      "crc32": "42cdf6b8"
+    },
+    {
+      "name": "competition/train/impressions/part-00478-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18640733,
+      "compressed_bytes": 18640733,
+      "method": 0,
+      "crc32": "e5a21320"
+    },
+    {
+      "name": "competition/train/impressions/part-00479-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19076545,
+      "compressed_bytes": 19076545,
+      "method": 0,
+      "crc32": "50084542"
+    },
+    {
+      "name": "competition/train/impressions/part-00480-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19254865,
+      "compressed_bytes": 19254865,
+      "method": 0,
+      "crc32": "8bf362a2"
+    },
+    {
+      "name": "competition/train/impressions/part-00481-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19040328,
+      "compressed_bytes": 19040328,
+      "method": 0,
+      "crc32": "861e30ac"
+    },
+    {
+      "name": "competition/train/impressions/part-00482-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19213799,
+      "compressed_bytes": 19213799,
+      "method": 0,
+      "crc32": "1f712c92"
+    },
+    {
+      "name": "competition/train/impressions/part-00483-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19041295,
+      "compressed_bytes": 19041295,
+      "method": 0,
+      "crc32": "54a8857d"
+    },
+    {
+      "name": "competition/train/impressions/part-00484-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19113234,
+      "compressed_bytes": 19113234,
+      "method": 0,
+      "crc32": "4a9bfa15"
+    },
+    {
+      "name": "competition/train/impressions/part-00485-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19184359,
+      "compressed_bytes": 19184359,
+      "method": 0,
+      "crc32": "e5d28d59"
+    },
+    {
+      "name": "competition/train/impressions/part-00486-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18911966,
+      "compressed_bytes": 18911966,
+      "method": 0,
+      "crc32": "3e8fe82d"
+    },
+    {
+      "name": "competition/train/impressions/part-00487-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19124330,
+      "compressed_bytes": 19124330,
+      "method": 0,
+      "crc32": "1f23fcec"
+    },
+    {
+      "name": "competition/train/impressions/part-00488-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19048089,
+      "compressed_bytes": 19048089,
+      "method": 0,
+      "crc32": "5346a531"
+    },
+    {
+      "name": "competition/train/impressions/part-00489-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19071116,
+      "compressed_bytes": 19071116,
+      "method": 0,
+      "crc32": "ea302fe0"
+    },
+    {
+      "name": "competition/train/impressions/part-00490-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19234034,
+      "compressed_bytes": 19234034,
+      "method": 0,
+      "crc32": "a49a5756"
+    },
+    {
+      "name": "competition/train/impressions/part-00491-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18976749,
+      "compressed_bytes": 18976749,
+      "method": 0,
+      "crc32": "ae3f8dd5"
+    },
+    {
+      "name": "competition/train/impressions/part-00492-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18977320,
+      "compressed_bytes": 18977320,
+      "method": 0,
+      "crc32": "101410ed"
+    },
+    {
+      "name": "competition/train/impressions/part-00493-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19097009,
+      "compressed_bytes": 19097009,
+      "method": 0,
+      "crc32": "80f5ec2a"
+    },
+    {
+      "name": "competition/train/impressions/part-00494-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18980608,
+      "compressed_bytes": 18980608,
+      "method": 0,
+      "crc32": "6fd969af"
+    },
+    {
+      "name": "competition/train/impressions/part-00495-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19095306,
+      "compressed_bytes": 19095306,
+      "method": 0,
+      "crc32": "0adb609d"
+    },
+    {
+      "name": "competition/train/impressions/part-00496-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19034460,
+      "compressed_bytes": 19034460,
+      "method": 0,
+      "crc32": "f2e02518"
+    },
+    {
+      "name": "competition/train/impressions/part-00497-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19030002,
+      "compressed_bytes": 19030002,
+      "method": 0,
+      "crc32": "17e87113"
+    },
+    {
+      "name": "competition/train/impressions/part-00498-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19048975,
+      "compressed_bytes": 19048975,
+      "method": 0,
+      "crc32": "70bf03f6"
+    },
+    {
+      "name": "competition/train/impressions/part-00499-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18925873,
+      "compressed_bytes": 18925873,
+      "method": 0,
+      "crc32": "1406240f"
+    },
+    {
+      "name": "competition/train/impressions/part-00500-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18829693,
+      "compressed_bytes": 18829693,
+      "method": 0,
+      "crc32": "9467abfb"
+    },
+    {
+      "name": "competition/train/impressions/part-00501-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19005051,
+      "compressed_bytes": 19005051,
+      "method": 0,
+      "crc32": "26b60093"
+    },
+    {
+      "name": "competition/train/impressions/part-00502-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19021351,
+      "compressed_bytes": 19021351,
+      "method": 0,
+      "crc32": "4904f98d"
+    },
+    {
+      "name": "competition/train/impressions/part-00503-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18885336,
+      "compressed_bytes": 18885336,
+      "method": 0,
+      "crc32": "12ff0e42"
+    },
+    {
+      "name": "competition/train/impressions/part-00504-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18983888,
+      "compressed_bytes": 18983888,
+      "method": 0,
+      "crc32": "6e5a96ab"
+    },
+    {
+      "name": "competition/train/impressions/part-00505-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19087740,
+      "compressed_bytes": 19087740,
+      "method": 0,
+      "crc32": "8eff8a1f"
+    },
+    {
+      "name": "competition/train/impressions/part-00506-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19119164,
+      "compressed_bytes": 19119164,
+      "method": 0,
+      "crc32": "25b6e52e"
+    },
+    {
+      "name": "competition/train/impressions/part-00507-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19072092,
+      "compressed_bytes": 19072092,
+      "method": 0,
+      "crc32": "ea6cf0a1"
+    },
+    {
+      "name": "competition/train/impressions/part-00508-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19174699,
+      "compressed_bytes": 19174699,
+      "method": 0,
+      "crc32": "b440c428"
+    },
+    {
+      "name": "competition/train/impressions/part-00509-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 18719187,
+      "compressed_bytes": 18719187,
+      "method": 0,
+      "crc32": "17d8969b"
+    },
+    {
+      "name": "competition/train/impressions/part-00510-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19124140,
+      "compressed_bytes": 19124140,
+      "method": 0,
+      "crc32": "d4549684"
+    },
+    {
+      "name": "competition/train/impressions/part-00511-e3428b2d-e8b5-4109-8f1d-0bb6189ed749-c000.zstd.parquet",
+      "bytes": 19134434,
+      "compressed_bytes": 19134434,
+      "method": 0,
+      "crc32": "d5cc9023"
+    }
+  ],
+  "expected_train_feeds": 3151208,
+  "scope": "full train; train/selection only; no test"
+}

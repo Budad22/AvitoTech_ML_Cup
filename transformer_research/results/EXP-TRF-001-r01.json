@@ -1,0 +1,81 @@
+{
+  "report": {
+    "status": "completed",
+    "experiment": "EXP-TRF-001-r01",
+    "epochs": 5,
+    "steps": 3845,
+    "selected_epoch": 4,
+    "parameters": 84841,
+    "selection_ndcg": 0.329371524620737,
+    "selection_logloss": 0.07560232714601227,
+    "fast_ndcg": 0.3308910220814823,
+    "confirmation_ndcg": 0.3290527712201191,
+    "checkpoint_sha256": "041ed0505f954685a3cd581b0a435dd102f7676a3b14c315e1fd4369f849dd61",
+    "history": [
+      {
+        "epoch": 1,
+        "step": 769,
+        "train_logloss": 0.09968791728897528,
+        "fast_logloss": 0.0749287913523352,
+        "fast_ndcg": 0.3280937910344602
+      },
+      {
+        "epoch": 2,
+        "step": 1538,
+        "train_logloss": 0.09675270804371712,
+        "fast_logloss": 0.07426335343883207,
+        "fast_ndcg": 0.3312945550843583
+      },
+      {
+        "epoch": 3,
+        "step": 2307,
+        "train_logloss": 0.09635779808402925,
+        "fast_logloss": 0.0742855807951824,
+        "fast_ndcg": 0.3278981992576168
+      },
+      {
+        "epoch": 4,
+        "step": 3076,
+        "train_logloss": 0.0961035963943304,
+        "fast_logloss": 0.0742208033646525,
+        "fast_ndcg": 0.3308910220814823
+      },
+      {
+        "epoch": 5,
+        "step": 3845,
+        "train_logloss": 0.09588886278330011,
+        "fast_logloss": 0.07432525855094708,
+        "fast_ndcg": 0.3324196726051936
+      }
+    ],
+    "independent_confirmation": false,
+    "full_train": false,
+    "note": "Pinned official architecture; adapted common cache and validation, one seed",
+    "test_read": false,
+    "submission_created": false
+  },
+  "verification": {
+    "status": "passed",
+    "source_cache_code_hashes_verified": true,
+    "full_selection_ndcg_reproduced": true,
+    "per_feed_reproduced": true,
+    "checkpoint_choice_matches_frozen_logloss": true,
+    "rows": 1101295,
+    "feeds": 11534,
+    "test_read": false
+  },
+  "environment": {
+    "torch": "2.10.0+cu128",
+    "numpy": "1.26.4",
+    "polars": "1.14.0",
+    "click": "8.1.8",
+    "loguru": "0.7.3",
+    "catboost": "1.2.10"
+  },
+  "differences": [
+    "common cached normalized inputs",
+    "train4 instead of full train",
+    "fast2000 instead of all validation",
+    "CUDA wheel of the pinned torch version"
+  ]
+}

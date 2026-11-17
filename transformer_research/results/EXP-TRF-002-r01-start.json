@@ -1,0 +1,242 @@
+{
+  "snapshot_only": true,
+  "final_result": false,
+  "experiment": "EXP-TRF-002-r01",
+  "task": "AvitoTransformer002",
+  "workspace": "C:/AvitoBaselines/EXP-TRF-002-r01",
+  "training": {
+    "status": "running",
+    "event": "batch_completed",
+    "pid": 22540,
+    "device": "cuda",
+    "elapsed_seconds": 42.125,
+    "updated_at": "2026-11-17T22:11:55.578304+00:00",
+    "epoch": 1,
+    "batch": 1438,
+    "step": 1438,
+    "total_steps": 492380,
+    "loss": 0.09004886448383331,
+    "steps_per_second": 35.05948897990749,
+    "gpu_allocated_bytes": 24444928,
+    "gpu_peak_bytes": 111703552
+  },
+  "config": {
+    "experiment": "EXP-TRF-002-r01",
+    "native_config": {
+      "train_feeds": 0,
+      "val_feeds": 0,
+      "epochs": 5,
+      "batch_size": 32,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "width": 64,
+      "layers": 2,
+      "dropout": 0.1,
+      "seed": 42,
+      "threads": 8
+    },
+    "epochs": 5,
+    "batch_size": 32,
+    "maximum_seconds": 28800,
+    "device": "cuda",
+    "seed": 42,
+    "source_sha256": "87b731df2a5507957c075e93a7f219c1fa4f59b9b7bb9752c59c43087bb2cc06",
+    "cache_sha256": {
+      "metadata.json": "e3be51bdc33113e4768866e7e9cb4a5642885f149dd3017d0223dd112d56025c",
+      "fast.npy": "e4eb4b5434b183c3028a42b045be7cf29ee6e4c65e63c99dea01a63359cf4237",
+      "confirmation.npy": "0704f7913223e6ddd646fd0acbb9facc974c3845dd7677d0827b09f745361a70",
+      "train/floats.npy": "5ccad040a6e13dc0ac73b8bce0dc7b5f07ad5ecb67abe94974bdd1805a97af62",
+      "train/category.npy": "d1dd05f40cf5fb18d6183202ce19a01fd74012be9d03c4bad9ad43cf87da0b05",
+      "train/target.npy": "f1e17b07301422a9207a0595c59da0dafe0cf39e61a3dbc1681b5d13612dec47",
+      "train/offsets.npy": "ca8755127f7f16fe96fef48f79625418c659825e8097641b10c64abc878e3092",
+      "train/feed_id.npy": "dceca3c389509b66c630e73d8bf24a92cf3e9c013dcac3ad4c1878179ce08cc9",
+      "train/item_id.npy": "46514c9f3aef42d7f72d37f5b7612d908145b7be8604d81d7f2bd6e7f716a672",
+      "train/item_index.npy": "11c401f700eb4d8312d0097dfa9b7cd80ae8fa6721c233431d099112c1a896bc",
+      "train/users.npy": "221ce87f7d76325b060bff5daa7697a4dd73f726496c59960dfa1b5fd89d6334",
+      "train/timestamp.npy": "e3ea8a41cde173fe316e146109da263457befb67ef7d93bb5f480fbe28ead331",
+      "train/user_id.npy": "a0f964fa561f614dc7ffedbc144f4684e2494db8841dd83dc3caaf0847fc8066",
+      "val/floats.npy": "0420d97e7623064c74b1d9e38a87651c098ed81845eea11183cdbf8bf69cd4b0",
+      "val/category.npy": "3772e7b5e25276019bb94a6d0bff52c60217f43bd4b51da614aef46081340441",
+      "val/target.npy": "66f6f299ec08338c753a31f7bc76ed4edaf78e0e6ae0cad70f97aecda334a47a",
+      "val/offsets.npy": "9ad8b80f829fa72b666c90c191d62950bf317df6557baf8bf2d8969fb6fb3c2d",
+      "val/feed_id.npy": "06bb2478a4d1756b6bc39f73584dcfa42ef0ba81ef496544acbf8ae35d621060",
+      "val/item_id.npy": "6af7600af38b7b62d1d4b0a1a2e8d02eb09c807d61e43f6045e6bca256a2c67c",
+      "val/item_index.npy": "422ca60b5a1757d8aa8dbfe99235fd311f44479be46035aba1bd1caecd551459",
+      "val/users.npy": "acadb13acf8fb0e670421c3cf290a10bf6577fa33759bed6c533a033fdcfca2a",
+      "val/timestamp.npy": "3f771283bef77a6a0c302f4b45133052530151272914ec17a5cab0e848f8cf5d",
+      "val/user_id.npy": "8d3a598c06f96ad2121b9fb62ad95b91f5f21649bbaae47d6f25ba703bc9c6e9"
+    },
+    "code_sha256": {
+      "__init__.py": "82624894abd25dcdfe178b9460f4e054ce70e29d7595aaa6103f32a327086909",
+      "archive_http.py": "1813af1c3e6e0acc93f32a8a1fe1586dc203d7fd935b4c81e9413f690c78d0f0",
+      "audit_compact.py": "88ae758c4ddf3b2b6ddbb6cdb0faf6e05dd409d88ab5d32b53368e157402fb79",
+      "build_compact.py": "764d3f900745d7fd47d0a038838d6d28571b1af7c1c7e49d66a952554bf2ace4",
+      "compact.py": "bbdd4dc55fdf9b727dda5b4b190fb3e31fd1de9e1e718681f6181e790636d2be",
+      "core.py": "5b500596d08134b807bc7d95bb84b6071591aabe441fcdbb55ee628ab892a5a2",
+      "fetch.py": "bcce3ed69914705961ee7310b529142e43857093ce21defe5ff8eeb8d9dda782",
+      "test_compact.py": "fb3743a3bd73cbe67b810c4f2b579c78043b1e1cf74844e8df28a1e05ea2a585",
+      "test_transformer.py": "9ff2f8933ba4e05dcbbbb9ce74b64e7e57251fca17cf485d33d5aa83b9f3a6e5",
+      "train.py": "06c37888ccf156f09699a68a66c716d678c78d398e50b9d73331946b9faf3994"
+    },
+    "environment": {
+      "torch": "2.10.0+cu128",
+      "numpy": "1.26.4",
+      "polars": "1.14.0",
+      "click": "8.1.8",
+      "loguru": "0.7.3",
+      "catboost": "1.2.10"
+    },
+    "checkpoint_criterion": "minimum fast2000 row logloss",
+    "metric": "full NDCG with equal feed weights and pessimistic ties",
+    "score_transform": "float32 sigmoid",
+    "full_train": true,
+    "test_read": false,
+    "differences": [
+      "native on-demand normalization; compact memmaps",
+      "fast2000 instead of all validation",
+      "CUDA wheel of the pinned torch version"
+    ]
+  },
+  "loader_profile": {
+    "event": "loader_verified",
+    "validation_feeds": 11534,
+    "max_input_error": 0.0,
+    "batches": 40,
+    "seconds": 1.485000000000582,
+    "steps_per_second": 26.93602693601638,
+    "estimated_training_hours": 5.07766875000199,
+    "gpu_peak_bytes": 110657536,
+    "train_feeds": 3151208,
+    "train_rows": 246745836,
+    "weights_discarded": true,
+    "test_read": false
+  },
+  "compact_metadata": {
+    "identity": {
+      "source_sha256": "bef330b9e2c00c825c20ee9a9cb4640999004d6c70df693cfe045a67f7cfd65f",
+      "raw_ready_sha256": "423ce33281185b31ecce5574c4751f59d72c771aca12abc3f988b45bd7692751",
+      "reference_sha256": "0c0d8c1a77f94ceb09eb01246af890c0589d2b08ad191d68e08f5db5dce15dd7",
+      "schema_version": 2,
+      "builder_sha256": "764d3f900745d7fd47d0a038838d6d28571b1af7c1c7e49d66a952554bf2ace4"
+    },
+    "splits": {
+      "train": {
+        "feeds": 3151208,
+        "rows": 246745836
+      },
+      "val": {
+        "feeds": 11534,
+        "rows": 1101295
+      }
+    },
+    "categories": {
+      "2": 1,
+      "3": 2,
+      "4": 3,
+      "5": 4,
+      "6": 5,
+      "7": 6,
+      "8": 7,
+      "9": 8,
+      "10": 9,
+      "11": 10,
+      "12": 11,
+      "13": 12,
+      "14": 13,
+      "15": 14,
+      "16": 15,
+      "17": 16,
+      "18": 17,
+      "19": 18,
+      "20": 19,
+      "21": 20,
+      "22": 21,
+      "23": 22,
+      "24": 23,
+      "25": 24,
+      "26": 25,
+      "27": 26,
+      "28": 27,
+      "29": 28,
+      "30": 29,
+      "31": 30,
+      "32": 31,
+      "33": 32,
+      "34": 33,
+      "35": 34,
+      "36": 35,
+      "37": 36,
+      "38": 37,
+      "39": 38,
+      "40": 39,
+      "41": 40,
+      "42": 41,
+      "43": 42,
+      "44": 43,
+      "45": 44,
+      "46": 45,
+      "47": 46,
+      "48": 47,
+      "49": 48,
+      "50": 49,
+      "51": 50,
+      "52": 51,
+      "53": 52
+    },
+    "boundary": 1790249984,
+    "items": {
+      "train": {
+        "dtype": "int8",
+        "shape": [
+          81557944,
+          128
+        ],
+        "order": "C",
+        "path": "../raw/train/item_embeddings/data.memmap"
+      },
+      "val": {
+        "dtype": "int8",
+        "shape": [
+          2516711,
+          128
+        ],
+        "order": "C",
+        "path": "../raw/val/item_embeddings/data.memmap"
+      }
+    },
+    "files_sha256": {
+      "train/category.npy": "d1dd05f40cf5fb18d6183202ce19a01fd74012be9d03c4bad9ad43cf87da0b05",
+      "train/feed_id.npy": "dceca3c389509b66c630e73d8bf24a92cf3e9c013dcac3ad4c1878179ce08cc9",
+      "train/floats.npy": "5ccad040a6e13dc0ac73b8bce0dc7b5f07ad5ecb67abe94974bdd1805a97af62",
+      "train/item_id.npy": "46514c9f3aef42d7f72d37f5b7612d908145b7be8604d81d7f2bd6e7f716a672",
+      "train/item_index.npy": "11c401f700eb4d8312d0097dfa9b7cd80ae8fa6721c233431d099112c1a896bc",
+      "train/offsets.npy": "ca8755127f7f16fe96fef48f79625418c659825e8097641b10c64abc878e3092",
+      "train/target.npy": "f1e17b07301422a9207a0595c59da0dafe0cf39e61a3dbc1681b5d13612dec47",
+      "train/timestamp.npy": "e3ea8a41cde173fe316e146109da263457befb67ef7d93bb5f480fbe28ead331",
+      "train/user_id.npy": "a0f964fa561f614dc7ffedbc144f4684e2494db8841dd83dc3caaf0847fc8066",
+      "train/users.npy": "221ce87f7d76325b060bff5daa7697a4dd73f726496c59960dfa1b5fd89d6334",
+      "val/category.npy": "3772e7b5e25276019bb94a6d0bff52c60217f43bd4b51da614aef46081340441",
+      "val/feed_id.npy": "06bb2478a4d1756b6bc39f73584dcfa42ef0ba81ef496544acbf8ae35d621060",
+      "val/floats.npy": "0420d97e7623064c74b1d9e38a87651c098ed81845eea11183cdbf8bf69cd4b0",
+      "val/item_id.npy": "6af7600af38b7b62d1d4b0a1a2e8d02eb09c807d61e43f6045e6bca256a2c67c",
+      "val/item_index.npy": "422ca60b5a1757d8aa8dbfe99235fd311f44479be46035aba1bd1caecd551459",
+      "val/offsets.npy": "9ad8b80f829fa72b666c90c191d62950bf317df6557baf8bf2d8969fb6fb3c2d",
+      "val/target.npy": "66f6f299ec08338c753a31f7bc76ed4edaf78e0e6ae0cad70f97aecda334a47a",
+      "val/timestamp.npy": "3f771283bef77a6a0c302f4b45133052530151272914ec17a5cab0e848f8cf5d",
+      "val/user_id.npy": "8d3a598c06f96ad2121b9fb62ad95b91f5f21649bbaae47d6f25ba703bc9c6e9",
+      "val/users.npy": "acadb13acf8fb0e670421c3cf290a10bf6577fa33759bed6c533a033fdcfca2a",
+      "fast.npy": "e4eb4b5434b183c3028a42b045be7cf29ee6e4c65e63c99dea01a63359cf4237",
+      "confirmation.npy": "0704f7913223e6ddd646fd0acbb9facc974c3845dd7677d0827b09f745361a70"
+    },
+    "diagnostics": {
+      "train": {
+        "duplicate_candidate_rows_preserved": 4
+      },
+      "val": {
+        "duplicate_candidate_rows_preserved": 0
+      }
+    },
+    "train_shards": 512,
+    "test_read": false
+  }
+}

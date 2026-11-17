@@ -1,0 +1,317 @@
+{
+  "experiment": "EXP-TABNET-006-r01",
+  "status": "completed",
+  "models": {
+    "mlp": {
+      "selection": 0.3613337358564908,
+      "fast": 0.361120068954366,
+      "confirmation": 0.36137855794630097,
+      "training": {
+        "kind": "mlp",
+        "seed": 42,
+        "status": "completed",
+        "steps": 32000,
+        "fast_ndcg": 0.361120068954366,
+        "seconds": 362.2820000000065,
+        "history": [
+          {
+            "step": 200,
+            "fast_ndcg": 0.35946004591272424,
+            "loss": 3.3851265907287598
+          },
+          {
+            "step": 800,
+            "fast_ndcg": 0.3568881130035924,
+            "loss": 3.6891427040100098
+          },
+          {
+            "step": 1600,
+            "fast_ndcg": 0.35535596046642803,
+            "loss": 3.1674182415008545
+          },
+          {
+            "step": 3200,
+            "fast_ndcg": 0.3591935460718438,
+            "loss": 3.572110176086426
+          },
+          {
+            "step": 4800,
+            "fast_ndcg": 0.35917314135878625,
+            "loss": 3.9936585426330566
+          },
+          {
+            "step": 6400,
+            "fast_ndcg": 0.361120068954366,
+            "loss": 3.5077013969421387
+          },
+          {
+            "step": 8000,
+            "fast_ndcg": 0.36037633588209633,
+            "loss": 3.399895191192627
+          },
+          {
+            "step": 9600,
+            "fast_ndcg": 0.35918345416243497,
+            "loss": 3.05295467376709
+          },
+          {
+            "step": 11200,
+            "fast_ndcg": 0.357111053816183,
+            "loss": 3.793015956878662
+          },
+          {
+            "step": 12800,
+            "fast_ndcg": 0.35774373019537,
+            "loss": 4.030312538146973
+          },
+          {
+            "step": 14400,
+            "fast_ndcg": 0.35803204999925026,
+            "loss": 3.7659332752227783
+          },
+          {
+            "step": 16000,
+            "fast_ndcg": 0.3563596117282328,
+            "loss": 3.6510674953460693
+          },
+          {
+            "step": 17600,
+            "fast_ndcg": 0.35151973806056336,
+            "loss": 3.6325721740722656
+          },
+          {
+            "step": 19200,
+            "fast_ndcg": 0.3519066907661207,
+            "loss": 2.92637300491333
+          },
+          {
+            "step": 20800,
+            "fast_ndcg": 0.35904371783212435,
+            "loss": 3.9048266410827637
+          },
+          {
+            "step": 22400,
+            "fast_ndcg": 0.35175330195291854,
+            "loss": 3.844773769378662
+          },
+          {
+            "step": 24000,
+            "fast_ndcg": 0.3529821969151807,
+            "loss": 3.92755126953125
+          },
+          {
+            "step": 25600,
+            "fast_ndcg": 0.3489198093208945,
+            "loss": 3.018594264984131
+          },
+          {
+            "step": 27200,
+            "fast_ndcg": 0.350042830709833,
+            "loss": 4.0246663093566895
+          },
+          {
+            "step": 28800,
+            "fast_ndcg": 0.34984193862882584,
+            "loss": 3.1394810676574707
+          },
+          {
+            "step": 30400,
+            "fast_ndcg": 0.3466393569079822,
+            "loss": 3.0064101219177246
+          },
+          {
+            "step": 32000,
+            "fast_ndcg": 0.34972534816851114,
+            "loss": 3.895477056503296
+          }
+        ],
+        "steps_this_attempt": 24800,
+        "seconds_this_attempt": 257.0,
+        "parameters": 328433
+      },
+      "predictions_sha256": "5fa4218096e567f3dbf6cbfbe7dea2bfac4f43dedd5f7dd3c9ea6eea27f4520a"
+    },
+    "tabnet": {
+      "selection": 0.34839623210726983,
+      "fast": 0.3511206096476038,
+      "confirmation": 0.34782472433711376,
+      "training": {
+        "kind": "tabnet",
+        "seed": 42,
+        "status": "completed",
+        "steps": 32000,
+        "fast_ndcg": 0.3511206096476038,
+        "seconds": 1735.4850000000006,
+        "history": [
+          {
+            "step": 200,
+            "fast_ndcg": 0.2851313374186807,
+            "loss": 3.506727695465088
+          },
+          {
+            "step": 800,
+            "fast_ndcg": 0.2912877401199536,
+            "loss": 3.8495309352874756
+          },
+          {
+            "step": 1600,
+            "fast_ndcg": 0.2932301046731275,
+            "loss": 3.3210957050323486
+          },
+          {
+            "step": 3200,
+            "fast_ndcg": 0.32868514757482015,
+            "loss": 3.774017095565796
+          },
+          {
+            "step": 4800,
+            "fast_ndcg": 0.32561143833638606,
+            "loss": 4.085142612457275
+          },
+          {
+            "step": 6400,
+            "fast_ndcg": 0.33610724314177925,
+            "loss": 3.5475895404815674
+          },
+          {
+            "step": 8000,
+            "fast_ndcg": 0.3344383714277062,
+            "loss": 3.4945311546325684
+          },
+          {
+            "step": 9600,
+            "fast_ndcg": 0.33377182491834234,
+            "loss": 3.1414120197296143
+          },
+          {
+            "step": 11200,
+            "fast_ndcg": 0.33696114085765483,
+            "loss": 3.883699893951416
+          },
+          {
+            "step": 12800,
+            "fast_ndcg": 0.34375715157445247,
+            "loss": 4.2761030197143555
+          },
+          {
+            "step": 14400,
+            "fast_ndcg": 0.34563213150810485,
+            "loss": 3.9389355182647705
+          },
+          {
+            "step": 16000,
+            "fast_ndcg": 0.3485661395055821,
+            "loss": 3.7602410316467285
+          },
+          {
+            "step": 17600,
+            "fast_ndcg": 0.3511206096476038,
+            "loss": 3.896827220916748
+          },
+          {
+            "step": 19200,
+            "fast_ndcg": 0.3443616445195222,
+            "loss": 2.9312996864318848
+          },
+          {
+            "step": 20800,
+            "fast_ndcg": 0.3461819132699008,
+            "loss": 3.9668452739715576
+          },
+          {
+            "step": 22400,
+            "fast_ndcg": 0.34852306603506644,
+            "loss": 4.041860580444336
+          },
+          {
+            "step": 24000,
+            "fast_ndcg": 0.3467171791085591,
+            "loss": 4.244189739227295
+          },
+          {
+            "step": 25600,
+            "fast_ndcg": 0.3496883672300536,
+            "loss": 3.148881196975708
+          },
+          {
+            "step": 27200,
+            "fast_ndcg": 0.3492018897592609,
+            "loss": 4.213070869445801
+          },
+          {
+            "step": 28800,
+            "fast_ndcg": 0.3494952526687633,
+            "loss": 3.7684617042541504
+          },
+          {
+            "step": 30400,
+            "fast_ndcg": 0.3490370101928488,
+            "loss": 3.350550651550293
+          },
+          {
+            "step": 32000,
+            "fast_ndcg": 0.34764133332192043,
+            "loss": 3.9442853927612305
+          }
+        ],
+        "steps_this_attempt": 25600,
+        "seconds_this_attempt": 1370.1719999999987,
+        "parameters": 347950
+      },
+      "predictions_sha256": "7524d7735985ddd0f3a39838b1a164e5b64c850682a2df23e3d99e9d701349ee"
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "exact_cached_truth": true,
+    "same_cohort": true,
+    "cache_config_hashes_verified": true,
+    "source_hashes_verified": true,
+    "finite_float32_predictions": true,
+    "per_feed_and_report_metrics_reproduced": true,
+    "feeds": 11534,
+    "rows": 1101295,
+    "test_read": false
+  },
+  "report": {
+    "status": "completed",
+    "runs": [
+      {
+        "kind": "mlp",
+        "seed": 42,
+        "best_step": 6400,
+        "selection_ndcg": 0.3613337358564908,
+        "confirmation_ndcg": 0.36137855794630097,
+        "checkpoint_sha256": "8e810348e93ef01f559dfc86f12ada1cf960f1a34c3c5a735635076ab3b363f9"
+      },
+      {
+        "kind": "tabnet",
+        "seed": 42,
+        "best_step": 17600,
+        "selection_ndcg": 0.34839623210726983,
+        "confirmation_ndcg": 0.34782472433711376,
+        "checkpoint_sha256": "d5f99b77bcfda166b203ed139bb2e0e8349e679845e033aeabae3ec25f14ae24"
+      }
+    ],
+    "fast_delta": -0.009999459306762215,
+    "practical_fast_threshold": 0.001,
+    "confirmation_comparison": {
+      "delta": -0.013553833609187169,
+      "lower": -0.0171763299162854,
+      "upper": -0.009780273696020993,
+      "per_seed": [
+        -0.013553833609187169
+      ],
+      "positive_seeds": 0,
+      "comparisons": 1,
+      "bootstrap_repetitions": 10000,
+      "evidence": false
+    },
+    "promote_candidate": false,
+    "independent_confirmation": false,
+    "note": "Historical selection reused; one seed is preliminary; larger train not evaluated",
+    "test_read": false,
+    "submission_created": false
+  },
+  "note": "One seed, train4, fixed total 32000 steps. Continuation from 6400 to 32000; checkpoint selected on fast; historical confirmation reused."
+}
