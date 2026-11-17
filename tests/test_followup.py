@@ -27,6 +27,25 @@ class FollowupContracts(unittest.TestCase):
             changes=[k for k,v in new.items() if k!='name' and base.get(k)!=v]
             self.assertEqual(len(changes),1)
             self.assertTrue(new['interactions'])
+        base=configuration(17)
+        for n in range(21,27):
+            new=configuration(n)
+            self.assertEqual(len([k for k,v in new.items() if k!='name' and base.get(k)!=v]),1)
+
+    def test_frozen_control_does_not_import_future_budget(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);source=root/'prior';target=root/'new'
+            folder=source/'medium/FTT-017-s42';folder.mkdir(parents=True)
+            (folder/'best.pt').write_bytes(b'future checkpoint')
+            (folder/'last.pt').write_bytes(b'future state')
+            (folder/'confirmed-best.pt').write_bytes(b'confirmed 12800 budget')
+            ledger={f'medium/FTT-017-s42/{budget}':dict(number=17,seed=42,target=budget,directory=str(folder))
+                    for budget in (12800,51200)}
+            (source/'ledger.json').write_text(json.dumps(ledger))
+            import_control(target,source,control=17,frozen_budget=12800)
+            result=json.loads((target/'ledger.json').read_text())
+            self.assertNotIn('medium/FTT-017-s42/51200',result)
+            self.assertEqual((target/'medium/FTT-017-s42/best.pt').read_bytes(),b'confirmed 12800 budget')
 
     def test_import_copies_control_and_leaves_resumed_files_untouched(self):
         with tempfile.TemporaryDirectory() as temporary:

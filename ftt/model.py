@@ -49,6 +49,8 @@ class Ranker(nn.Module):
             self.score_skip = nn.Linear(8,1)
             nn.init.zeros_(self.score_skip.weight)
             nn.init.zeros_(self.score_skip.bias)
+        if config.get('product_token'):
+            self.product_projection = nn.Linear(128,d)
 
     def interaction_features(self, batch):
         rows = []
@@ -99,6 +101,8 @@ class Ranker(nn.Module):
                 tokens.append(similarities[...,None]*self.similarity_weight+self.similarity_bias)
             else:
                 tokens.append(self.interaction_projection(similarities)[:,None])
+        if self.config.get('product_token'):
+            tokens.append(self.product_projection(batch['user']*batch['item'])[:,None])
         if self.config['history']:
             h = self.history_projection(batch['history_vectors'])
             h = h + self.category(batch['history_category']) + self.event(batch['history_event'])

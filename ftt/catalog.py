@@ -1,6 +1,13 @@
 """Variant definitions; existing configuration dictionaries remain checkpoint-compatible."""
 
 def configuration(number):
+    if number in range(21,27):
+        config = configuration(17)
+        config.update(name=f'FTT-{number:03d}')
+        config.update({21:dict(learning_rate=3e-4),22:dict(encoding='ple'),
+                       23:dict(score_skip=True),24:dict(dropout=.05),
+                       25:dict(depth=3),26:dict(product_token=True)}[number])
+        return config
     if number in range(13,21):
         config = configuration(9)
         config.update(name=f'FTT-{number:03d}')
