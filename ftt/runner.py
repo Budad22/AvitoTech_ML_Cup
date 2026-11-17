@@ -9,7 +9,8 @@ import traceback
 import numpy as np
 import torch
 
-from ftt.data import Cache, prepare, write_json
+from ftt.data import Cache, prepare
+from ftt.atomic import write_json
 from ftt.model import Ranker, configuration
 from ftt.training import Trainer, ndcg, save, evaluate
 from ftt.policy import rank_result, select_candidates, validation_partition, paired_summary

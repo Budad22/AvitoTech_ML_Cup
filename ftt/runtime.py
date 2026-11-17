@@ -7,7 +7,7 @@ from pathlib import Path
 import time
 import traceback
 
-from ftt.data import write_json
+from ftt.atomic import write_json
 
 
 def read_json(path, default):

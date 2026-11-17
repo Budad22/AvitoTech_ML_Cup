@@ -11,7 +11,8 @@ import torch
 
 from recsys_data import PreparedSplit
 from recsys_data.core import _flat
-from ftt.data import digest, write_json
+from ftt.data import digest
+from ftt.atomic import write_json
 from ftt.inference import model_inputs
 from ftt.model import Ranker
 from ftt.training import ndcg

@@ -11,7 +11,8 @@ import traceback
 import numpy as np
 import torch
 
-from ftt.data import Cache, digest, prepare, write_json
+from ftt.data import Cache, digest, prepare
+from ftt.atomic import write_json
 from ftt.model import Ranker, configuration
 from ftt.runner import Queue
 from ftt.training import evaluate
@@ -160,7 +161,10 @@ class Followup(Queue):
             for n in (self.control,winner):
                 result=self.ledger[f'medium/FTT-{n:03d}-s42/{previous}']
                 estimates.append(result['seconds']/result['steps']*(target-previous))
-            if self.remaining() < sum(estimates)*1.35+300:
+            extension_started = any(
+                f'medium/FTT-{n:03d}-s42/{target}' in self.ledger
+                for n in (self.control, winner))
+            if not extension_started and self.remaining() < sum(estimates)*1.35+300:
                 self.snapshot(long_extension_skipped=target,reason='Insufficient budget for both matched curves')
                 break
             for n in (self.control,winner):

@@ -6,7 +6,8 @@ import time
 import numpy as np
 import torch
 
-from ftt.data import Cache, Full, digest, write_json
+from ftt.data import Cache, Full, digest
+from ftt.atomic import write_json, replace
 from ftt.model import Ranker, configuration, objective
 
 
@@ -20,7 +21,7 @@ def ndcg(y, scores):
 def save(path, state):
     temporary = path.with_suffix('.tmp.pt')
     torch.save(state, temporary)
-    os.replace(temporary, path)
+    replace(temporary, path)
 
 
 @torch.inference_mode()
