@@ -27,7 +27,7 @@ $p=Get-Process -Id $s.pid -ErrorAction SilentlyContinue
 $s | Add-Member -NotePropertyName process_alive -NotePropertyValue ([bool]$p) -Force
 $s | Add-Member -NotePropertyName gpu -NotePropertyValue (@(& nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits)) -Force
 if (__LINES__ -gt 0) {
- $logs=@{};foreach($name in @('failure.txt','worker.err.log','events.jsonl')) {
+ $logs=@{};foreach($name in @('failure.txt','worker.err.log','tests.err.log','events.jsonl')) {
   if(Test-Path "$root/$name") {$logs[$name]=(Get-Content "$root/$name" -Tail __LINES__) -join "`n"}
  };$s | Add-Member -NotePropertyName logs -NotePropertyValue $logs -Force
 }
@@ -80,7 +80,7 @@ def main():
                 for name,content in (state.get('logs') or {}).items():
                     console.print(name,style='bold yellow')
                     console.print(content,markup=False,highlight=False,soft_wrap=True)
-            if not args.watch or state['status'] != 'running':
+            if not args.watch or state['status'] not in ('running','waiting'):
                 break
             time.sleep(args.watch)
     except KeyboardInterrupt:

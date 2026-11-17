@@ -81,7 +81,7 @@ class Queue:
         validation = self.validation
         torch.manual_seed(seed)
         model = Ranker(config, *train.statistics()).to(self.args.device)
-        optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-5)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=config.get('learning_rate',1e-4), weight_decay=1e-5)
         identity = dict(config=config, seed=seed, cache=digest(self.root / 'cache/metadata.json'), size=size)
         step, best, history, seconds, micro = 0, -1., [], 0., 16
         if (output / 'last.pt').exists():
@@ -152,7 +152,7 @@ class Queue:
                 continue
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1., error_if_nonfinite=True)
             for group in optimizer.param_groups:
-                group['lr'] = 1e-4 * min(1., (step+1)/100)
+                group['lr'] = config.get('learning_rate',1e-4) * min(1., (step+1)/100)
             optimizer.step()
             step += 1
             # Persist before heartbeat/budget exceptions so resume retains real progress.

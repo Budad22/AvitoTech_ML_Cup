@@ -34,7 +34,7 @@ class TransformerTests(unittest.TestCase):
 
     def test_all_variants_finite_gradients_and_empty_history(self):
         torch.set_num_threads(2)
-        for number in range(1,13):
+        for number in range(1,21):
             with self.subTest(number=number):
                 batch = self.batch()
                 model = self.model(number)
@@ -47,7 +47,7 @@ class TransformerTests(unittest.TestCase):
 
     def test_candidate_permutation_and_history_padding(self):
         permutation = torch.tensor([2,0,1,4,3])
-        for number in (1,7,8,9,10,11,12):
+        for number in (1,7,8,9,10,11,12,13,14,15,16,17,18,19,20):
             batch = self.batch()
             model = self.model(number).eval()
             with torch.no_grad():
@@ -65,7 +65,7 @@ class TransformerTests(unittest.TestCase):
 
     @unittest.skipUnless(torch.cuda.is_available(), 'CUDA unavailable')
     def test_cuda_updates_all_variants(self):
-        for n in range(1,13):
+        for n in range(1,21):
             model = self.model(n).cuda()
             batch = {k:v.cuda() if isinstance(v,torch.Tensor) else v for k,v in self.batch().items()}
             before = model.output.weight.detach().clone()

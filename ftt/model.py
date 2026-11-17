@@ -7,6 +7,14 @@ from torch.nn import functional as F
 
 
 def configuration(number):
+    if number in range(13,21):
+        config = configuration(9)
+        config.update(name=f'FTT-{number:03d}')
+        config.update({13:dict(learning_rate=3e-4),14:dict(learning_rate=3e-5),
+                       15:dict(dropout=.05),16:dict(dropout=.2),
+                       17:dict(similarity_tokens=True),18:dict(score_skip=True),
+                       19:dict(remove_vector_tokens=True),20:dict(context=True)}[number])
+        return config
     if number in (9, 10, 11, 12):
         config = configuration({9:1,10:2,11:3,12:4}[number])
         config.update(name=f'FTT-{number:03d}', interactions=True)
@@ -32,7 +40,7 @@ class Ranker(nn.Module):
         self.groups = nn.ModuleList([nn.Linear(128, d) for _ in range(3)])
         self.flags = nn.Linear(4, d)
         self.cls = nn.Parameter(torch.randn(1, 1, d) * .02)
-        layer = nn.TransformerEncoderLayer(d, 4, d * 4, .1, activation='gelu',
+        layer = nn.TransformerEncoderLayer(d, 4, d * 4, config.get('dropout',.1), activation='gelu',
                                            batch_first=True, norm_first=True)
         self.encoder = nn.TransformerEncoder(layer, config['depth'], enable_nested_tensor=False)
         self.norm = nn.LayerNorm(d)
@@ -49,6 +57,13 @@ class Ranker(nn.Module):
                                                             activation='gelu', batch_first=True, norm_first=True)
         if config.get('interactions'):
             self.interaction_projection = nn.Linear(8, d)
+        if config.get('similarity_tokens'):
+            self.similarity_weight = nn.Parameter(torch.randn(8,d)*.02)
+            self.similarity_bias = nn.Parameter(torch.zeros(8,d))
+        if config.get('score_skip'):
+            self.score_skip = nn.Linear(8,1)
+            nn.init.zeros_(self.score_skip.weight)
+            nn.init.zeros_(self.score_skip.bias)
 
     def interaction_features(self, batch):
         rows = []
@@ -91,8 +106,14 @@ class Ranker(nn.Module):
         tokens += [projection(batch[key])[:, None] for projection, key in
                    zip(self.groups, ('user', 'item', 'history_mean'))]
         tokens.append(self.flags(batch['flags'])[:, None])
+        if self.config.get('remove_vector_tokens'):
+            tokens = [tokens[0],tokens[1],tokens[-1]]
         if self.config.get('interactions'):
-            tokens.append(self.interaction_projection(self.interaction_features(batch))[:,None])
+            similarities = self.interaction_features(batch)
+            if self.config.get('similarity_tokens'):
+                tokens.append(similarities[...,None]*self.similarity_weight+self.similarity_bias)
+            else:
+                tokens.append(self.interaction_projection(similarities)[:,None])
         if self.config['history']:
             h = self.history_projection(batch['history_vectors'])
             h = h + self.category(batch['history_category']) + self.event(batch['history_event'])
@@ -119,7 +140,10 @@ class Ranker(nn.Module):
             mask = torch.arange(padded.shape[1], device=x.device)[None] >= lengths[:, None]
             values = self.context_layer(padded, src_key_padding_mask=mask)
             features = torch.cat([values[i, :n] for i, n in enumerate(batch['counts'])])
-        return self.output(self.norm(features)).squeeze(-1)
+        score = self.output(self.norm(features)).squeeze(-1)
+        if self.config.get('score_skip'):
+            score = score + self.score_skip(similarities).squeeze(-1)
+        return score
 
 
 def objective(scores, target, counts, kind):
