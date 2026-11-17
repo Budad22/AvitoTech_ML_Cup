@@ -1,6 +1,5 @@
 """Four-hour adaptive research queue, waiting without a language-model connection."""
 import argparse
-import ctypes
 import json
 import os
 from pathlib import Path
@@ -14,7 +13,10 @@ import torch
 
 from ftt.data import Cache, digest, prepare, write_json
 from ftt.model import Ranker, configuration
-from ftt.runner import Queue, evaluate
+from ftt.runner import Queue
+from ftt.training import evaluate
+from ftt.policy import rank_result, select_candidates, validation_partition, paired_summary
+from ftt.runtime import read_json, worker_lock, record_failure, add_run_arguments
 
 
 def gpu_busy():
@@ -85,38 +87,29 @@ class Followup(Queue):
                            full_training='disabled', confirmation_reused=True)
         info = prepare(self.args.data,self.root/'cache',self.emit)
         self.validation = Cache(self.root/'cache','val')
-        selection = np.flatnonzero(self.validation.timestamps < info['boundary'])
         rng = np.random.default_rng(2026)
-        self.fast = np.sort(rng.permutation(selection)[:min(2000,len(selection)//2)])
-        confirmation = np.setdiff1d(selection,self.fast)
-        self.excluded = json.loads((self.root/'excluded.json').read_text()) if (self.root/'excluded.json').exists() else {}
+        selection, self.fast, confirmation = validation_partition(self.validation.timestamps, info['boundary'], rng)
+        self.excluded = read_json(self.root/'excluded.json', {})
         variants = list(range(13,21))
         for number in variants:
             self.screen(number,20,'smoke')
         for target in (200,800):
             screened = [r for n in [9,*variants] if (r:=self.screen(n,target,'small'))]
-        rank = lambda r:(-r['best'],r['seconds'],r['number'])
-        candidates = sorted([r for r in screened if r['number']!=9],key=rank)
+        candidates = sorted([r for r in screened if r['number']!=9],key=rank_result)
         if not candidates:
             self.snapshot(status='inconclusive',reason='No viable hypotheses')
             self.emit('completed',status='completed')
             return
-        # Reserve a place for a slowly improving variant.
-        selected = [r['number'] for r in candidates[:3]]
-        def growth(r):
-            h={v['step']:v['ndcg'] for v in r['history']}
-            return (-(h[800]-h[200]),r['number'])
-        remaining=[r for r in candidates if r['number'] not in selected]
-        if remaining:selected.append(min(remaining,key=growth)['number'])
+        selected = select_candidates(screened, control=9, top_count=3)[1:]
         extended = [r for n in [9,*selected] if (r:=self.screen(n,3200,'small'))]
-        finalists = [r['number'] for r in sorted([r for r in extended if r['number']!=9],key=rank)[:2]]
+        finalists = [r['number'] for r in sorted([r for r in extended if r['number']!=9],key=rank_result)[:2]]
         self.snapshot(finalists=finalists,phase='medium')
         medium = [r for n in [9,*finalists] if (r:=self.screen(n,12800,'medium'))]
         if not any(r['number']!=9 for r in medium):
             self.snapshot(status='inconclusive',reason='No viable medium hypotheses')
             self.emit('completed',status='completed')
             return
-        winner = min([r for r in medium if r['number']!=9],key=rank)['number']
+        winner = min([r for r in medium if r['number']!=9],key=rank_result)['number']
         self.snapshot(winner=winner)
         for seed in (43,44):
             for n in (9,winner):
@@ -140,18 +133,10 @@ class Followup(Queue):
                 metrics[n].append(values)
                 checkpoints.append(dict(number=n,seed=seed,step=state['step'],
                                         sha256=digest(frozen),path=str(frozen)))
-        delta=np.asarray(metrics[winner])-np.asarray(metrics[9])
-        _,groups,counts=np.unique(self.validation.users[confirmation],return_inverse=True,return_counts=True)
-        sums=np.stack([np.bincount(groups,weights=row) for row in delta])
-        draws=[]
-        for _ in range(20000):
-            sampled_seeds=rng.integers(0,3,3)
-            sampled_users=rng.integers(0,len(counts),len(counts))
-            draws.append(sums[sampled_seeds].mean(0)[sampled_users].sum()/counts[sampled_users].sum())
-        lower,upper=np.quantile(draws,[.025,.975])
+        summary = paired_summary(metrics[winner], metrics[9], self.validation.users[confirmation], rng)
         self.snapshot(phase='convergence',confirmation=dict(control=float(np.mean(metrics[9])),
-                      winner=float(np.mean(metrics[winner])),delta=float(delta.mean()),
-                      per_seed=delta.mean(1).tolist(),interval=[float(lower),float(upper)],
+                      winner=float(np.mean(metrics[winner])),delta=summary['delta'],
+                      per_seed=summary['per_seed'],interval=summary['interval'],
                       checkpoints=checkpoints,feeds=len(confirmation)))
         # Freeze confirmed checkpoints before exploring longer seed42 curves.
         for target in (25600,51200):
@@ -173,23 +158,14 @@ class Followup(Queue):
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('--data',required=True)
-    parser.add_argument('--output',required=True)
-    parser.add_argument('--device',default='cuda')
-    parser.add_argument('--hours',type=float,default=4)
-    parser.add_argument('--experiment',default='FTT-NIGHT-003')
+    add_run_arguments(parser, hours=4, experiment='FTT-NIGHT-003')
     parser.add_argument('--control-source',default='Q:/AVITOCUP/experiments/FTT-NIGHT-002')
     args=parser.parse_args()
     root=Path(args.output)
     root.mkdir(parents=True,exist_ok=True)
-    with (root/'followup.lock').open('a+b') as lock:
-        import msvcrt
-        lock.seek(0)
-        if not lock.read(1):lock.write(b'0');lock.flush()
-        lock.seek(0);msvcrt.locking(lock.fileno(),msvcrt.LK_NBLCK,1)
-        ctypes.windll.kernel32.SetThreadExecutionState(0x80000003)
+    with worker_lock(root/'followup.lock'):
         queued=time.monotonic()
-        prior=json.loads((root/'status.json').read_text()) if (root/'status.json').exists() else {}
+        prior=read_json(root/'status.json', {})
         elapsed=prior.get('elapsed_seconds',0)
         while gpu_busy():
             write_json(root/'status.json',dict(experiment=args.experiment,status='waiting',
@@ -209,11 +185,7 @@ def main():
         try:
             queue.run()
         except Exception as error:
-            (root/'failure.txt').write_text(traceback.format_exc(),encoding='utf-8')
-            status='budget_exhausted' if isinstance(error,TimeoutError) else 'failed'
-            if hasattr(queue,'report'):queue.snapshot(status=status,error=str(error))
-            queue.state.update(status=status,error=str(error),heartbeat=time.time())
-            write_json(root/'status.json',queue.state)
+            record_failure(queue, error, queue.snapshot if hasattr(queue,'report') else None)
             raise
 
 

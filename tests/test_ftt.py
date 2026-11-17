@@ -111,12 +111,12 @@ class TransformerTests(unittest.TestCase):
             for key in resumed['model']:
                 torch.testing.assert_close(resumed['model'][key],straight['model'][key],rtol=0,atol=0)
             # A crash after the last step was saved must not skip the pending validation.
-            with patch('ftt.runner.evaluate', side_effect=RuntimeError('validation interrupted')):
+            with patch('ftt.training.evaluate', side_effect=RuntimeError('validation interrupted')):
                 with self.assertRaisesRegex(RuntimeError, 'interrupted'):
                     q.trial(2,42,21,'small')
             last = torch.load(other/'small/FTT-002-s42/last.pt',weights_only=False)
             self.assertEqual(last['step'],21)
-            with patch('ftt.runner.evaluate', return_value=np.array([.7])) as evaluator:
+            with patch('ftt.training.evaluate', return_value=np.array([.7])) as evaluator:
                 recovered = q.trial(2,42,21,'small')
             evaluator.assert_called_once()
             self.assertEqual(recovered['best'],.7)
