@@ -46,5 +46,8 @@
     "full_training": "not_started",
     "confirmation_feeds": 9534,
     "official_control_evaluated": false
-  }
+  },
+  "train_small_feeds": 24592,
+  "train_medium_feeds": 172356,
+  "train_medium_fraction": 0.054695215295213775
 }
