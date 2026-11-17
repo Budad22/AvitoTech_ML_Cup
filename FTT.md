@@ -204,3 +204,9 @@ checkpoint и частичныйотчёт; не выдавать незавер
 python scripts/status.py --run-id FTT-NIGHT-003 --watch 2
 python scripts/status.py --run-id FTT-NIGHT-003 --logs 50
 ```
+
+Постановка FTT-NIGHT-003 подтверждена: statuswaiting, phasewaiting_for_gpu,
+process_alive=true, heartbeat5,8с. GPU занят текущейсерией(32%,1748/8192МиБ),
+поэтому новые обучения ещё не начались. Ожидание продолжится безSSH/чата.
+Снимок исследовательского кода соответствует commit3d8d40b;15локальныхтестов
+прошли(одинCUDA-тест пропущен). CUDA-preflight выполнится послеосвобожденияGPU.
