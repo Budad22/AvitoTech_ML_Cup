@@ -1,0 +1,60 @@
+{
+  "winner": 9,
+  "mean_delta": 0.02273203858392676,
+  "interval": [
+    0.01917477960024379,
+    0.02651118479162162
+  ],
+  "per_seed": [
+    0.02042333658580062,
+    0.02490005986978842,
+    0.022872719296191245
+  ],
+  "qualifies": true,
+  "full_training": "completed",
+  "confirmation_feeds": 9534,
+  "official_control_evaluated": true,
+  "full": {
+    "number": 9,
+    "seed": 42,
+    "target": 984755,
+    "steps": 12000,
+    "best": 0.3590622642575145,
+    "history": [
+      {
+        "step": 2000,
+        "ndcg": 0.34632237693884144
+      },
+      {
+        "step": 4000,
+        "ndcg": 0.3549085124157285
+      },
+      {
+        "step": 6000,
+        "ndcg": 0.3590622642575145
+      },
+      {
+        "step": 8000,
+        "ndcg": 0.35480954846492146
+      },
+      {
+        "step": 10000,
+        "ndcg": 0.3558711200025619
+      },
+      {
+        "step": 12000,
+        "ndcg": 0.3577055120329734
+      }
+    ],
+    "seconds": 578.5160000000033,
+    "directory": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-002\\full\\FTT-009-s42"
+  },
+  "full_val_ndcg": 0.3572992755833176,
+  "selection_ndcg": 0.3575769793103572,
+  "control_ndcg": 0.35619057541451365,
+  "train_medium_feeds": 172356,
+  "train_medium_fraction": 0.054695215295213775,
+  "full_source_note": "Run ended at 12000 steps, before one full epoch; full refers to the source, not completed coverage.",
+  "best_full_source_epochs": 0.030464507579315615,
+  "last_full_source_epochs": 0.06092901515863123
+}

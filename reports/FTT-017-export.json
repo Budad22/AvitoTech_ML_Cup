@@ -1,0 +1,42 @@
+{
+  "run_id": "FTT-NIGHT-003-FTT-017-s42-long",
+  "checkpoint": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-003\\medium\\FTT-017-s42\\best.pt",
+  "checkpoint_sha256": "c23f127146aa8b735b9fc39de40ccf0f2e1f1e6d6b3e713567fe1b0fcc946fda",
+  "checkpoint_step": 35200,
+  "seed": 42,
+  "config": {
+    "name": "FTT-017",
+    "width": 96,
+    "depth": 2,
+    "encoding": "linear",
+    "history": false,
+    "context": false,
+    "loss": "softmax",
+    "interactions": true,
+    "similarity_tokens": true
+  },
+  "training_commit": "3d8d40bf497177ab84aad794c5d1c289479d379e",
+  "inference_commit": "446f071c38a845a278c3bb86b929987a15a0c51e",
+  "training_source_sha256": "c85f1f051f173a411635e8b89b8425765e076e9611c9f1ccad7ecb4fe87210b8",
+  "manifest_sha256": "0450ce7806edcd012ef4c621b37f4992cc45917e62beb7c31d72a4226af74154",
+  "scores": "raw float32 logits",
+  "splits": {
+    "val": {
+      "file": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-004\\export\\ftt_val_predictions.parquet",
+      "rows": 1389971,
+      "feeds": 14423,
+      "sha256": "a99655772c24fed86809c8288720484001210ac0c1d80a4b69894982c54f334d",
+      "full_ndcg": 0.3635727453723233,
+      "selection_ndcg": 0.3637947920580372,
+      "control_ndcg": 0.3626862495353468,
+      "fast_ndcg": 0.36646766507720496,
+      "boundary": 1790249984
+    },
+    "test": {
+      "file": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-004\\export\\ftt_submission.parquet",
+      "rows": 2904806,
+      "feeds": 28595,
+      "sha256": "b6d13673971a586c03ef881e438d26f708b53cbe885bee61eabc846a8265a0e5"
+    }
+  }
+}

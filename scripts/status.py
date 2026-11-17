@@ -14,12 +14,18 @@ from rich.panel import Panel
 from rich.table import Table
 
 
-def snapshot(client, lines=0, run_id='FTT-NIGHT-002'):
-    if not re.fullmatch(r'FTT-[A-Z0-9-]+',run_id):
+def snapshot(client, lines=0, run_id=None):
+    if run_id is not None and not re.fullmatch(r'FTT-[A-Z0-9-]+',run_id):
         raise ValueError('Invalid FTT run ID')
     script = r"""$ErrorActionPreference='Stop'
 [Console]::OutputEncoding=[Text.Encoding]::UTF8
-$root='Q:/AVITOCUP/experiments/__RUN_ID__'
+$run='__RUN_ID__'
+if (!$run) {
+ if(Test-Path 'Q:/AVITOCUP/active-ftt.json') {$run=(Get-Content 'Q:/AVITOCUP/active-ftt.json' -Raw|ConvertFrom-Json).run_id}
+ else {$run='FTT-NIGHT-002'}
+}
+if($run -notmatch '^FTT-[A-Z0-9-]+$'){throw 'Invalid active FTT run ID'}
+$root='Q:/AVITOCUP/experiments/'+$run
 if (!(Test-Path "$root/status.json")) {throw 'FTT has no status yet'}
 $s=Get-Content "$root/status.json" -Raw | ConvertFrom-Json
 $s | Add-Member -NotePropertyName server_time -NotePropertyValue ([DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()/1000) -Force
@@ -32,7 +38,7 @@ if (__LINES__ -gt 0) {
  };$s | Add-Member -NotePropertyName logs -NotePropertyValue $logs -Force
 }
 $s | ConvertTo-Json -Depth 10 -Compress
-""".replace('__LINES__',str(lines)).replace('__RUN_ID__',run_id)
+""".replace('__LINES__',str(lines)).replace('__RUN_ID__',run_id or '')
     encoded = base64.b64encode(script.encode('utf-16-le')).decode()
     _, stdout, stderr = client.exec_command('powershell -NoProfile -NonInteractive -EncodedCommand '+encoded, timeout=30)
     output, error = stdout.read(), stderr.read()
@@ -49,7 +55,7 @@ def main():
     parser.add_argument('--details', action='store_true')
     parser.add_argument('--logs', nargs='?', const=50, type=int, default=0)
     parser.add_argument('--watch', type=float, default=0)
-    parser.add_argument('--run-id', default='FTT-NIGHT-002')
+    parser.add_argument('--run-id', help='Run to inspect; default: server active FTT queue')
     args = parser.parse_args()
     password = getpass.getpass('SSH password: ') if sys.stdin.isatty() else sys.stdin.readline().rstrip('\r\n')
     client = paramiko.SSHClient()

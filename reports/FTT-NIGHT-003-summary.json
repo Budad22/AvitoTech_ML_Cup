@@ -1,0 +1,76 @@
+{
+  "experiment": "FTT-NIGHT-003",
+  "status": "completed",
+  "control": 9,
+  "full_training": "disabled",
+  "confirmation_reused": true,
+  "phase": "completed",
+  "finalists": [
+    13,
+    17
+  ],
+  "winner": 17,
+  "confirmation": {
+    "control": 0.3593349532223963,
+    "winner": 0.36079653159218217,
+    "delta": 0.0014615783697859471,
+    "per_seed": [
+      0.003399341832903321,
+      0.0014037369600827698,
+      -0.00041834368362824896
+    ],
+    "interval": [
+      -0.0009385963721387589,
+      0.003796116787696514
+    ],
+    "checkpoints": [
+      {
+        "number": 9,
+        "seed": 42,
+        "step": 8400,
+        "sha256": "86c6cc333cfd17603dce4f1fb8ead20e2fea1c8428bdd66f99259a18020abbb5",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-003\\medium\\FTT-009-s42\\confirmed-best.pt"
+      },
+      {
+        "number": 9,
+        "seed": 43,
+        "step": 12000,
+        "sha256": "06b4a8973aa306133964a77e6a16315096470b659e0506b173cd6e6e57977e45",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-003\\medium\\FTT-009-s43\\confirmed-best.pt"
+      },
+      {
+        "number": 9,
+        "seed": 44,
+        "step": 10800,
+        "sha256": "1a95ddd3d2e2d029d344a06c935e12455f9928e9147127f51bd2b6b42e89431e",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-003\\medium\\FTT-009-s44\\confirmed-best.pt"
+      },
+      {
+        "number": 17,
+        "seed": 42,
+        "step": 12000,
+        "sha256": "0363fa6317302bc3c0268e029bd73308b4f6ed096877e3d0f00a14b02f1dc86c",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-003\\medium\\FTT-017-s42\\confirmed-best.pt"
+      },
+      {
+        "number": 17,
+        "seed": 43,
+        "step": 10800,
+        "sha256": "5b377d2ed20f0180b8146d5ace8a9ce6f74f61a94db6e23f1c7f68b0bcfcda46",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-003\\medium\\FTT-017-s43\\confirmed-best.pt"
+      },
+      {
+        "number": 17,
+        "seed": 44,
+        "step": 8800,
+        "sha256": "9d02a927134eb6ff27618c6100b215ab7680c7608be17e3f7b31172d8602c66c",
+        "path": "Q:\\AVITOCUP\\experiments\\FTT-NIGHT-003\\medium\\FTT-017-s44\\confirmed-best.pt"
+      }
+    ],
+    "feeds": 9534
+  },
+  "longest_matched_steps": 51200,
+  "long_scope": "Exploratory seed42 curves; confirmation above uses frozen 12800-step budgets",
+  "train_medium_feeds": 172356,
+  "train_medium_fraction": 0.054695215295213775
+}
