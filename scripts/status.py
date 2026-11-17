@@ -3,6 +3,7 @@ import argparse
 import base64
 import getpass
 import json
+import re
 from pathlib import Path
 import sys
 import time
@@ -13,10 +14,12 @@ from rich.panel import Panel
 from rich.table import Table
 
 
-def snapshot(client, lines=0):
+def snapshot(client, lines=0, run_id='FTT-NIGHT-002'):
+    if not re.fullmatch(r'FTT-[A-Z0-9-]+',run_id):
+        raise ValueError('Invalid FTT run ID')
     script = r"""$ErrorActionPreference='Stop'
 [Console]::OutputEncoding=[Text.Encoding]::UTF8
-$root='Q:/AVITOCUP/experiments/FTT-NIGHT-001'
+$root='Q:/AVITOCUP/experiments/__RUN_ID__'
 if (!(Test-Path "$root/status.json")) {throw 'FTT has no status yet'}
 $s=Get-Content "$root/status.json" -Raw | ConvertFrom-Json
 $s | Add-Member -NotePropertyName server_time -NotePropertyValue ([DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()/1000) -Force
@@ -29,7 +32,7 @@ if (__LINES__ -gt 0) {
  };$s | Add-Member -NotePropertyName logs -NotePropertyValue $logs -Force
 }
 $s | ConvertTo-Json -Depth 10 -Compress
-""".replace('__LINES__',str(lines))
+""".replace('__LINES__',str(lines)).replace('__RUN_ID__',run_id)
     encoded = base64.b64encode(script.encode('utf-16-le')).decode()
     _, stdout, stderr = client.exec_command('powershell -NoProfile -NonInteractive -EncodedCommand '+encoded, timeout=30)
     output, error = stdout.read(), stderr.read()
@@ -46,6 +49,7 @@ def main():
     parser.add_argument('--details', action='store_true')
     parser.add_argument('--logs', nargs='?', const=50, type=int, default=0)
     parser.add_argument('--watch', type=float, default=0)
+    parser.add_argument('--run-id', default='FTT-NIGHT-002')
     args = parser.parse_args()
     password = getpass.getpass('SSH password: ') if sys.stdin.isatty() else sys.stdin.readline().rstrip('\r\n')
     client = paramiko.SSHClient()
@@ -57,7 +61,7 @@ def main():
     console = Console()
     try:
         while True:
-            state = snapshot(client,args.logs)
+            state = snapshot(client,args.logs,args.run_id)
             age = round(max(0, state.get('server_time',time.time())-state.get('heartbeat',0)),1)
             keys = ('experiment','status','phase','event','model','seed','step','target','best_ndcg','completed','error')
             compact = {k:state[k] for k in keys if k in state}

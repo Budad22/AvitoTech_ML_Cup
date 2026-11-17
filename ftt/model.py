@@ -7,6 +7,10 @@ from torch.nn import functional as F
 
 
 def configuration(number):
+    if number in (9, 10, 11, 12):
+        config = configuration({9:1,10:2,11:3,12:4}[number])
+        config.update(name=f'FTT-{number:03d}', interactions=True)
+        return config
     return dict(name=f'FTT-{number:03d}', width=192 if number == 5 else 96,
                 depth=3 if number == 4 else 2, encoding={2: 'plr', 3: 'ple'}.get(number, 'linear'),
                 history=number == 7, context=number == 8, loss='bce' if number == 6 else 'softmax')
@@ -43,6 +47,31 @@ class Ranker(nn.Module):
         if config['context']:
             self.context_layer = nn.TransformerEncoderLayer(d, 4, d * 4, .1,
                                                             activation='gelu', batch_first=True, norm_first=True)
+        if config.get('interactions'):
+            self.interaction_projection = nn.Linear(8, d)
+
+    def interaction_features(self, batch):
+        rows = []
+        start = 0
+        for i, count in enumerate(batch['counts']):
+            item = batch['item'][start:start+count]
+            user = batch['user'][start:start+count]
+            history = batch['history_vectors'][i]
+            valid = batch['history_mask'][i] & (history.square().sum(-1) > 0)
+            similarity = item @ history.T
+            weights = valid.to(similarity.dtype)
+            n = weights.sum().clamp_min(1)
+            mean = (similarity*weights).sum(1)/n
+            maximum = similarity.masked_fill(~valid, -torch.inf).max(1).values
+            maximum = torch.where(valid.any(), maximum, torch.zeros_like(maximum))
+            std = (((similarity-mean[:,None]).square()*weights).sum(1)/n).sqrt()
+            matches = (batch['category'][start:start+count,None] == batch['history_category'][i,None])
+            category_rate = (matches*weights).sum(1)/n
+            rows.append(torch.stack([(item*user).sum(1),
+                       (item*batch['history_mean'][start:start+count]).sum(1), maximum, mean, std,
+                       category_rate, weights.sum().log1p().expand(count), (~valid.any()).float().expand(count)],1))
+            start += count
+        return torch.cat(rows)
 
     def forward(self, batch):
         x = (batch['numeric'] - self.mean) / self.scale
@@ -62,6 +91,8 @@ class Ranker(nn.Module):
         tokens += [projection(batch[key])[:, None] for projection, key in
                    zip(self.groups, ('user', 'item', 'history_mean'))]
         tokens.append(self.flags(batch['flags'])[:, None])
+        if self.config.get('interactions'):
+            tokens.append(self.interaction_projection(self.interaction_features(batch))[:,None])
         if self.config['history']:
             h = self.history_projection(batch['history_vectors'])
             h = h + self.category(batch['history_category']) + self.event(batch['history_event'])

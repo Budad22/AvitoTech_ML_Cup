@@ -50,7 +50,7 @@ class Queue:
         prior = self.root / 'status.json'
         self.state = json.loads(prior.read_text(encoding='utf-8')) if prior.exists() else dict(elapsed_seconds=0)
         self.previous_seconds = self.state.get('elapsed_seconds', 0)
-        self.state.update(status='running', pid=os.getpid(), experiment='FTT-NIGHT-001', device=args.device)
+        self.state.update(status='running', pid=os.getpid(), experiment=getattr(args,'experiment','FTT-NIGHT-001'), device=args.device)
         self.ledger = json.loads((self.root / 'ledger.json').read_text()) if (self.root / 'ledger.json').exists() else {}
         torch.set_num_threads(4)
 
@@ -212,10 +212,13 @@ class Queue:
         confirmation = np.setdiff1d(selection, self.fast)
         write_json(self.root / 'partitions.json', dict(boundary=info['boundary'], fast=self.fast.tolist(), confirmation=confirmation.tolist()))
         # Smoke trials are isolated from selection runs.
-        for number in range(1, 9):
+        variants = [int(n) for n in getattr(self.args,'variants','1,2,3,4,5,6,7,8').split(',')]
+        if 1 not in variants or len(set(variants)) != len(variants) or any(n not in range(1,13) for n in variants):
+            raise ValueError('Variants must contain control 1 and unique IDs 1..12')
+        for number in variants:
             self.screen_trial(number, 20, 'smoke')
         for target in (200, 800):
-            scores = [r for n in range(1, 9) if (r := self.screen_trial(n, target, 'small'))]
+            scores = [r for n in variants if (r := self.screen_trial(n, target, 'small'))]
         rank = lambda r: (-r['best'], r['seconds'], r['number'])
         candidates = sorted([r for r in scores if r['number'] != 1], key=rank)
         if not candidates:
@@ -234,7 +237,7 @@ class Queue:
         if not finalists:
             raise RuntimeError('No viable finalists; no full training permitted')
         medium = [r for n in [1, *finalists] if (r := self.screen_trial(n, 3200, 'medium'))]
-        growing = any({v['step']:v['ndcg'] for v in r['history']}[3200] >
+        growing = getattr(self.args,'force_medium_6400',False) or any({v['step']:v['ndcg'] for v in r['history']}[3200] >
                       {v['step']:v['ndcg'] for v in r['history']}[1600] for r in medium)
         target = 6400 if growing else 3200
         if growing:
@@ -296,6 +299,9 @@ def main():
     parser.add_argument('--output', required=True)
     parser.add_argument('--device', default='cuda')
     parser.add_argument('--hours', type=float, default=8)
+    parser.add_argument('--experiment', default='FTT-NIGHT-001')
+    parser.add_argument('--variants', default='1,2,3,4,5,6,7,8')
+    parser.add_argument('--force-medium-6400', action='store_true')
     args = parser.parse_args()
     queue = Queue(args)
     lock = queue.root / 'controller.lock'
