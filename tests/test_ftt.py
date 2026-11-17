@@ -125,6 +125,25 @@ class TransformerTests(unittest.TestCase):
             q.emit('training',model='FTT-002',phase='small',seed=42,step=1)
             self.assertNotIn('best_ndcg',q.state)
             self.assertNotIn('ndcg',q.state)
+            # New optimizer/dropout/token variants must resume exactly as uninterrupted training.
+            resumed_queue=Queue(SimpleNamespace(output=str(root),device='cpu',hours=8,data=str(data)))
+            resumed_queue.validation=q.validation
+            resumed_queue.fast=np.array([0])
+            torch.set_num_threads(2)
+            for number in range(13,21):
+                with self.subTest(resume_variant=number):
+                    q.trial(number,42,4,'small')
+                    resumed_queue.trial(number,42,2,'small')
+                    resumed_queue.trial(number,42,4,'small')
+                    straight=torch.load(other/f'small/FTT-{number:03d}-s42/last.pt',weights_only=False)
+                    continued=torch.load(root/f'small/FTT-{number:03d}-s42/last.pt',weights_only=False)
+                    for key in straight['model']:
+                        torch.testing.assert_close(straight['model'][key],continued['model'][key],rtol=0,atol=0)
+                    self.assertEqual(straight['optimizer']['param_groups'],continued['optimizer']['param_groups'])
+                    for parameter,values in straight['optimizer']['state'].items():
+                        for key,value in values.items():
+                            torch.testing.assert_close(value,continued['optimizer']['state'][parameter][key],rtol=0,atol=0)
+                    self.assertTrue(torch.equal(straight['rng'],continued['rng']))
             if torch.cuda.is_available():
                 args.device='cuda'
                 gpu = Queue(args)
