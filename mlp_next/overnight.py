@@ -66,6 +66,9 @@ class Overnight:
         self.ledger = read(self.root / 'ledger.json', {})
         self.logger = RunLogger(self.root, 'EXP-032', 'MLP', echo=False)
         self.medium_cache = self.medium_view = None
+        write_json(self.root / 'research-config.json', dict(maximum_hours=args.maximum_hours,
+                   minimum_hours=args.minimum_hours, hypotheses=len(self.new_names),
+                   per_full_model_hours=2, status='queued'))
 
     def event(self, event, **fields):
         self.state.update(progress=fields, updated_at=datetime.now(timezone.utc).isoformat())
@@ -78,6 +81,10 @@ class Overnight:
 
     def wait(self):
         self.event('successor_queued', predecessor=str(self.args.previous))
+        write_json(Path('Q:/AVITOCUP/active-research-queue.json'), dict(
+                   experiment='EXP-032', directory=str(self.root), hypotheses=len(self.new_names),
+                   minimum_hours=self.args.minimum_hours, maximum_hours=self.args.maximum_hours,
+                   predecessor='EXP-031'))
         while predecessor_alive(self.args.previous):
             prior = read(self.args.previous / 'status.json', {})
             self.event('waiting', predecessor_current=prior.get('current'),
