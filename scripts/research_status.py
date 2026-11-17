@@ -43,7 +43,8 @@ if($report.final_runs){
  delta=$report.differences.($report.best_mlp).delta;confirmation_feeds=$report.confirmation_feeds}
 }
 $config=Get-Content "$root\research-config.json" -Raw | ConvertFrom-Json
-@{research=$state;alive=$alive;stages=$stages;task=(Get-ScheduledTask $active.task_name).State.ToString();
+$task=if($active.task_name){(Get-ScheduledTask $active.task_name).State.ToString()}else{'detached'}
+@{research=$state;alive=$alive;stages=$stages;task=$task;
 gpu=@(& nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits);
 logs=$logs;decision=$report.decision;explanation=$report.explanation;summary=$summary;
 budget_seconds=$config.maximum_hours*3600}|ConvertTo-Json -Depth 12 -Compress

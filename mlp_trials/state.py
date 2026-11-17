@@ -7,11 +7,11 @@ import time
 def write_json(path, value):
     temporary = path.with_suffix(path.suffix + '.tmp')
     temporary.write_text(json.dumps(value, indent=2, allow_nan=False), encoding='utf-8')
-    for attempt in range(10):
+    for attempt in range(21):
         try:
             os.replace(temporary, path)
             return
         except PermissionError:
-            if attempt == 9:
+            if attempt == 20:
                 raise
-            time.sleep(.05)
+            time.sleep(min(.025 * (2 ** attempt), .25))

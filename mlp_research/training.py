@@ -58,15 +58,17 @@ def evaluate(model, dataset, feeds, config, batch_size=32, predictions=False):
 
 
 class Trainer:
-    def __init__(self, cache, directory, emit, batch_size=16, device='cpu'):
+    def __init__(self, cache, directory, emit, batch_size=16, device='cpu',
+                 model_class=ResearchRanker, split_class=DeviceSplit, order_fn=feed_order):
         self.cache, self.directory, self.emit = Path(cache), Path(directory), emit
         self.device = device
+        self.model_class, self.order_fn = model_class, order_fn
         if device == 'cuda' and not torch.cuda.is_available():
             raise RuntimeError('CUDA was requested but is unavailable')
         self.info = json.loads((self.cache / 'metadata.json').read_text(encoding='utf-8'))
         self.fingerprint = sha256(self.cache / 'metadata.json')
-        self.train = DeviceSplit(cache, 'train', device)
-        self.validation = DeviceSplit(cache, 'val', device)
+        self.train = split_class(cache, 'train', device)
+        self.validation = split_class(cache, 'val', device)
         with np.load(self.cache / 'statistics.npz') as statistics:
             self.statistics = {key: statistics[key].copy() for key in statistics.files}
         self.fast = np.load(self.cache / 'fast.npy')
@@ -87,7 +89,7 @@ class Trainer:
         if self.device != 'cpu':
             identity['device'] = self.device
         torch.manual_seed(seed)
-        model = ResearchRanker(len(self.info['categories']), config, self.statistics).to(self.device)
+        model = self.model_class(len(self.info['categories']), config, self.statistics).to(self.device)
         optimizer = torch.optim.AdamW(model.parameters(), lr=config['learning_rate'], weight_decay=config['weight_decay'])
         step, best, history, seconds = 0, -1., [], 0.
         if (output / 'last.pt').exists():
@@ -116,7 +118,7 @@ class Trainer:
                 save(output / 'last.pt', state())
                 raise TimeoutError('Per-model safety budget reached; insufficient training is not a negative result')
             before = time.monotonic()
-            chosen = feed_order(self.train.feeds, seed, index, self.batch_size)
+            chosen = self.order_fn(self.train.feeds, seed, index, self.batch_size)
             inputs = self.train.batch(chosen, history=config['history'], context=config['context'])
             wait += time.monotonic() - before
             before = time.monotonic()
@@ -137,7 +139,7 @@ class Trainer:
                           loss=last_loss, steps_per_second=(step - initial_step) /
                           max(time.monotonic() - started, 1e-9), loader_wait_pct=100 * wait / max(wait + compute, 1e-9))
                 last_report = time.monotonic()
-            if step in (200, 800, 1600, 3200, 4800, 6400) or step == target:
+            if step in (200, 800, 1600, 3200, 4800, 6400) or (step > 6400 and step % 2000 == 0) or step == target:
                 metric = evaluate(model, self.validation, self.fast, config)
                 improved = metric['ndcg'] > best
                 best = max(best, metric['ndcg'])
@@ -162,7 +164,7 @@ class Trainer:
     def final(self, config, seed):
         output = self.directory / 'runs' / f"{config['name']}-s{seed}"
         state = torch.load(output / 'best.pt', map_location='cpu', weights_only=False)
-        model = ResearchRanker(len(self.info['categories']), config, self.statistics).to(self.device)
+        model = self.model_class(len(self.info['categories']), config, self.statistics).to(self.device)
         model.load_state_dict(state['model'])
         metrics = evaluate(model, self.validation, np.arange(self.validation.feeds), config, predictions=True)
         np.save(output / 'selection_logits.npy', metrics['scores'])
