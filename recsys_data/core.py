@@ -71,7 +71,7 @@ class EmbeddingStore:
         self.shape = tuple(shape)
         self.path = self.directory / "data.memmap"
         self.available = self.path.is_file()
-        if self.available and self.path.stat().st_size != int(np.prod(self.shape)):
+        if self.available and self.path.stat().st_size != self.shape[0] * self.shape[1]:
             raise ValueError(f"Embedding file size disagrees with metadata: {self.path}")
         self._vectors = None
 

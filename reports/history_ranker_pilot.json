@@ -1,0 +1,125 @@
+{
+  "experiment": "EXP-TRF-003",
+  "run": "EXP-TRF-003-r01-train4-a",
+  "dataset_scope": "train4",
+  "train_shards": [
+    0,
+    170,
+    341,
+    511
+  ],
+  "train_feeds": 24592,
+  "train_candidates": 1925512,
+  "task": "AvitoHistoryRanker003Pilot",
+  "task_exit_code": 0,
+  "report": {
+    "feeds": 7581,
+    "candidates": 733339,
+    "users": 7236,
+    "ndcg": {
+      "pilot": 0.33595247106256154
+    },
+    "catboost_abs_diff": {
+      "pilot": 1.3877787807814457e-15
+    },
+    "scope": "early",
+    "cache_sha256": "7f274617b07b55691ef8d92f2302af31e30ba93fcc0f46c7bd47c177d5c456a1",
+    "checkpoints": {
+      "pilot": "3f7cb4d63843120a275a7cec45d8d0ead0c3122d6cd306cbbd704143cc8ccdb7"
+    },
+    "code": {
+      "__init__.py": "f11b23b341374aede9d159f02fcdc61b5fa6a20e1ca6eefa664ff021e0524f19",
+      "__main__.py": "a043f9854ba59c01b26c2b7d037ef1d0cd35086ed9cb315bf4a6eb07d21fee0f",
+      "data.py": "c6d909b16d9bfd4fbb358a88945eec8bc95620dd56b53359c2197b1aebbdb74d",
+      "evaluate.py": "a6d5902b6e2b4cc811f86c8a3bae82692f2bd7b8c942b067fc722de8fa07ce11",
+      "losses.py": "655e8cef56e2fae436c477144c6f5933d3d19b76770747a57830c3811653c55a",
+      "model.py": "eb53e6ffc18b32a160c11a9f7776cf0657ca64a21562edfa5b90608cb220b31e",
+      "prepare.py": "394ff990a76b132812203174c46a83c1639057715a16308723fbaa4edd5c3b26",
+      "state.py": "c8dccf336348b044361e97c17e751233135a521a237161c0e9a3aa8c6118e09d",
+      "train.py": "e2984732396f35df0a68bf1efb305ead9d55a4d7c5419a0a68fb48a07028551d"
+    },
+    "device": "cuda",
+    "microbatch": 8,
+    "scores_sha256": "64fa2374357f9b82eba2740079f16825e6f628d7e8e06c6ebd02e5b45011e378",
+    "feed_ids_sha256": "e31457be1faacf387838e4db58f74441f2aef4cbaa7faf8996e12de04abde6d4"
+  },
+  "training": {
+    "status": "completed",
+    "step": 769,
+    "steps": 769,
+    "elapsed_seconds": 190.5314386
+  },
+  "config": {
+    "stage": "pilot",
+    "cache_sha256": "7f274617b07b55691ef8d92f2302af31e30ba93fcc0f46c7bd47c177d5c456a1",
+    "code": {
+      "__init__.py": "f11b23b341374aede9d159f02fcdc61b5fa6a20e1ca6eefa664ff021e0524f19",
+      "__main__.py": "a043f9854ba59c01b26c2b7d037ef1d0cd35086ed9cb315bf4a6eb07d21fee0f",
+      "data.py": "c6d909b16d9bfd4fbb358a88945eec8bc95620dd56b53359c2197b1aebbdb74d",
+      "evaluate.py": "a6d5902b6e2b4cc811f86c8a3bae82692f2bd7b8c942b067fc722de8fa07ce11",
+      "losses.py": "655e8cef56e2fae436c477144c6f5933d3d19b76770747a57830c3811653c55a",
+      "model.py": "eb53e6ffc18b32a160c11a9f7776cf0657ca64a21562edfa5b90608cb220b31e",
+      "prepare.py": "394ff990a76b132812203174c46a83c1639057715a16308723fbaa4edd5c3b26",
+      "state.py": "c8dccf336348b044361e97c17e751233135a521a237161c0e9a3aa8c6118e09d",
+      "train.py": "e2984732396f35df0a68bf1efb305ead9d55a4d7c5419a0a68fb48a07028551d"
+    },
+    "seed": 42,
+    "lr": 0.0003,
+    "epochs": 1,
+    "feeds": 24592,
+    "batch": 32,
+    "microbatch": 8,
+    "device": "cuda",
+    "parent_sha256": null,
+    "query_chunk": null,
+    "torch": "2.10.0+cu128"
+  },
+  "cuda_profile": {
+    "device": "cuda",
+    "microbatch": 8,
+    "query_chunk": null,
+    "duration_seconds": 14.480718600000728,
+    "optimizer_steps": 25,
+    "microbatches": 100,
+    "stress_history_lengths": [
+      256,
+      0,
+      221
+    ],
+    "stress_candidate_counts": [
+      72,
+      66,
+      299
+    ],
+    "feeds_per_second": 55.24587709341716,
+    "full_epoch_hours": 15.84435982571913,
+    "five_epoch_hours": 79.22179912859566,
+    "peak_cuda_bytes": 121492992,
+    "cache_sha256": "7f274617b07b55691ef8d92f2302af31e30ba93fcc0f46c7bd47c177d5c456a1",
+    "code": {
+      "__init__.py": "f11b23b341374aede9d159f02fcdc61b5fa6a20e1ca6eefa664ff021e0524f19",
+      "__main__.py": "a043f9854ba59c01b26c2b7d037ef1d0cd35086ed9cb315bf4a6eb07d21fee0f",
+      "data.py": "c6d909b16d9bfd4fbb358a88945eec8bc95620dd56b53359c2197b1aebbdb74d",
+      "evaluate.py": "a6d5902b6e2b4cc811f86c8a3bae82692f2bd7b8c942b067fc722de8fa07ce11",
+      "losses.py": "655e8cef56e2fae436c477144c6f5933d3d19b76770747a57830c3811653c55a",
+      "model.py": "eb53e6ffc18b32a160c11a9f7776cf0657ca64a21562edfa5b90608cb220b31e",
+      "prepare.py": "394ff990a76b132812203174c46a83c1639057715a16308723fbaa4edd5c3b26",
+      "state.py": "c8dccf336348b044361e97c17e751233135a521a237161c0e9a3aa8c6118e09d",
+      "train.py": "e2984732396f35df0a68bf1efb305ead9d55a4d7c5419a0a68fb48a07028551d"
+    },
+    "oom_attempts": []
+  },
+  "pilot_feeds_per_second": 129.0705627412399,
+  "disk_free_bytes_at_check": 88130338816,
+  "independent_verification": {
+    "ndcg": 0.33595247106256154,
+    "keys_source": "raw val",
+    "exact_keys": true,
+    "score_digest_verified": true,
+    "code_and_cache_digest_verified": true
+  },
+  "validation_24_evaluated": false,
+  "full_training_executed": false,
+  "windows_workspace": "C:/AvitoBaselines/EXP-TRF-003-r01",
+  "artifacts": "artifacts/windows-results/EXP-TRF-003-r01"
+}
