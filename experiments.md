@@ -1,5 +1,24 @@
 # Журнал гипотез и экспериментов
 
+## EXP-032 — промежуточные результаты 2026-11-18T16:06:03UTC
+
+Живой controller PID5740, supervisor PID8404 monitoring/restarts0;
+49 завершённых этапов (screen48/full_priority1), failed0, stderr пуст.
+Активное время9287,891с. Текущий full_new/memory_cosine/seed42, step9934,
+CUDA6,351шаг/с, loader_wait5,475%; GPU39%,3334/8192МиБ.
+
+ranking.json зафиксировал средний fast2000 NDCG seed42/43:
+memory_cosine0,365416825; all_scalars_softmax0,363476015;
+position_nuisance0,363163634; experts_4 0,362934621;
+warmup_cosine0,362204954; bilinear_32 0,362114151. Это адаптивный отбор
+на среднем train, не независимая confirmation и не официальный full val.
+
+full_priority/plr_softmax-s42: actual_steps50000, best_step30000,
+fast_ndcg0,366761800, stopped_early=true, epochs1,015483586,
+train_seconds3531,421, train_feeds3151208, batch64. Плановый максимум
+12эпох не достигнут вследствие early stopping. Очередь не прерывалась;
+новые модели/гипотезы при проверке не добавлялись. Подробная таблица в MLP.md.
+
 ## EXP-032 — проверка длительной автономности
 
 Проверка развёрнутой защиты: 2026-11-18T13:51:43UTC, status=running,
