@@ -61,14 +61,14 @@ def restore_checkpoint(path, model, optimizer, position_loss, config, device):
     torch.set_rng_state(state["cpu_rng"])
     if device == "cuda":
         torch.cuda.set_rng_state_all(state["cuda_rng"])
-    return state["epoch"], state["cursor"], state["steps"]
+    return state["epoch"], state["cursor"], state["steps"], state.get("elapsed_seconds", 0.0)
 
 
-def save_checkpoint(path, model, optimizer, position_loss, config, device, epoch, cursor, steps):
+def save_checkpoint(path, model, optimizer, position_loss, config, device, epoch, cursor, steps, elapsed_seconds=0.0):
     state = dict(config=config, model=model.state_dict(), optimizer=optimizer.state_dict(),
                  position_loss=None if position_loss is None else position_loss.state_dict(),
                  cpu_rng=torch.get_rng_state(), cuda_rng=torch.cuda.get_rng_state_all() if device == "cuda" else [],
-                 epoch=epoch, cursor=cursor, steps=steps)
+                 epoch=epoch, cursor=cursor, steps=steps, elapsed_seconds=elapsed_seconds)
     atomic_write(path, lambda tmp: torch.save(state, tmp))
 
 
@@ -96,14 +96,26 @@ def train(cache, output, stage, microbatch, device, parent=None, query_chunk=Non
         config_path = output / "config.json"
         if config_path.exists() and read_json(config_path) != config:
             raise ValueError("Run configuration differs from existing run")
+        status_path = output / "status.json"
+        previous = read_json(status_path) if status_path.exists() else {}
+        if previous.get("status") == "completed":
+            from .evaluate import load_frozen
+            load_frozen(output, stage, data_hash)
+            return
         write_json(config_path, config)
         torch.manual_seed(SEED)
         model, optimizer, position_loss = build_training(stage, dataset.info, device, query_chunk, initializer)
         last = output / "last.pt"
         epoch, cursor, steps = 0, 0, 0
+        carried = previous.get("elapsed_seconds", 0.0)
         if last.exists():
-            epoch, cursor, steps = restore_checkpoint(last, model, optimizer, position_loss, config, device)
+            epoch, cursor, steps, checkpoint_seconds = restore_checkpoint(last, model, optimizer, position_loss, config, device)
+            carried = max(carried, checkpoint_seconds)
         started = time.perf_counter()
+
+        def elapsed():
+            return carried + (time.perf_counter() - started)
+
         total_steps = epochs * math.ceil(len(dataset) / EFFECTIVE_BATCH)
         start_step = steps
         try:
@@ -117,25 +129,28 @@ def train(cache, output, stage, microbatch, device, parent=None, query_chunk=Non
                     done = position == len(dataset)
                     if done or steps % 100 == 0:
                         save_checkpoint(last, model, optimizer, position_loss, config, device,
-                                        current + int(done), 0 if done else position, steps)
+                                        current + int(done), 0 if done else position, steps, elapsed())
                     if done or steps % 25 == 0 or steps == start_step + 1:
                         status = dict(status="running", epoch=current + 1, step=steps, steps=total_steps,
-                                      loss=loss, elapsed_seconds=time.perf_counter() - started)
+                                      loss=loss, elapsed_seconds=elapsed())
                         write_json(output / "status.json", status)
                         print(status, flush=True)
                 cursor = 0
             write_json(output / "frozen.json", dict(config=config, step=steps, checkpoint_sha256=sha256(last)))
             write_json(output / "status.json", dict(status="completed", step=steps, steps=total_steps,
-                                                    elapsed_seconds=time.perf_counter() - started))
+                                                    elapsed_seconds=elapsed()))
         except BaseException as error:
-            write_json(output / "status.json", dict(status="interrupted", step=steps, error=str(error)))
+            write_json(output / "status.json", dict(status="interrupted", step=steps, elapsed_seconds=elapsed(), error=str(error)))
             raise
 
 
-def smoke(cache, output, device):
+def smoke(cache, output, device, optimizer_steps=None):
     dataset = Feeds(cache, "train")
-    if dataset.metadata["identity"]["scope"] != "smoke":
-        raise ValueError("Profiling requires the four-shard cache")
+    scope = dataset.metadata["identity"]["scope"]
+    if scope not in ("smoke", "full"):
+        raise ValueError(f"Invalid profiling scope: {scope}")
+    if optimizer_steps is not None and (optimizer_steps <= 0 or 64 + optimizer_steps * EFFECTIVE_BATCH > len(dataset)):
+        raise ValueError("Measured steps must fit in the dataset after two warmup batches")
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     torch.manual_seed(SEED)
@@ -154,14 +169,14 @@ def smoke(cache, output, device):
             train_step(model, optimizer, None, dataset, stress, microbatch, device)
             for start in range(0, 64, EFFECTIVE_BATCH):
                 train_step(model, optimizer, pos, dataset, ordered[start:start + EFFECTIVE_BATCH], microbatch, device)
-            steps = math.ceil(100 / math.ceil(EFFECTIVE_BATCH / microbatch))
+            steps = optimizer_steps or (200 if scope == "full" else math.ceil(100 / math.ceil(EFFECTIVE_BATCH / microbatch)))
             started = time.perf_counter()
             for i in range(steps):
                 start = 64 + i * EFFECTIVE_BATCH
                 train_step(model, optimizer, pos, dataset, ordered[start:start + EFFECTIVE_BATCH], microbatch, device)
             duration = time.perf_counter() - started
             speed = steps * EFFECTIVE_BATCH / duration
-            profile = dict(device=device, microbatch=microbatch, query_chunk=chunk, duration_seconds=duration,
+            profile = dict(scope=scope, dataset_feeds=len(dataset), device=device, microbatch=microbatch, query_chunk=chunk, duration_seconds=duration,
                            optimizer_steps=steps, microbatches=steps * math.ceil(EFFECTIVE_BATCH / microbatch),
                            stress_history_lengths=[int(lengths[i]) for i in stress],
                            stress_candidate_counts=[int(candidates[i]) for i in stress],

@@ -1,0 +1,37 @@
+{
+  "scope": "full",
+  "dataset_feeds": 3151208,
+  "device": "cuda",
+  "microbatch": 8,
+  "query_chunk": null,
+  "duration_seconds": 139.9631300000001,
+  "optimizer_steps": 200,
+  "microbatches": 800,
+  "stress_history_lengths": [
+    256,
+    0,
+    0
+  ],
+  "stress_candidate_counts": [
+    72,
+    66,
+    300
+  ],
+  "feeds_per_second": 45.726328069399386,
+  "full_epoch_hours": 19.14292252435071,
+  "five_epoch_hours": 95.71461262175355,
+  "peak_cuda_bytes": 121186304,
+  "cache_sha256": "acfe0d3ffe85893317bb6955d877aeb55c2db127a3704783c3f6632df420e13d",
+  "code": {
+    "__init__.py": "f11b23b341374aede9d159f02fcdc61b5fa6a20e1ca6eefa664ff021e0524f19",
+    "__main__.py": "e6339431ceafd9d66f5a9e0970edd264b5f98e6233695a6904699c5452084874",
+    "data.py": "c6d909b16d9bfd4fbb358a88945eec8bc95620dd56b53359c2197b1aebbdb74d",
+    "evaluate.py": "a6d5902b6e2b4cc811f86c8a3bae82692f2bd7b8c942b067fc722de8fa07ce11",
+    "losses.py": "655e8cef56e2fae436c477144c6f5933d3d19b76770747a57830c3811653c55a",
+    "model.py": "eb53e6ffc18b32a160c11a9f7776cf0657ca64a21562edfa5b90608cb220b31e",
+    "prepare.py": "394ff990a76b132812203174c46a83c1639057715a16308723fbaa4edd5c3b26",
+    "state.py": "c8dccf336348b044361e97c17e751233135a521a237161c0e9a3aa8c6118e09d",
+    "train.py": "ce6c91f3355629d2813c73c124f928b00269846e00c5d9bc188b6b150512a338"
+  },
+  "oom_attempts": []
+}

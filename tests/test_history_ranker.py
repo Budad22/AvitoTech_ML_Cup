@@ -129,10 +129,10 @@ class RankerTest(unittest.TestCase):
             path = Path(tmp) / "last.pt"
             config = {"seed": 42}
             train_step(model, optimizer, pos, rows, [0, 1], 1, "cpu")
-            save_checkpoint(path, model, optimizer, pos, config, "cpu", 0, 2, 1)
+            save_checkpoint(path, model, optimizer, pos, config, "cpu", 0, 2, 1, 12.5)
             expected = train_step(model, optimizer, pos, rows, [1, 2], 1, "cpu")
             second, opt2, pos2 = build_training("a", {"max_pos": 8}, "cpu", None)
-            self.assertEqual((0, 2, 1), restore_checkpoint(path, second, opt2, pos2, config, "cpu"))
+            self.assertEqual((0, 2, 1, 12.5), restore_checkpoint(path, second, opt2, pos2, config, "cpu"))
             actual = train_step(second, opt2, pos2, rows, [1, 2], 1, "cpu")
             self.assertEqual(expected, actual)
             for key, value in model.state_dict().items():

@@ -17,7 +17,9 @@ def main():
         command.add_argument("--cache", required=True, type=Path)
         command.add_argument("--output", required=True, type=Path)
         command.add_argument("--device", choices=("cpu", "cuda"), default="cuda")
-        if name != "smoke":
+        if name == "smoke":
+            command.add_argument("--steps", type=int, help="Measured optimizer steps after warmup")
+        else:
             command.add_argument("--microbatch", type=int, choices=(1, 2, 4, 8), default=8)
         if name in ("pilot", "train-a", "train-b"):
             command.add_argument("--query-chunk", type=int, choices=(32, 64, 128))
@@ -40,7 +42,7 @@ def main():
         torch.backends.cudnn.allow_tf32 = False
         if args.command == "smoke":
             from .train import smoke
-            smoke(args.cache, args.output, args.device)
+            smoke(args.cache, args.output, args.device, args.steps)
         elif args.command.startswith("evaluate"):
             from .evaluate import evaluate
             evaluate(args)
