@@ -43,10 +43,9 @@ def predecessor_alive(directory):
     pid, identity = state.get('controller_pid'), state.get('controller_identity')
     if not pid or not identity:
         return False
-    command = f"$p=Get-Process -Id {int(pid)} -ErrorAction SilentlyContinue;if($p){{$p.StartTime.ToUniversalTime().ToFileTimeUtc()}}"
-    result = subprocess.check_output(['powershell', '-NoProfile', '-NonInteractive', '-Command', command],
-                                     text=True, creationflags=subprocess.CREATE_NO_WINDOW).strip()
-    return bool(result) and int(result) == int(identity)
+    # The native query returns None for an exited process; no shell exit-code race.
+    # Compare creation time too, because Windows can reuse a PID.
+    return process_identity(int(pid)) == int(identity)
 
 
 class Overnight:
@@ -63,6 +62,7 @@ class Overnight:
                           controller_identity=process_identity(os.getpid()), directory=str(self.root),
                           completed=self.state.get('completed', 0), failed=self.state.get('failed', 0),
                           hypotheses=len(self.new_names))
+        self.state.pop('error', None)
         self.ledger = read(self.root / 'ledger.json', {})
         self.logger = RunLogger(self.root, 'EXP-032', 'MLP', echo=False)
         self.medium_cache = self.medium_view = None
@@ -128,7 +128,7 @@ class Overnight:
                    data_cache=str(self.medium_cache)))
 
     def trainer(self, directory, *, full=False, name=None):
-        trainer = Trainer(self.medium_cache, directory, self.event, batch_size=64 if full else 16,
+        trainer = Trainer(self.medium_cache, directory, self.event, batch_size=64 if full else 16, device='cuda',
                           model_class=ExtendedRanker,
                           split_class=partial(ExtendedSplit, positions=self.root / 'positions'),
                           order_fn=sequential_order if full else cached_order, loss_fn=extended_loss)

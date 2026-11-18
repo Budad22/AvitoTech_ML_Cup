@@ -1,0 +1,86 @@
+{
+  "experiment": "EXP-031",
+  "status": "completed",
+  "best_mlp": "plr_softmax",
+  "baseline": "history_control",
+  "medium": {
+    "fast_mean": {
+      "history_control": 0.3575637280009843,
+      "mlp_softmax": 0.3600864195163979,
+      "plr_softmax": 0.36186934500654805,
+      "plr_stats_din128": 0.36048472078524885,
+      "stats_sequence128": 0.3605188777364503
+    },
+    "confirmation_mean": {
+      "history_control": 0.3566240430871083,
+      "mlp_softmax": 0.3606029242648313,
+      "plr_softmax": 0.3621143746411893,
+      "plr_stats_din128": 0.36013258290581485,
+      "stats_sequence128": 0.3593661255532539
+    },
+    "comparisons": {
+      "mlp_softmax": {
+        "delta": 0.003978881177723031,
+        "lower": 0.0011507537557382107,
+        "upper": 0.006880893986000658,
+        "per_seed": [
+          0.0047413987813589645,
+          0.0037539516538664607,
+          0.0034412930979436677
+        ],
+        "positive_seeds": 3,
+        "comparisons": 5,
+        "bootstrap_repetitions": 10000,
+        "evidence": true
+      },
+      "plr_softmax": {
+        "delta": 0.005490331554080943,
+        "lower": 0.002230354784858475,
+        "upper": 0.008815183487722245,
+        "per_seed": [
+          0.005060733918355901,
+          0.006273792147597705,
+          0.005136468596289226
+        ],
+        "positive_seeds": 3,
+        "comparisons": 5,
+        "bootstrap_repetitions": 10000,
+        "evidence": true
+      },
+      "plr_stats_din128": {
+        "delta": 0.003508539818706491,
+        "lower": 0.00027531058317046506,
+        "upper": 0.00660102314940019,
+        "per_seed": [
+          0.004055673029696288,
+          0.003092363117535629,
+          0.0033775833088875544
+        ],
+        "positive_seeds": 3,
+        "comparisons": 5,
+        "bootstrap_repetitions": 10000,
+        "evidence": true
+      },
+      "stats_sequence128": {
+        "delta": 0.002742082466145595,
+        "lower": -0.0010857996825157255,
+        "upper": 0.006410982563101886,
+        "per_seed": [
+          0.00441088347760338,
+          0.0006786504145859508,
+          0.0031367135062474556
+        ],
+        "positive_seeds": 3,
+        "comparisons": 5,
+        "bootstrap_repetitions": 10000,
+        "evidence": false
+      }
+    },
+    "train_feeds": 49196,
+    "note": "Historical selection, not full official val or untouched holdout"
+  },
+  "full_started": true,
+  "completed_stages": 39,
+  "decision": "continue_mlp",
+  "test_predicted": false
+}

@@ -1,0 +1,14 @@
+{
+  "name": "plr_softmax",
+  "seed": 42,
+  "best_step": 116000,
+  "selection_ndcg": 0.3695039078458337,
+  "confirmation_ndcg": 0.36974537103285227,
+  "checkpoint_sha256": "4000bad2388a7c216cf9096ba456c72135c7b04ab010ba7e75f38ec6e38355df",
+  "status": "partial_budget",
+  "last_step": 184186,
+  "last_epochs": 0.935189298833971,
+  "best_epochs": 0.5889804798667686,
+  "training_seconds": 7200.031,
+  "metric_scope": "Early selection:11534 feeds; confirmation:9534 of these feeds. Not the full official val."
+}

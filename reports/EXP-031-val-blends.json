@@ -1,0 +1,100 @@
+{
+  "status": "completed",
+  "rows": [
+    {
+      "expert": "history_stats",
+      "weight": 0,
+      "metrics": {
+        "selection": 0.3684379277310017,
+        "full_val": 0.36729391355771474,
+        "late_control": 0.3627265686374341
+      }
+    },
+    {
+      "expert": "softmax",
+      "weight": 0.1,
+      "metrics": {
+        "selection": 0.36884324122721535,
+        "full_val": 0.367911273383455,
+        "late_control": 0.36419049902903056
+      }
+    },
+    {
+      "expert": "softmax",
+      "weight": 0.25,
+      "metrics": {
+        "selection": 0.36974750579757143,
+        "full_val": 0.36871532589132266,
+        "late_control": 0.364594466410993
+      }
+    },
+    {
+      "expert": "softmax",
+      "weight": 0.5,
+      "metrics": {
+        "selection": 0.36971797581088606,
+        "full_val": 0.36832699823561854,
+        "late_control": 0.3627736803563744
+      }
+    },
+    {
+      "expert": "softmax",
+      "weight": 1.0,
+      "metrics": {
+        "selection": 0.3635891290587153,
+        "full_val": 0.3620791143318137,
+        "late_control": 0.35605055432486216
+      }
+    },
+    {
+      "expert": "ftt",
+      "weight": 0.1,
+      "metrics": {
+        "selection": 0.36845380492532503,
+        "full_val": 0.3676813391428178,
+        "late_control": 0.3645973584105792
+      }
+    },
+    {
+      "expert": "ftt",
+      "weight": 0.25,
+      "metrics": {
+        "selection": 0.3688091569279039,
+        "full_val": 0.3681294817473483,
+        "late_control": 0.36541595681397104
+      }
+    },
+    {
+      "expert": "ftt",
+      "weight": 0.5,
+      "metrics": {
+        "selection": 0.36848370973024736,
+        "full_val": 0.36749443812286714,
+        "late_control": 0.36354488508737925
+      }
+    },
+    {
+      "expert": "ftt",
+      "weight": 1.0,
+      "metrics": {
+        "selection": 0.3637947920580372,
+        "full_val": 0.3635727453723233,
+        "late_control": 0.3626862495353468
+      }
+    }
+  ],
+  "chosen": {
+    "expert": "softmax",
+    "weight": 0.25,
+    "metrics": {
+      "selection": 0.36974750579757143,
+      "full_val": 0.36871532589132266,
+      "late_control": 0.364594466410993
+    }
+  },
+  "missing": [],
+  "rows_count": 1389971,
+  "feeds": 14423,
+  "test_read": false,
+  "limitation": "Compared with full MLP parent. Existing CatBoost ensemble predictions unavailable; no claim of beating it. Historical val was used before."
+}

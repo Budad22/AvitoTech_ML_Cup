@@ -24,6 +24,74 @@ def inputs(device='cpu'):
 
 
 class OvernightContracts(unittest.TestCase):
+    def test_queue_explicitly_constructs_cuda_trainer(self):
+        from unittest.mock import patch
+        from pathlib import Path
+        from mlp_next.overnight import Overnight
+        queue=object.__new__(Overnight)
+        queue.medium_cache=Path('unused');queue.root=Path('unused');queue.event=lambda *a,**k:None
+        with patch('mlp_next.overnight.Trainer') as factory:
+            queue.trainer(Path('unused'))
+        self.assertEqual(factory.call_args.kwargs['device'],'cuda')
+
+    @unittest.skipUnless(torch.cuda.is_available(),'CUDA unavailable')
+    def test_full_queue_trainer_prefetch_and_model_update_on_cuda(self):
+        import test_mlp_trials
+        from types import SimpleNamespace
+        from mlp_research.cache import build
+        from mlp_next.data import build_sequences
+        from mlp_next.extended_data import prepare_positions
+        from mlp_next.overnight import Overnight
+        from mlp_next.models import configurations
+        fixture=test_mlp_trials.TrialContracts();fixture.setUp();trainer=None
+        try:
+            queue=object.__new__(Overnight)
+            queue.root=fixture.root;queue.args=SimpleNamespace(data=fixture.data)
+            queue.configs=configurations();queue.event=lambda *a,**k:None
+            queue.medium_cache=fixture.root/'cache'
+            build(fixture.data,queue.medium_cache,queue.event)
+            build_sequences(fixture.data,queue.medium_cache,fixture.root/'sequences',queue.event)
+            prepare_positions(fixture.data,queue.medium_cache,fixture.root/'positions')
+            trainer=queue.trainer(fixture.root/'full',full=True,name='plr_softmax')
+            trainer.validation.need_sequence=False
+            result=trainer.run(queue.configs['plr_softmax'],42,2)
+            self.assertEqual(result['device'],'cuda')
+            self.assertEqual(result['steps'],2)
+        finally:
+            if trainer:trainer.close()
+            fixture.tearDown()
+
+    def test_predecessor_exit_and_pid_reuse_are_normal_transitions(self):
+        from unittest.mock import patch
+        from mlp_next.overnight import predecessor_alive
+        for actual,expected in ((None,False),(123,True),(124,False)):
+            with self.subTest(actual=actual), \
+                    patch('mlp_next.overnight.read',return_value=dict(controller_pid=7,controller_identity=123)), \
+                    patch('mlp_next.overnight.process_identity',return_value=actual):
+                self.assertEqual(predecessor_alive('unused'),expected)
+
+    def test_wait_continues_after_predecessor_exit_without_restarting_it(self):
+        from unittest.mock import patch
+        from types import SimpleNamespace
+        from pathlib import Path
+        import tempfile
+        from mlp_next.overnight import Overnight
+        with tempfile.TemporaryDirectory() as directory:
+            queue=object.__new__(Overnight)
+            queue.args=SimpleNamespace(previous=Path(directory)/'prior',minimum_hours=12,maximum_hours=18)
+            queue.root=Path(directory)
+            queue.new_names=[]
+            queue.state={};queue.event=lambda *a,**k:None
+            with patch('mlp_next.overnight.predecessor_alive',side_effect=[True,False]), \
+                    patch('mlp_next.overnight.read',return_value={'status':'completed'}), \
+                    patch('mlp_next.overnight.time.sleep'), \
+                    patch('mlp_next.overnight.write_json'), \
+                    patch('mlp_next.overnight.subprocess.check_output',return_value='0, 304'), \
+                    patch('mlp_next.overnight.subprocess.run',return_value=SimpleNamespace(returncode=0)) as tests:
+                queue.wait()
+            self.assertEqual(queue.state['status'],'running')
+            self.assertEqual(tests.call_count,1)
+
     def test_worker_records_named_progress_and_never_retrains_same_full_seed(self):
         from pathlib import Path
         from types import SimpleNamespace
