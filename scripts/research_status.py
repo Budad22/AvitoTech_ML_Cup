@@ -59,6 +59,7 @@ if($report.final_runs){
 }
 $config=Get-Content "$root\research-config.json" -Raw | ConvertFrom-Json
 $task=if($active.task_name){(Get-ScheduledTask $active.task_name).State.ToString()}else{'detached'}
+$supervisor=if(Test-Path "$root/supervisor.json"){Get-Content "$root/supervisor.json" -Raw|ConvertFrom-Json}else{$null}
 $queued=$null
 if(Test-Path 'Q:/AVITOCUP/active-research-queue.json'){
  $candidate=Get-Content 'Q:/AVITOCUP/active-research-queue.json' -Raw|ConvertFrom-Json
@@ -78,7 +79,7 @@ if(Test-Path 'Q:/AVITOCUP/active-research-queue.json'){
 }
 @{research=$state;alive=$alive;stages=$stages;task=$task;
 gpu=@(& nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits);
-logs=$logs;decision=$report.decision;explanation=$report.explanation;summary=$summary;queued=$queued;
+logs=$logs;decision=$report.decision;explanation=$report.explanation;summary=$summary;queued=$queued;supervisor=$supervisor;
 budget_seconds=$config.maximum_hours*3600}|ConvertTo-Json -Depth 12 -Compress
 """.replace('__LINES__', str(lines))
     payload = base64.b64encode(gzip.compress(script.encode())).decode()
@@ -103,6 +104,9 @@ def render_research(snapshot):
     if state['status'] == 'running' and not snapshot['alive']:
         lines.append('ОШИБКА: процесс контроллера остановлен; сохранённый running устарел.')
     lines.append(f"Завершено этапов: {state['completed']} · ошибок: {state['failed']}")
+    if snapshot.get('supervisor'):
+        guard=snapshot['supervisor']
+        lines.append(f"Автовосстановление: {guard['event']} · перезапусков {guard['restarts']}")
     if snapshot.get('queued'):
         queued = snapshot['queued']
         lines.append(f"Следующая очередь: {queued['experiment']} · {queued['hypotheses']} новых гипотез · окно {queued['minimum_hours']} ч + резерв")
@@ -174,6 +178,9 @@ def build_research_view(snapshot, host):
                        confirmation_delta=summary['delta'])
         warnings.append('Лидер: ' + summary['name'] + ' · среднее по трём seed')
     warnings.append(f"Очередь: завершено этапов {state['completed']} · ошибок {state['failed']} · {state['phase']}")
+    if snapshot.get('supervisor'):
+        guard=snapshot['supervisor']
+        warnings.append(f"Автовосстановление: {guard['event']} · перезапусков {guard['restarts']}")
     if snapshot.get('queued'):
         queued = snapshot['queued']
         warnings.append(f"Далее: {queued['experiment']} · {queued['hypotheses']} новых гипотез · {queued['minimum_hours']} ч + резерв")

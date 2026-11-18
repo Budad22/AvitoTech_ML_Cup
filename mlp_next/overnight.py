@@ -140,6 +140,8 @@ class Overnight:
         return trainer
 
     def case(self, name, seed, target, stage, *, full=False):
+        if (self.root/'STOP_AFTER_CASE').exists():
+            raise InterruptedError('Owner requested a pause after the previous case')
         key = f'{stage}/{name}-s{seed}/{target}'
         if key in self.ledger:
             return self.ledger[key]
@@ -238,6 +240,9 @@ class Overnight:
         tasks = [(n,42,'full_new') for n in ranked[:2]]
         tasks += [('plr_softmax',43,'full_seed_repeat')]
         tasks += [(n,seed,'full_reserve') for seed in (42,43,44) for n in reserve]
+        # Extra distinct seeds prevent a fast/early-stopped reserve from emptying the work window.
+        tasks += [(n,seed,'full_extra_seed') for seed in range(45,65)
+                  for n in list(dict.fromkeys(['plr_softmax',*ranked[:2]]))]
         for name, seed, stage in tasks:
             if self.state.get('elapsed_seconds', 0) >= self.args.minimum_hours*3600:
                 break
@@ -250,6 +255,7 @@ class Overnight:
             trainer.validation.need_sequence = self.configs[name]['sequence']
             try:
                 for seed in (42,43):
+                    self.event('final_evaluation_started',name=name,seed=seed)
                     trainer.final(self.configs[name],seed)
             finally:
                 trainer.close()
@@ -260,6 +266,7 @@ class Overnight:
             trainer = self.trainer(self.root / stage, full=True, name=result['name'])
             trainer.validation.need_sequence = self.configs[result['name']]['sequence']
             try:
+                self.event('final_evaluation_started',name=result['name'],seed=result['seed'])
                 trainer.final(self.configs[result['name']],result['seed'])
             finally:
                 trainer.close()
@@ -277,8 +284,8 @@ def main():
     parser.add_argument('--data', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--previous', type=Path, required=True)
-    parser.add_argument('--minimum-hours', type=float, default=12)
-    parser.add_argument('--maximum-hours', type=float, default=18)
+    parser.add_argument('--minimum-hours', type=float, default=18)
+    parser.add_argument('--maximum-hours', type=float, default=20)
     args = parser.parse_args()
     if not 0 < args.minimum_hours < args.maximum_hours:
         parser.error('Require 0 < minimum-hours < maximum-hours')
