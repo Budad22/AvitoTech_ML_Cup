@@ -1,5 +1,28 @@
 # Журнал гипотез и экспериментов
 
+## EXP-032 — пауза владельца для передачи GPU, 19 ноября 2026
+
+По прямой просьбе владельца создана штатная checkpoint-пауза текущего
+full_reserve/all_scalars_softmax/seed43. Worker5740 и supervisor8404
+подтверждённо завершены; supervisor event=owner_stop/restarts0. После проверки
+статус приведён к paused вместо InterruptedError, исходное состояние сохранено
+в owner-pause.json. Лимиты/данные/код/ledger не менялись, 60 записанных этапов,
+failed0, сохранённое время очереди68360,141с. Новые модели не запускались.
+
+last.pt:step78295,seconds5516,313,SHA256
+`06030b10384b1385a5b91aba1c4716d8136c51e2c305aa7ed00f0d8bf04c6834`.
+best.pt:step78000,fast2000 NDCG0,373553152686838,SHA256
+`bc1531be90b5d73b966ff176089ece7d5c719fb984072c2ff3202006eb1f7bbf`.
+Оба прочитаны на CPU; присутствуют model/optimizer/torch_rng/cuda_rng/identity.
+Состояние и происхождение: reports/EXP-032-paused.json; инструкция в MLP.md.
+
+Возобновлять только по новой просьбе. Минимум18ч уже пройден: для продолжения
+незавершённого reserve требуется явное оставшееся окно очереди либо точечный
+same-identity Trainer.run; исходный bootstrap иначе перейдёт к final evaluation.
+Маркеры SUPERVISOR_STOP, STOP_AFTER_CASE, full_reserve/STOP_AFTER_CHECKPOINT
+оставлены. nvidia-smi запрос завис и завершился тайм-аутом; освобождение наших
+ресурсов подтверждено отсутствием worker/supervisor, свежая GPU-нагрузка неизвестна.
+
 ## EXP-032 — повтор лидера, 2026-11-19T06:31:23UTC
 
 Status running, controller5740 жив, supervisor8404 monitoring/restarts0,

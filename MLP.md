@@ -1,5 +1,29 @@
 # Эксперименты MLP
 
+## EXP-032 — пауза владельца 19 ноября, 11:30 МСК
+
+Очередь остановлена штатным `STOP_AFTER_CHECKPOINT`, автоперезапуск отключён
+через `SUPERVISOR_STOP` и `STOP_AFTER_CASE`. Worker5740 и supervisor8404
+завершены; статус исправлен на paused после проверки отсутствия процессов.
+Данные и замороженный код не менялись. GPU нашими процессами не занята;
+запрос nvidia-smi завершился тайм-аутом, процент нагрузки не подтверждён.
+
+Точка продолжения: `full_reserve/runs/all_scalars_softmax-s43/last.pt`,
+шаг**78295**, train5516,313с. Проверено чтение model/optimizer/torch_rng/
+cuda_rng/identity. Лучший checkpoint step78000, fast2000 NDCG**0,373553153**;
+это предварительный score, не полная val. Оба SHA256 и конфиг сохранены
+в `reports/EXP-032-paused.json`, на сервере дополнительно `owner-pause.json`.
+
+Корень: `Q:/AVITOCUP/experiments/MLP-OVERNIGHT-GPU-032`; код
+`code-repair-003`, launcher `supervisor-bootstrap.py`. Для будущего продолжения
+только по просьбе владельца снять три маркера: `SUPERVISOR_STOP`,
+`STOP_AFTER_CASE`, `full_reserve/STOP_AFTER_CHECKPOINT`. Сохранять checkpoint
+identity и продолжать через resume, без init-from. Уже учтено68360,141с
+(18ч59мин20с); исходный минимум18ч пройден. Поэтому исходный launcher
+перейдёт к итоговой оценке, пропустив незавершённый reserve: для продолжения
+именно этого опыта потребуется явное новое окно очереди либо точечный
+Trainer.run с прежней identity и сохранённым per-model бюджетом. Пока не запускать.
+
 ## EXP-032 — повтор лидера, 19 ноября, 09:31 МСК
 
 Очередь работает17ч00мин09с:59 записанных этапов, ошибок0, рестартов0.

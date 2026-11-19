@@ -1,0 +1,154 @@
+{
+  "status": {
+    "experiment": "EXP-032",
+    "architecture": "MLP",
+    "device": "cuda",
+    "status": "paused",
+    "phase": "full_reserve",
+    "controller_pid": 5740,
+    "controller_identity": 134394832839170060,
+    "directory": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032",
+    "completed": 60,
+    "failed": 0,
+    "hypotheses": 26,
+    "progress": {
+      "name": "all_scalars_softmax",
+      "seed": 43,
+      "step": 78295,
+      "total": 590856,
+      "device": "cuda",
+      "loss": 3.7163467407226562,
+      "steps_per_second": 14.193737196371016,
+      "loader_wait_pct": 61.994347325650345
+    },
+    "updated_at": "2026-11-19T08:30:34.243384+00:00",
+    "elapsed_seconds": 68360.14100000006,
+    "current": {
+      "name": "all_scalars_softmax",
+      "seed": 43,
+      "target": 590856
+    },
+    "pause_reason": "Owner requested GPU handover",
+    "paused_at": "2026-11-19T08:33:39.087850+00:00"
+  },
+  "supervisor": {
+    "event": "owner_stop",
+    "supervisor_pid": 8404,
+    "updated_at": "2026-11-19T08:30:47.931857+00:00",
+    "restarts": 0,
+    "failures_by_case": {},
+    "worker_alive": false
+  },
+  "checkpoint": {
+    "checked_at": "2026-11-19T08:32:42.204585+00:00",
+    "checkpoints": {
+      "last.pt": {
+        "step": 78295,
+        "best": 0.373553152686838,
+        "seconds": 5516.313000000082,
+        "sha256": "06030b10384b1385a5b91aba1c4716d8136c51e2c305aa7ed00f0d8bf04c6834",
+        "has_optimizer": true,
+        "has_model": true,
+        "has_torch_rng": true,
+        "has_cuda_rng": true,
+        "identity": {
+          "config": {
+            "family": "encoding",
+            "backbone": "mlp",
+            "history": true,
+            "context": false,
+            "encoding": "plr",
+            "width": 256,
+            "depth": 2,
+            "dropout": 0.1,
+            "activation": "relu",
+            "layer_norm": false,
+            "learning_rate": 0.001,
+            "weight_decay": 0.0001,
+            "loss": "softmax",
+            "frequencies": 16,
+            "embedding": 16,
+            "sigma": 0.1,
+            "frozen": false,
+            "shared": false,
+            "raw_skip": false,
+            "scalar_history": true,
+            "normalize": "standard",
+            "bins": 16,
+            "name": "all_scalars_softmax",
+            "description": "all_scalars_softmax",
+            "sequence": false,
+            "window": 128,
+            "early_stop_patience": 6,
+            "minimum_steps": 49238
+          },
+          "seed": 43,
+          "cache": "e915768b1053fad4ec6f564d54b41c9103fa349ade3defcf178fe3b2a2184025",
+          "batch_size": 64,
+          "device": "cuda"
+        }
+      },
+      "best.pt": {
+        "step": 78000,
+        "best": 0.373553152686838,
+        "seconds": 5495.1720000000205,
+        "sha256": "bc1531be90b5d73b966ff176089ece7d5c719fb984072c2ff3202006eb1f7bbf",
+        "has_optimizer": true,
+        "has_model": true,
+        "has_torch_rng": true,
+        "has_cuda_rng": true,
+        "identity": {
+          "config": {
+            "family": "encoding",
+            "backbone": "mlp",
+            "history": true,
+            "context": false,
+            "encoding": "plr",
+            "width": 256,
+            "depth": 2,
+            "dropout": 0.1,
+            "activation": "relu",
+            "layer_norm": false,
+            "learning_rate": 0.001,
+            "weight_decay": 0.0001,
+            "loss": "softmax",
+            "frequencies": 16,
+            "embedding": 16,
+            "sigma": 0.1,
+            "frozen": false,
+            "shared": false,
+            "raw_skip": false,
+            "scalar_history": true,
+            "normalize": "standard",
+            "bins": 16,
+            "name": "all_scalars_softmax",
+            "description": "all_scalars_softmax",
+            "sequence": false,
+            "window": 128,
+            "early_stop_patience": 6,
+            "minimum_steps": 49238
+          },
+          "seed": 43,
+          "cache": "e915768b1053fad4ec6f564d54b41c9103fa349ade3defcf178fe3b2a2184025",
+          "batch_size": 64,
+          "device": "cuda"
+        }
+      }
+    }
+  },
+  "worker_alive": false,
+  "supervisor_alive": false,
+  "gpu_query_note": "nvidia-smi request timed out; GPU release established by verified termination of owned worker and supervisor, no utilization snapshot claimed",
+  "resume": {
+    "root": "Q:/AVITOCUP/experiments/MLP-OVERNIGHT-GPU-032",
+    "code": "code-repair-003",
+    "bootstrap": "supervisor-bootstrap.py",
+    "markers": [
+      "SUPERVISOR_STOP",
+      "STOP_AFTER_CASE",
+      "full_reserve/STOP_AFTER_CHECKPOINT"
+    ],
+    "checkpoint": "full_reserve/runs/all_scalars_softmax-s43/last.pt",
+    "note": "Resume only on owner request. Preserve identity and budgets. Queue elapsed exceeds18h; original bootstrap would skip unfinished reserve case, so explicitly plan remaining active window or targeted same-identity Trainer.run resume."
+  }
+}
