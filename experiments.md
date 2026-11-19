@@ -1,5 +1,31 @@
 # Журнал гипотез и экспериментов
 
+## EXP-032 — проверка 2026-11-19T02:26:49UTC
+
+Controller5740 жив, supervisor8404 monitoring/restarts0. Ledger57:
+screen48, full_priority1, full_new2, full_seed_repeat1, full_reserve5.
+Failed0; два partial_budget — штатные двухчасовые ограничения, не аварии.
+Elapsed46535,219с; текущий rankone_8/seed42/full_reserve, step22903,
+CUDA13,9898шаг/с, loader_wait60,5467%; GPU29%,7939/8192МиБ. Логи ошибок пусты.
+
+Полные источники train, fast2000 NDCG лучших checkpoint:
+memory_cosine/s42 **0,372442293**, step34000, actual45752, epochs0,9292081,
+7200,016с/partial_budget; memory_multi4/s42 0,368782596, step46000,
+actual47070, epochs0,9559762,7200,078с/partial_budget;
+all_scalars_softmax/s42 0,368670767, step42000, actual54000;
+plr_softmax/s43 0,366844828, step48000, actual60000;
+plr_softmax/s42 0,366761800, step30000, actual50000;
+warmup_cosine/s42 0,366599735; position_nuisance/s42 0,366560575;
+experts_4/s42 0,366214825; bilinear_32/s42 0,366019323.
+Остальные перечисленные полные опыты завершились early stopping.
+
+Memory_cosine минус контроль PLR-softmax того же seed: +0,005680492.
+Это адаптивный fast-score, не независимая confirmation/full val; один seed
+и разные фактические бюджеты не подтверждают устойчивость улучшения.
+final.json и итоговый report.json ещё отсутствуют, confirmation не открывалась.
+Пути/статусы/измерения сохранены в reports/EXP-032-interim.json, таблица в MLP.md.
+Обучение не прерывалось и новых опытов при проверке не добавлено.
+
 ## EXP-032 — промежуточные результаты 2026-11-18T16:06:03UTC
 
 Живой controller PID5740, supervisor PID8404 monitoring/restarts0;

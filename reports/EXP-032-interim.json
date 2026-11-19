@@ -1,0 +1,243 @@
+{
+  "experiment": "EXP-032",
+  "observed_at": "2026-11-19T02:26:49.326144+00:00",
+  "scope": "Fast NDCG on 2000 historical selection feeds; not confirmation, full official val or website score",
+  "snapshot": {
+    "decision": null,
+    "summary": {},
+    "stages": {
+      "full_new": {
+        "completed": 1,
+        "failed": 0,
+        "partial": 1
+      },
+      "screen": {
+        "completed": 48,
+        "failed": 0,
+        "partial": 0
+      },
+      "full_seed_repeat": {
+        "completed": 1,
+        "failed": 0,
+        "partial": 0
+      },
+      "full_priority": {
+        "completed": 1,
+        "failed": 0,
+        "partial": 0
+      },
+      "full_reserve": {
+        "completed": 4,
+        "failed": 0,
+        "partial": 1
+      }
+    },
+    "research": {
+      "experiment": "EXP-032",
+      "architecture": "MLP",
+      "device": "cuda",
+      "status": "running",
+      "phase": "full_reserve",
+      "controller_pid": 5740,
+      "controller_identity": 134394832839170060,
+      "directory": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032",
+      "completed": 57,
+      "failed": 0,
+      "hypotheses": 26,
+      "progress": {
+        "name": "rankone_8",
+        "seed": 42,
+        "step": 22903,
+        "total": 590856,
+        "device": "cuda",
+        "loss": 3.893484115600586,
+        "steps_per_second": 13.989768649309003,
+        "loader_wait_pct": 60.546662123165284
+      },
+      "updated_at": "2026-11-19T02:26:49.326144+00:00",
+      "elapsed_seconds": 46535.21900000004,
+      "current": {
+        "name": "rankone_8",
+        "seed": 42,
+        "target": 590856
+      }
+    },
+    "supervisor": {
+      "event": "monitoring",
+      "supervisor_pid": 8404,
+      "updated_at": "2026-11-19T02:26:43.812893+00:00",
+      "restarts": 0,
+      "failures_by_case": {},
+      "worker_pid": 5740,
+      "worker_alive": true
+    },
+    "logs": [],
+    "budget_seconds": 72000,
+    "task": "detached",
+    "explanation": null,
+    "gpu": [
+      "NVIDIA GeForce RTX 3060 Ti, 29, 7939, 8192"
+    ],
+    "queued": null,
+    "alive": true
+  },
+  "report_exists": false,
+  "ranking": {
+    "ranking": [
+      {
+        "name": "memory_cosine",
+        "mean_fast": 0.36541682468465286
+      },
+      {
+        "name": "all_scalars_softmax",
+        "mean_fast": 0.3634760145722937
+      },
+      {
+        "name": "position_nuisance",
+        "mean_fast": 0.36316363355358394
+      },
+      {
+        "name": "experts_4",
+        "mean_fast": 0.36293462146993827
+      },
+      {
+        "name": "warmup_cosine",
+        "mean_fast": 0.3622049536189873
+      },
+      {
+        "name": "bilinear_32",
+        "mean_fast": 0.36211415116743656
+      }
+    ],
+    "criterion": "Mean fast NDCG, frozen before any new confirmation scoring"
+  },
+  "final_files": [],
+  "full_runs": [
+    {
+      "key": "full_priority/plr_softmax-s42/590856",
+      "name": "plr_softmax",
+      "seed": 42,
+      "status": "completed",
+      "fast_ndcg": 0.36676180039004447,
+      "best_step": 30000,
+      "actual_steps": 50000,
+      "epochs": 1.0154835859771871,
+      "train_seconds": 3531.420999999973,
+      "stopped_early": true,
+      "reason": null,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_priority\\runs\\plr_softmax-s42"
+    },
+    {
+      "key": "full_new/memory_cosine-s42/590856",
+      "name": "memory_cosine",
+      "seed": 42,
+      "status": "partial_budget",
+      "fast_ndcg": 0.3724422928510444,
+      "best_step": 34000,
+      "actual_steps": 45752,
+      "epochs": 0.9292081005125653,
+      "train_seconds": 7200.016000000003,
+      "stopped_early": null,
+      "reason": "Per-model safety budget reached; insufficient training is not a negative result",
+      "output": null
+    },
+    {
+      "key": "full_new/all_scalars_softmax-s42/590856",
+      "name": "all_scalars_softmax",
+      "seed": 42,
+      "status": "completed",
+      "fast_ndcg": 0.36867076693034495,
+      "best_step": 42000,
+      "actual_steps": 54000,
+      "epochs": 1.096722272855362,
+      "train_seconds": 3739.469000000041,
+      "stopped_early": true,
+      "reason": null,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_new\\runs\\all_scalars_softmax-s42"
+    },
+    {
+      "key": "full_seed_repeat/plr_softmax-s43/590856",
+      "name": "plr_softmax",
+      "seed": 43,
+      "status": "completed",
+      "fast_ndcg": 0.36684482771535665,
+      "best_step": 48000,
+      "actual_steps": 60000,
+      "epochs": 1.2185803031726246,
+      "train_seconds": 4169,
+      "stopped_early": true,
+      "reason": null,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_seed_repeat\\runs\\plr_softmax-s43"
+    },
+    {
+      "key": "full_reserve/position_nuisance-s42/590856",
+      "name": "position_nuisance",
+      "seed": 42,
+      "status": "completed",
+      "fast_ndcg": 0.3665605754726846,
+      "best_step": 42000,
+      "actual_steps": 54000,
+      "epochs": 1.096722272855362,
+      "train_seconds": 4049.859999999986,
+      "stopped_early": true,
+      "reason": null,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_reserve\\runs\\position_nuisance-s42"
+    },
+    {
+      "key": "full_reserve/experts_4-s42/590856",
+      "name": "experts_4",
+      "seed": 42,
+      "status": "completed",
+      "fast_ndcg": 0.3662148252964259,
+      "best_step": 42000,
+      "actual_steps": 54000,
+      "epochs": 1.096722272855362,
+      "train_seconds": 3794.1560000000172,
+      "stopped_early": true,
+      "reason": null,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_reserve\\runs\\experts_4-s42"
+    },
+    {
+      "key": "full_reserve/warmup_cosine-s42/590856",
+      "name": "warmup_cosine",
+      "seed": 42,
+      "status": "completed",
+      "fast_ndcg": 0.3665997347197453,
+      "best_step": 38000,
+      "actual_steps": 50000,
+      "epochs": 1.0154835859771871,
+      "train_seconds": 3496.4529999999795,
+      "stopped_early": true,
+      "reason": null,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_reserve\\runs\\warmup_cosine-s42"
+    },
+    {
+      "key": "full_reserve/bilinear_32-s42/590856",
+      "name": "bilinear_32",
+      "seed": 42,
+      "status": "completed",
+      "fast_ndcg": 0.3660193226736395,
+      "best_step": 32000,
+      "actual_steps": 50000,
+      "epochs": 1.0154835859771871,
+      "train_seconds": 3502.1720000000205,
+      "stopped_early": true,
+      "reason": null,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_reserve\\runs\\bilinear_32-s42"
+    },
+    {
+      "key": "full_reserve/memory_multi4-s42/590856",
+      "name": "memory_multi4",
+      "seed": 42,
+      "status": "partial_budget",
+      "fast_ndcg": 0.3687825961242933,
+      "best_step": 46000,
+      "actual_steps": 47070,
+      "epochs": 0.955976247838924,
+      "train_seconds": 7200.0779999999795,
+      "stopped_early": null,
+      "reason": "Per-model safety budget reached; insufficient training is not a negative result",
+      "output": null
+    }
+  ]
+}
