@@ -1,5 +1,28 @@
 # Журнал гипотез и экспериментов
 
+## EXP-032 — повтор лидера, 2026-11-19T06:31:23UTC
+
+Status running, controller5740 жив, supervisor8404 monitoring/restarts0,
+failed0, ledger59 (48screen +11полных источников, из них3partial_budget).
+Elapsed61209,375с. Полный memory_cosine/seed43:step35356, CUDA6,3586шаг/с,
+loader_wait5,5636%; GPU18%,3325/8192МиБ. Ошибок worker/supervisor нет.
+
+Отдельное чтение CPU checkpoint без изменения обучения:
+best.pt step30000/best0,37065573342072694/seconds4721,797;
+last.pt step35600/seconds5599,062. Метрика предварительная, опыт ещё running.
+Отличие от PLR-softmax того же seed43: +0,0038109057. У seed42 остаётся
++0,0056804925 (0,3724422929 против0,3667618004). Оба положительны на fast2000;
+независимая confirmation/full val ещё не оценивалась, статистическая
+значимость и итоговое преимущество не заявляются.
+
+Новые записи ledger: rankone_8/s42 completed/early stopping,
+fast0,3660559285,best22000,actual50000,epochs1,015483586,train3544,859с;
+objective_pairwise_mix/s42 partial_budget,fast0,3667769554,best46000,
+actual57687,epochs1,171604032,train7200,109с. Оба не обошли cosine-лидера.
+Report.json/final.json отсутствуют. Продолжение автономной очереди сохранено;
+при проверке ничего на сервере не менялось. Обновлены MLP.md и машинная сводка
+reports/EXP-032-interim.json; текущий best seed43 явно отмечен provisional.
+
 ## EXP-032 — проверка 2026-11-19T02:26:49UTC
 
 Controller5740 жив, supervisor8404 monitoring/restarts0. Ledger57:
