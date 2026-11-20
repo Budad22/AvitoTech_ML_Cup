@@ -1,0 +1,92 @@
+{
+  "experiment": "EXP-TRF-005",
+  "train_shards": [
+    0,
+    170,
+    341,
+    511
+  ],
+  "split": "early",
+  "feeds": 7581,
+  "users": 7236,
+  "candidates": 733339,
+  "variants": {
+    "bce": {
+      "ndcg": 0.33595247106256154,
+      "catboost_abs_diff": 1.3877787807814457e-15,
+      "checkpoint_sha256": "8dfd4d3e5e373722b16137aeb4db2c395f51cb66fceeaed4d90583fb493e46d6",
+      "settings": {
+        "stage": "pilot",
+        "cache_sha256": "cc2207e8658a3a985ee7427a835162d9699f3f4937340ae896364302aa24e921",
+        "code": {
+          "__init__.py": "f11b23b341374aede9d159f02fcdc61b5fa6a20e1ca6eefa664ff021e0524f19",
+          "__main__.py": "e6339431ceafd9d66f5a9e0970edd264b5f98e6233695a6904699c5452084874",
+          "data.py": "c6d909b16d9bfd4fbb358a88945eec8bc95620dd56b53359c2197b1aebbdb74d",
+          "evaluate.py": "a6d5902b6e2b4cc811f86c8a3bae82692f2bd7b8c942b067fc722de8fa07ce11",
+          "losses.py": "655e8cef56e2fae436c477144c6f5933d3d19b76770747a57830c3811653c55a",
+          "model.py": "eb53e6ffc18b32a160c11a9f7776cf0657ca64a21562edfa5b90608cb220b31e",
+          "prepare.py": "394ff990a76b132812203174c46a83c1639057715a16308723fbaa4edd5c3b26",
+          "state.py": "c8dccf336348b044361e97c17e751233135a521a237161c0e9a3aa8c6118e09d",
+          "train.py": "ce6c91f3355629d2813c73c124f928b00269846e00c5d9bc188b6b150512a338"
+        },
+        "seed": 42,
+        "lr": 0.0003,
+        "epochs": 1,
+        "feeds": 24592,
+        "batch": 32,
+        "microbatch": 8,
+        "device": "cuda",
+        "parent_sha256": null,
+        "query_chunk": null,
+        "torch": "2.10.0+cu128"
+      },
+      "status": {
+        "status": "completed",
+        "step": 769,
+        "steps": 769,
+        "elapsed_seconds": 84.06492489995435
+      }
+    },
+    "listwise": {
+      "ndcg": 0.33977563999661503,
+      "catboost_abs_diff": 1.4988010832439613e-15,
+      "checkpoint_sha256": "be99a5c750c3603a66a66ba8b389379f5b8fc1169353f57657a101b13a6a74e4",
+      "settings": {
+        "stage": "pilot",
+        "cache_sha256": "cc2207e8658a3a985ee7427a835162d9699f3f4937340ae896364302aa24e921",
+        "code": {
+          "__init__.py": "f11b23b341374aede9d159f02fcdc61b5fa6a20e1ca6eefa664ff021e0524f19",
+          "__main__.py": "e6339431ceafd9d66f5a9e0970edd264b5f98e6233695a6904699c5452084874",
+          "data.py": "c6d909b16d9bfd4fbb358a88945eec8bc95620dd56b53359c2197b1aebbdb74d",
+          "evaluate.py": "a6d5902b6e2b4cc811f86c8a3bae82692f2bd7b8c942b067fc722de8fa07ce11",
+          "losses.py": "e6756afd2622a07816a925f0339f7b17ed940025422120661123856c75994cea",
+          "model.py": "eb53e6ffc18b32a160c11a9f7776cf0657ca64a21562edfa5b90608cb220b31e",
+          "prepare.py": "394ff990a76b132812203174c46a83c1639057715a16308723fbaa4edd5c3b26",
+          "state.py": "c8dccf336348b044361e97c17e751233135a521a237161c0e9a3aa8c6118e09d",
+          "train.py": "ce6c91f3355629d2813c73c124f928b00269846e00c5d9bc188b6b150512a338"
+        },
+        "seed": 42,
+        "lr": 0.0003,
+        "epochs": 1,
+        "feeds": 24592,
+        "batch": 32,
+        "microbatch": 8,
+        "device": "cuda",
+        "parent_sha256": null,
+        "query_chunk": null,
+        "torch": "2.10.0+cu128"
+      },
+      "status": {
+        "status": "completed",
+        "step": 769,
+        "steps": 769,
+        "elapsed_seconds": 73.7261845000321
+      }
+    }
+  },
+  "delta_listwise_minus_bce": 0.0038231689340535117,
+  "ci95": [
+    0.0017534635099505762,
+    0.005837853530087971
+  ]
+}

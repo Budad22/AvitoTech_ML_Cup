@@ -1,0 +1,7 @@
+{
+  "experiments": "Q:/AVITOCUP/experiments",
+  "jobs": [
+    {"id":"EXP-TRF-005-full-one","task":"AvitoHistoryListwise005FullOne","directory":"EXP-TRF-005-full-one","stages":["train","evaluate"],"progress":{"train":"run/status.json"},"report":"comparison.json"},
+    {"id":"EXP-TRF-003","task":"AvitoHistoryRanker003-budad22","directory":"EXP-TRF-003-budad22-r01","stages":["tests","verify","compact","histories","profile","train-a","train-b","val"],"progress":{"train-a":"runs/full-a/status.json","train-b":"runs/full-b/status.json"},"report":"runs/full-late/report.json"}
+  ]
+}

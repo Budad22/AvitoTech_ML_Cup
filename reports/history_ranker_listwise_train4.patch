@@ -1,0 +1,14 @@
+--- a/history_ranker/losses.py
++++ b/history_ranker/losses.py
+@@ -10,8 +10,9 @@
+ 
+     def forward(self, scores, labels, valid, pos):
+         adjusted = scores + self.bias[pos.masked_fill(~valid, 0)]
+-        loss = F.binary_cross_entropy_with_logits(adjusted, labels, reduction="none")
+-        return loss.masked_fill(~valid, 0).sum(1) / valid.sum(1)
++        log_probs = F.log_softmax(adjusted.masked_fill(~valid, -torch.inf), dim=1)
++        positives = labels.masked_fill(~valid, 0)
++        return -(log_probs.masked_fill(~valid, 0) * positives).sum(1) / positives.sum(1).clamp_min(1)
+ 
+ 
+ def swap_weights(scores, labels, item_id):

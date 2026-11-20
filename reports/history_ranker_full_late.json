@@ -1,0 +1,64 @@
+{
+  "feeds": 6488,
+  "candidates": 619811,
+  "users": 6184,
+  "ndcg": {
+    "a": 0.36646170307385595,
+    "b": 0.36708785728484755,
+    "baseline": 0.35778914441859877
+  },
+  "catboost_abs_diff": {
+    "a": 1.0547118733938987e-15,
+    "b": 7.216449660063518e-16,
+    "baseline": 3.885780586188048e-16
+  },
+  "scope": "late",
+  "cache_sha256": "eef6bcfe4cbb29b7d8f74d016b1e0502af774821e0a9b2c8f90ee1c609271ae1",
+  "checkpoints": {
+    "a": "0086467680cde1e562527dbd3aab5f527d9fbcb7ca878e1e1b8e028138a04fcf",
+    "b": "8c482fcc55581dc0d646afffe0c6dd36ecd8a24d9516752d68cbf3c8b1f29a4d",
+    "baseline": "e64954d8704843d7d490c26bd1f0c7d8437e76fed48405b0589f1742e4fdfe11"
+  },
+  "code": {
+    "__init__.py": "f11b23b341374aede9d159f02fcdc61b5fa6a20e1ca6eefa664ff021e0524f19",
+    "__main__.py": "e6339431ceafd9d66f5a9e0970edd264b5f98e6233695a6904699c5452084874",
+    "data.py": "c6d909b16d9bfd4fbb358a88945eec8bc95620dd56b53359c2197b1aebbdb74d",
+    "evaluate.py": "a6d5902b6e2b4cc811f86c8a3bae82692f2bd7b8c942b067fc722de8fa07ce11",
+    "losses.py": "655e8cef56e2fae436c477144c6f5933d3d19b76770747a57830c3811653c55a",
+    "model.py": "eb53e6ffc18b32a160c11a9f7776cf0657ca64a21562edfa5b90608cb220b31e",
+    "prepare.py": "394ff990a76b132812203174c46a83c1639057715a16308723fbaa4edd5c3b26",
+    "state.py": "c8dccf336348b044361e97c17e751233135a521a237161c0e9a3aa8c6118e09d",
+    "train.py": "ce6c91f3355629d2813c73c124f928b00269846e00c5d9bc188b6b150512a338"
+  },
+  "device": "cuda",
+  "microbatch": 8,
+  "scores_sha256": "7d74586e3260a1fb6f3192c42c681ae120c97116b53c729ef0d07ae4d1b2b2ad",
+  "feed_ids_sha256": "caa4fc7e89d2e7caa66ec446a7ec6774c1f671dba32106835efbac28c133abf0",
+  "paired": {
+    "b-baseline": {
+      "delta": 0.009298712866248775,
+      "ci95": [
+        0.00523819429170219,
+        0.0136021624486678
+      ],
+      "users": 6184
+    },
+    "a-baseline": {
+      "delta": 0.008672558655257146,
+      "ci95": [
+        0.004667271907620833,
+        0.01296373354009099
+      ],
+      "users": 6184
+    },
+    "b-a": {
+      "delta": 0.0006261542109916279,
+      "ci95": [
+        -0.0003137888655869949,
+        0.0015780496869888946
+      ],
+      "users": 6184
+    }
+  },
+  "historical_baseline": true
+}
