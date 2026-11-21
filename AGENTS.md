@@ -15,7 +15,7 @@
 
 - `recsys_data/` — данные; `mlp/` — модель/обучение; `training_logs/` — события/панель; `scripts/` — управление; `tests/` — синтетические unittest.
 - Проверка: `python -m unittest discover -s tests -v`. Соблюдать четыре пробела, `snake_case`, явные контракты и существующий Python-стиль. Данные не скачивать для тестов.
-- Мониторинг сервера: `python scripts/remote.py status --host 26.27.122.189 --user bl1tz2200`; `--once` даёт один снимок, `--json` — машинный вывод. Ctrl+C останавливает только просмотр.
+- Текущий сервер: `server.taild49777.ts.net`. Мониторинг: `http://server.taild49777.ts.net:8787/`; компактный JSON — `GET /api/current`, общий — `GET /api/status`. API работает только на чтение; процессы запускает Планировщик Windows. SSH fallback: `python scripts/remote.py status --host server.taild49777.ts.net --user bl1tz2200 --once`. Ctrl+C останавливает только просмотр.
 - Локальная очередь: `python scripts/local_ablation.py status --directory ../local-experiments/EXP-016-local-r01`. Завершение подтверждает `completed` вместе с итоговым `report.json`, а не окончание отдельной эпохи.
 - GPU-очередь: `python scripts/remote.py suite-status --host 26.27.122.189 --user bl1tz2200`. Код: `mlp_trials/`, управление: `scripts/gpu_suite.py`, протокол и восстановление: `docs/MLP_SUITE.md`. Не изменять замороженный снимок действующей очереди.
 

@@ -1,0 +1,71 @@
+{
+  "verified_at": "2026-11-21T08:30:59.894866+00:00",
+  "state": {
+    "experiment": "EXP-032",
+    "architecture": "MLP",
+    "device": "cuda",
+    "status": "running",
+    "phase": "full_reserve",
+    "controller_pid": 14668,
+    "controller_identity": 134397232953535185,
+    "directory": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032",
+    "completed": 60,
+    "failed": 0,
+    "hypotheses": 26,
+    "progress": {
+      "name": "all_scalars_softmax",
+      "seed": 43,
+      "step": 79546,
+      "total": 590856,
+      "device": "cuda",
+      "loss": 3.5816268920898438,
+      "steps_per_second": 13.837424093266117,
+      "loader_wait_pct": 62.36116047582273
+    },
+    "updated_at": "2026-11-21T08:30:50.652055+00:00",
+    "elapsed_seconds": 68507.60999999999,
+    "current": {
+      "name": "all_scalars_softmax",
+      "seed": 43,
+      "target": 590856
+    }
+  },
+  "supervisor": {
+    "event": "monitoring",
+    "supervisor_pid": 15064,
+    "updated_at": "2026-11-21T08:30:45.366963+00:00",
+    "restarts": 0,
+    "failures_by_case": {},
+    "worker_pid": 14668,
+    "worker_alive": true
+  },
+  "gpu_tests_tail": [
+    "",
+    "----------------------------------------------------------------------",
+    "Ran 97 tests in 48.583s",
+    "",
+    "OK"
+  ],
+  "worker_error_tail": [],
+  "api_monitor_error_tail": [],
+  "deployment": {
+    "deployed_at": "2026-11-21T08:26:17.906440+00:00",
+    "code": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\code-resume-api-004",
+    "archive_sha256": "3b1051b82ebff04ba8b0da3fc72341de09ce81d06b10677b1e10d51ebdd76905",
+    "reason": "Resume saved pending case before minimum gate; publish via existing read-only API",
+    "minimum_hours": 18,
+    "maximum_hours": 22
+  },
+  "native_api_progress": {
+    "step": 79546,
+    "steps": 590856,
+    "elapsed_seconds": null,
+    "model": "all_scalars_softmax",
+    "seed": 43,
+    "updated_at": "2026-11-21T08:30:50.652055+00:00",
+    "queue_elapsed_seconds": 68507.60999999999,
+    "loss": 3.5816268920898438,
+    "steps_per_second": 13.837424093266117,
+    "loader_wait_pct": 62.36116047582273
+  }
+}

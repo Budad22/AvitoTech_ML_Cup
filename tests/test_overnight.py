@@ -24,6 +24,29 @@ def inputs(device='cpu'):
 
 
 class OvernightContracts(unittest.TestCase):
+    def test_pending_checkpoint_resumes_after_minimum_window_and_is_not_duplicated(self):
+        from pathlib import Path
+        from unittest.mock import Mock
+        import tempfile
+        from mlp_next.overnight import Overnight
+        with tempfile.TemporaryDirectory() as folder:
+            queue = object.__new__(Overnight)
+            queue.root = Path(folder)
+            queue.state = dict(elapsed_seconds=19 * 3600)
+            queue.resume_case = dict(phase='full_reserve', current=dict(
+                name='all_scalars_softmax', seed=43, target=590856))
+            checkpoint = queue.root / 'full_reserve/runs/all_scalars_softmax-s43/last.pt'
+            checkpoint.parent.mkdir(parents=True)
+            checkpoint.touch()
+            queue.ledger = {}
+            queue.case = Mock()
+            queue.resume_pending_case()
+            queue.case.assert_called_once_with('all_scalars_softmax', 43, 590856, 'full_reserve', full=True)
+            queue.case.reset_mock()
+            queue.ledger['full_reserve/all_scalars_softmax-s43/590856'] = {'status': 'completed'}
+            queue.resume_pending_case()
+            queue.case.assert_not_called()
+
     def test_queue_explicitly_constructs_cuda_trainer(self):
         from unittest.mock import patch
         from pathlib import Path

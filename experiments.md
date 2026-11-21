@@ -1,5 +1,39 @@
 # Журнал гипотез и экспериментов
 
+## EXP-032 — разрешённое продолжение и API, 21 ноября 2026
+
+Фактический resume подтверждён2026-11-21T08:30:50UTC: all_scalars_softmax/s43,
+CUDA step79546 после сохранённого78295, loss3,581626892,13,8374шаг/с,
+loader_wait62,3612%. Controller14668, supervisor15064/monitoring/restarts0,
+completed60/failed0. Все97server unittest OK за48,583с, без skipped.
+Worker/monitor stderr пуст; API current показывает EXP-032-MLP/running
+с обновляющимися шагами. Снимок reports/EXP-032-api-resume.json.
+
+Владелец разрешил resume и отменил новый датасет. Проверены прежняя SSH identity
+сервера по новому Tailscale DNS, paused state и SHA256 last.pt
+`06030b10384b1385a5b91aba1c4716d8136c51e2c305aa7ed00f0d8bf04c6834`.
+Перед запуском GPU0%,413/8192МиБ, активных Python CUDA-процессов нет.
+
+Обнаружена и устранена особенность resume: при elapsed>=18ч reserve-цикл
+пропускал незавершённый checkpoint. Overnight теперь сохраняет прошлые
+phase/current до обновления state и выполняет незавершённый case с last.pt
+перед временным gate. Идентичные записи ledger не повторяются.
+Min18/max22 вместо18/20; расширение только для завершения сохранённого опыта
+и итоговой оценки, 2ч per-model/optimizer/RNG/identity сохранены.
+
+API8787 — read-only, не endpoint запуска. Добавлен файловый адаптер
+scripts/research_monitor.py и отдельная S4U-задача AvitoMLPResearch032Resume.
+Общий config jobs.json дополнен EXP-032-MLP; существующие3TRF-задания
+не менялись, backup jobs.before-mlp-20261121T082731Z.json. API не перезапускался.
+Регистрация principal через USERDOMAIN/USERNAME не разрешила имя аккаунта;
+до запуска исправлена на SID текущей Windows identity. Ошибка не затронула
+checkpoint/обучение. Планировщик подтвердил State4 после регистрации по SID.
+
+Локально97unittest OK за167,003с (4CUDA skipped). Изолированный code-resume-api-004,
+SHA256 архива3b1051b82ebff04ba8b0da3fc72341de09ce81d06b10677b1e10d51ebdd76905.
+Исходный снимок, paused metadata и журналы сохранены. Новых гипотез, подготовки
+данных, test/submission не запускалось; сервер не перезагружался.
+
 ## EXP-032 — пауза владельца для передачи GPU, 19 ноября 2026
 
 По прямой просьбе владельца создана штатная checkpoint-пауза текущего

@@ -55,6 +55,8 @@ class Overnight:
         self.configs = {**configurations(), **extended_configurations()}
         self.new_names = list(extended_configurations())
         self.state = read(self.root / 'status.json', {})
+        self.resume_case = dict(phase=self.state.get('phase'),
+                                current=dict(self.state.get('current') or {}))
         self.elapsed = self.state.get('elapsed_seconds', 0)
         self.started = time.monotonic()
         self.state.update(experiment='EXP-032', architecture='MLP', device='cuda', status='waiting',
@@ -63,6 +65,8 @@ class Overnight:
                           completed=self.state.get('completed', 0), failed=self.state.get('failed', 0),
                           hypotheses=len(self.new_names))
         self.state.pop('error', None)
+        self.state.pop('pause_reason', None)
+        self.state.pop('paused_at', None)
         self.ledger = read(self.root / 'ledger.json', {})
         self.logger = RunLogger(self.root, 'EXP-032', 'MLP', echo=False)
         self.medium_cache = self.medium_view = None
@@ -205,10 +209,23 @@ class Overnight:
         feeds = read(self.args.data / 'manifest.json')['splits']['train']['feeds']
         return self.case(name, seed, 12 * math.ceil(feeds / 64), stage, full=True)
 
+    def resume_pending_case(self):
+        """Finish a saved case before checking the queue's minimum-time gate."""
+        phase, current = self.resume_case['phase'], self.resume_case['current']
+        if not current or phase not in ('screen', 'full_priority', 'full_new',
+                'full_reserve', 'full_seed_repeat', 'full_extra_seed', 'full_EXP031_winner'):
+            return
+        name, seed, target = current['name'], current['seed'], current['target']
+        key = f'{phase}/{name}-s{seed}/{target}'
+        checkpoint = self.root / phase / 'runs' / f'{name}-s{seed}' / 'last.pt'
+        if key not in self.ledger and checkpoint.exists():
+            self.case(name, seed, target, phase, full=phase != 'screen')
+
     def run(self):
         torch.set_num_threads(4)
         self.wait()
         self.prepare()
+        self.resume_pending_case()
         # Guaranteed high-priority larger-data trial: EXP-030's winner, new batch64/prefetch protocol.
         self.full('plr_softmax')
         records = [self.case(n, 42, 800, 'screen') for n in self.new_names]
