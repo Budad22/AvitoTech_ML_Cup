@@ -18,6 +18,30 @@ from mlp_trials.state import write_json
 TRAIN_STAGE = 'MLP: обучение (предел12эпох, лимит2ч)'
 
 
+def completed_results(root):
+    """Keep the dashboard compact; retain every run in the report details."""
+    names = {'all_scalars_softmax': 'Все числовые', 'memory_cosine': 'Внимание к истории',
+             'plr_softmax': 'Бейзлайн', 'experts_4': 'Четыре эксперта',
+             'memory_multi4': 'Многоголовое внимание', 'position_nuisance': 'Поправка на позицию'}
+    best, details = {}, []
+    for path in sorted(Path(root).glob('*/runs/*/final.json')):
+        if not path.parent.parent.parent.name.startswith('full_'):
+            continue
+        result = read(path)
+        if result.get('selection_ndcg') is not None:
+            details.append(dict(path=str(path), **result))
+            name = result['name']
+            if name not in best or result['selection_ndcg'] > best[name]['selection_ndcg']:
+                best[name] = result
+    selected = sorted(best, key=lambda n: (-best[n]['selection_ndcg'], n))[:2]
+    if 'plr_softmax' in best and 'plr_softmax' not in selected:
+        selected.append('plr_softmax')
+    return dict(ndcg={names.get(n, n.replace('_', ' ')) + ' · selection': best[n]['selection_ndcg']
+                      for n in selected}, details=details, selected={n: best[n] for n in selected},
+                scope='Historical selection; not official full val or website score',
+                aggregation='Best selection checkpoint/seed per architecture; top two plus baseline')
+
+
 def publish(root, *, running):
     """Map native research state to the monitor's existing file contract."""
     root = Path(root)
@@ -30,13 +54,7 @@ def publish(root, *, running):
     current = state.get('current') or {}
     if status == 'completed':
         stage = 'completed'
-        scores = {}
-        for path in sorted(root.glob('*/runs/*/final.json')):
-            result = read(path)
-            if result.get('selection_ndcg') is not None:
-                scores[f"selection · {path.parent.parent.parent.name} · {result['name']} · seed{result['seed']}"] = result['selection_ndcg']
-        write_json(output / 'comparison.json', dict(ndcg=scores,
-                   scope='Historical selection; not official full val or website score'))
+        write_json(output / 'comparison.json', completed_results(root))
     elif status == 'paused':
         stage = 'paused'
     elif status == 'error' or not running:
