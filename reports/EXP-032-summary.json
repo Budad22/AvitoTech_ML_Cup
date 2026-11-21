@@ -1,0 +1,528 @@
+{
+  "experiment": "EXP-032",
+  "status": "completed",
+  "new_hypotheses": 26,
+  "ranking": [
+    {
+      "name": "memory_cosine",
+      "mean_fast": 0.36541682468465286
+    },
+    {
+      "name": "all_scalars_softmax",
+      "mean_fast": 0.3634760145722937
+    },
+    {
+      "name": "position_nuisance",
+      "mean_fast": 0.36316363355358394
+    },
+    {
+      "name": "experts_4",
+      "mean_fast": 0.36293462146993827
+    },
+    {
+      "name": "warmup_cosine",
+      "mean_fast": 0.3622049536189873
+    },
+    {
+      "name": "bilinear_32",
+      "mean_fast": 0.36211415116743656
+    }
+  ],
+  "completed_stages": 61,
+  "elapsed_seconds": 69439.532,
+  "minimum_hours": 18.0,
+  "note": "All scores are historical selection unless explicitly named otherwise; no test/submission.",
+  "full_runs": [
+    {
+      "name": "plr_softmax",
+      "seed": 42,
+      "status": "completed",
+      "steps": 50000,
+      "fast_ndcg": 0.36676180039004447,
+      "stopped_early": true,
+      "device": "cuda",
+      "seconds": 3531.4369999999763,
+      "parameters": 328433,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_priority\\runs\\plr_softmax-s42",
+      "best_step": 30000,
+      "actual_steps": 50000,
+      "train_seconds": 3531.420999999973,
+      "epochs": 1.0154835859771871,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_priority/plr_softmax-s42/590856",
+      "final": {
+        "name": "plr_softmax",
+        "seed": 42,
+        "best_step": 30000,
+        "selection_ndcg": 0.3683189765620272,
+        "confirmation_ndcg": 0.36864563403464784,
+        "checkpoint_sha256": "9df76a474c2dbb4f470ac1c9be57c4a076b023f627b2729dff9bbc043e0626f8"
+      }
+    },
+    {
+      "name": "memory_cosine",
+      "seed": 42,
+      "status": "partial_budget",
+      "reason": "Per-model safety budget reached; insufficient training is not a negative result",
+      "fast_ndcg": 0.3724422928510444,
+      "best_step": 34000,
+      "actual_steps": 45752,
+      "train_seconds": 7200.016000000003,
+      "epochs": 0.9292081005125653,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_new/memory_cosine-s42/590856",
+      "final": {
+        "name": "memory_cosine",
+        "seed": 42,
+        "best_step": 34000,
+        "selection_ndcg": 0.3726386596151046,
+        "confirmation_ndcg": 0.3726798525591072,
+        "checkpoint_sha256": "a22b57b92ac51a324a6c6f598e8d414674dcadf5cd1907edce5500b8794f631c"
+      }
+    },
+    {
+      "name": "all_scalars_softmax",
+      "seed": 42,
+      "status": "completed",
+      "steps": 54000,
+      "fast_ndcg": 0.36867076693034495,
+      "stopped_early": true,
+      "device": "cuda",
+      "seconds": 3739.4850000000442,
+      "parameters": 402961,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_new\\runs\\all_scalars_softmax-s42",
+      "best_step": 42000,
+      "actual_steps": 54000,
+      "train_seconds": 3739.469000000041,
+      "epochs": 1.096722272855362,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_new/all_scalars_softmax-s42/590856",
+      "final": {
+        "name": "all_scalars_softmax",
+        "seed": 42,
+        "best_step": 42000,
+        "selection_ndcg": 0.3729452286701557,
+        "confirmation_ndcg": 0.37384190619056923,
+        "checkpoint_sha256": "a4f152e25221ac99ada4056c5cdda0131f05fad4b6a0ebc7d6d96a9f39ba51ca"
+      }
+    },
+    {
+      "name": "plr_softmax",
+      "seed": 43,
+      "status": "completed",
+      "steps": 60000,
+      "fast_ndcg": 0.36684482771535665,
+      "stopped_early": true,
+      "device": "cuda",
+      "seconds": 4169.016000000003,
+      "parameters": 328433,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_seed_repeat\\runs\\plr_softmax-s43",
+      "best_step": 48000,
+      "actual_steps": 60000,
+      "train_seconds": 4169.0,
+      "epochs": 1.2185803031726246,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_seed_repeat/plr_softmax-s43/590856",
+      "final": {
+        "name": "plr_softmax",
+        "seed": 43,
+        "best_step": 48000,
+        "selection_ndcg": 0.3702546583645081,
+        "confirmation_ndcg": 0.37096995743082894,
+        "checkpoint_sha256": "5336e6d07552154e54a186d085ccb0786c08c3e044a01b44a400bc940c8a400d"
+      }
+    },
+    {
+      "name": "position_nuisance",
+      "seed": 42,
+      "status": "completed",
+      "steps": 54000,
+      "fast_ndcg": 0.3665605754726846,
+      "stopped_early": true,
+      "device": "cuda",
+      "seconds": 4049.875,
+      "parameters": 328439,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_reserve\\runs\\position_nuisance-s42",
+      "best_step": 42000,
+      "actual_steps": 54000,
+      "train_seconds": 4049.859999999986,
+      "epochs": 1.096722272855362,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_reserve/position_nuisance-s42/590856",
+      "final": {
+        "name": "position_nuisance",
+        "seed": 42,
+        "best_step": 42000,
+        "selection_ndcg": 0.37064385984421155,
+        "confirmation_ndcg": 0.37150043302892455,
+        "checkpoint_sha256": "cd54c9af4de476af7ced5247efcb6d86a70076619f28e669a3c8148af8600b18"
+      }
+    },
+    {
+      "name": "experts_4",
+      "seed": 42,
+      "status": "completed",
+      "steps": 54000,
+      "fast_ndcg": 0.3662148252964259,
+      "stopped_early": true,
+      "device": "cuda",
+      "seconds": 3794.1869999999763,
+      "parameters": 876349,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_reserve\\runs\\experts_4-s42",
+      "best_step": 42000,
+      "actual_steps": 54000,
+      "train_seconds": 3794.1560000000172,
+      "epochs": 1.096722272855362,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_reserve/experts_4-s42/590856",
+      "final": {
+        "name": "experts_4",
+        "seed": 42,
+        "best_step": 42000,
+        "selection_ndcg": 0.37079026349247346,
+        "confirmation_ndcg": 0.37175007851157293,
+        "checkpoint_sha256": "81f8acbddb3480d81008c97a5b8717af36e3986ac08dedf8dedc6157023807c6"
+      }
+    },
+    {
+      "name": "warmup_cosine",
+      "seed": 42,
+      "status": "completed",
+      "steps": 50000,
+      "fast_ndcg": 0.3665997347197453,
+      "stopped_early": true,
+      "device": "cuda",
+      "seconds": 3496.469000000041,
+      "parameters": 328433,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_reserve\\runs\\warmup_cosine-s42",
+      "best_step": 38000,
+      "actual_steps": 50000,
+      "train_seconds": 3496.4529999999795,
+      "epochs": 1.0154835859771871,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_reserve/warmup_cosine-s42/590856",
+      "final": {
+        "name": "warmup_cosine",
+        "seed": 42,
+        "best_step": 38000,
+        "selection_ndcg": 0.368444561260745,
+        "confirmation_ndcg": 0.36883156074490686,
+        "checkpoint_sha256": "6f7910cfe8715ea38203e5118078bff744808fd7fb3d2d7e89e08d1f42fb9910"
+      }
+    },
+    {
+      "name": "bilinear_32",
+      "seed": 42,
+      "status": "completed",
+      "steps": 50000,
+      "fast_ndcg": 0.3660193226736395,
+      "stopped_early": true,
+      "device": "cuda",
+      "seconds": 3502.1879999999655,
+      "parameters": 336658,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_reserve\\runs\\bilinear_32-s42",
+      "best_step": 32000,
+      "actual_steps": 50000,
+      "train_seconds": 3502.1720000000205,
+      "epochs": 1.0154835859771871,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_reserve/bilinear_32-s42/590856",
+      "final": {
+        "name": "bilinear_32",
+        "seed": 42,
+        "best_step": 32000,
+        "selection_ndcg": 0.36804905099394486,
+        "confirmation_ndcg": 0.36847483834873934,
+        "checkpoint_sha256": "07c741a99a4754049e03191fc5214183566c14393984a09952f221bd33495638"
+      }
+    },
+    {
+      "name": "memory_multi4",
+      "seed": 42,
+      "status": "partial_budget",
+      "reason": "Per-model safety budget reached; insufficient training is not a negative result",
+      "fast_ndcg": 0.3687825961242933,
+      "best_step": 46000,
+      "actual_steps": 47070,
+      "train_seconds": 7200.0779999999795,
+      "epochs": 0.955976247838924,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_reserve/memory_multi4-s42/590856",
+      "final": {
+        "name": "memory_multi4",
+        "seed": 42,
+        "best_step": 46000,
+        "selection_ndcg": 0.36974748643687416,
+        "confirmation_ndcg": 0.3699498968234025,
+        "checkpoint_sha256": "8f53c9109171d117363b38f292b5ea32d07e77db7ae29e149e4ca931b14a7cd6"
+      }
+    },
+    {
+      "name": "rankone_8",
+      "seed": 42,
+      "status": "completed",
+      "steps": 50000,
+      "fast_ndcg": 0.3660559285061055,
+      "stopped_early": true,
+      "device": "cuda",
+      "seconds": 3544.875,
+      "parameters": 475442,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_reserve\\runs\\rankone_8-s42",
+      "best_step": 22000,
+      "actual_steps": 50000,
+      "train_seconds": 3544.859000000055,
+      "epochs": 1.0154835859771871,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_reserve/rankone_8-s42/590856",
+      "final": {
+        "name": "rankone_8",
+        "seed": 42,
+        "best_step": 22000,
+        "selection_ndcg": 0.36790015889794997,
+        "confirmation_ndcg": 0.3682870333246007,
+        "checkpoint_sha256": "bad66b49472d1170c52fc6a4d23c85f1cb1a83930ab41216034d9a9f503a2a3f"
+      }
+    },
+    {
+      "name": "objective_pairwise_mix",
+      "seed": 42,
+      "status": "partial_budget",
+      "reason": "Per-model safety budget reached; insufficient training is not a negative result",
+      "fast_ndcg": 0.36677695540722427,
+      "best_step": 46000,
+      "actual_steps": 57687,
+      "train_seconds": 7200.109000000055,
+      "epochs": 1.1716040324853199,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_reserve/objective_pairwise_mix-s42/590856",
+      "final": {
+        "name": "objective_pairwise_mix",
+        "seed": 42,
+        "best_step": 46000,
+        "selection_ndcg": 0.3690538234670636,
+        "confirmation_ndcg": 0.3695314546942169,
+        "checkpoint_sha256": "4102469c626b484f32c3271fa8ee41de8fae7cfae3f2b226af6de4c2b9d7961b"
+      }
+    },
+    {
+      "name": "memory_cosine",
+      "seed": 43,
+      "status": "partial_budget",
+      "reason": "Per-model safety budget reached; insufficient training is not a negative result",
+      "fast_ndcg": 0.37065573342072694,
+      "best_step": 30000,
+      "actual_steps": 45759,
+      "train_seconds": 7200.078000000096,
+      "epochs": 0.9293502682146021,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_reserve/memory_cosine-s43/590856",
+      "final": {
+        "name": "memory_cosine",
+        "seed": 43,
+        "best_step": 30000,
+        "selection_ndcg": 0.37188156590479954,
+        "confirmation_ndcg": 0.3721387155763063,
+        "checkpoint_sha256": "aac5504854df13b52c1853a1661eec0675dc83acffb28bde6aa50ae3057e4d16"
+      }
+    },
+    {
+      "name": "all_scalars_softmax",
+      "seed": 43,
+      "status": "completed",
+      "steps": 90000,
+      "fast_ndcg": 0.373553152686838,
+      "stopped_early": true,
+      "device": "cuda",
+      "seconds": 6340.813000000082,
+      "parameters": 402961,
+      "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_reserve\\runs\\all_scalars_softmax-s43",
+      "best_step": 78000,
+      "actual_steps": 90000,
+      "train_seconds": 6340.798000000068,
+      "epochs": 1.8278704547589368,
+      "full_train": true,
+      "train_feeds": 3151208,
+      "batch_size": 64,
+      "key": "full_reserve/all_scalars_softmax-s43/590856",
+      "final": {
+        "name": "all_scalars_softmax",
+        "seed": 43,
+        "best_step": 78000,
+        "selection_ndcg": 0.3739454927570339,
+        "confirmation_ndcg": 0.37402779610719045,
+        "checkpoint_sha256": "bc1531be90b5d73b966ff176089ece7d5c719fb984072c2ff3202006eb1f7bbf"
+      }
+    }
+  ],
+  "state": {
+    "experiment": "EXP-032",
+    "architecture": "MLP",
+    "device": "cuda",
+    "status": "completed",
+    "phase": "completed",
+    "controller_pid": 14668,
+    "controller_identity": 134397232953535185,
+    "directory": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032",
+    "completed": 61,
+    "failed": 0,
+    "hypotheses": 26,
+    "progress": {},
+    "updated_at": "2026-11-21T08:46:30.083561+00:00",
+    "elapsed_seconds": 69447.032,
+    "current": null
+  },
+  "supervisor": {
+    "event": "finished",
+    "supervisor_pid": 15064,
+    "updated_at": "2026-11-21T08:46:45.899686+00:00",
+    "restarts": 0,
+    "failures_by_case": {},
+    "worker_status": "completed"
+  },
+  "worker_errors": "",
+  "monitor_errors": "",
+  "metric_scope": {
+    "selection_feeds": 11534,
+    "confirmation_feeds": 9534,
+    "fast_feeds": 2000,
+    "official_full_val_evaluated": false,
+    "website_evaluated": false
+  },
+  "architecture_means": [
+    {
+      "name": "all_scalars_softmax",
+      "seeds": [
+        42,
+        43
+      ],
+      "selection_ndcg": 0.3734453607135948,
+      "confirmation_ndcg": 0.3739348511488798
+    },
+    {
+      "name": "memory_cosine",
+      "seeds": [
+        42,
+        43
+      ],
+      "selection_ndcg": 0.3722601127599521,
+      "confirmation_ndcg": 0.37240928406770674
+    },
+    {
+      "name": "experts_4",
+      "seeds": [
+        42
+      ],
+      "selection_ndcg": 0.37079026349247346,
+      "confirmation_ndcg": 0.37175007851157293
+    },
+    {
+      "name": "position_nuisance",
+      "seeds": [
+        42
+      ],
+      "selection_ndcg": 0.37064385984421155,
+      "confirmation_ndcg": 0.37150043302892455
+    },
+    {
+      "name": "memory_multi4",
+      "seeds": [
+        42
+      ],
+      "selection_ndcg": 0.36974748643687416,
+      "confirmation_ndcg": 0.3699498968234025
+    },
+    {
+      "name": "plr_softmax",
+      "seeds": [
+        42,
+        43
+      ],
+      "selection_ndcg": 0.36928681746326764,
+      "confirmation_ndcg": 0.36980779573273836
+    },
+    {
+      "name": "objective_pairwise_mix",
+      "seeds": [
+        42
+      ],
+      "selection_ndcg": 0.3690538234670636,
+      "confirmation_ndcg": 0.3695314546942169
+    },
+    {
+      "name": "warmup_cosine",
+      "seeds": [
+        42
+      ],
+      "selection_ndcg": 0.368444561260745,
+      "confirmation_ndcg": 0.36883156074490686
+    },
+    {
+      "name": "bilinear_32",
+      "seeds": [
+        42
+      ],
+      "selection_ndcg": 0.36804905099394486,
+      "confirmation_ndcg": 0.36847483834873934
+    },
+    {
+      "name": "rankone_8",
+      "seeds": [
+        42
+      ],
+      "selection_ndcg": 0.36790015889794997,
+      "confirmation_ndcg": 0.3682870333246007
+    }
+  ],
+  "best_checkpoint": {
+    "name": "all_scalars_softmax",
+    "seed": 43,
+    "status": "completed",
+    "steps": 90000,
+    "fast_ndcg": 0.373553152686838,
+    "stopped_early": true,
+    "device": "cuda",
+    "seconds": 6340.813000000082,
+    "parameters": 402961,
+    "output": "Q:\\AVITOCUP\\experiments\\MLP-OVERNIGHT-GPU-032\\full_reserve\\runs\\all_scalars_softmax-s43",
+    "best_step": 78000,
+    "actual_steps": 90000,
+    "train_seconds": 6340.798000000068,
+    "epochs": 1.8278704547589368,
+    "full_train": true,
+    "train_feeds": 3151208,
+    "batch_size": 64,
+    "key": "full_reserve/all_scalars_softmax-s43/590856",
+    "final": {
+      "name": "all_scalars_softmax",
+      "seed": 43,
+      "best_step": 78000,
+      "selection_ndcg": 0.3739454927570339,
+      "confirmation_ndcg": 0.37402779610719045,
+      "checkpoint_sha256": "bc1531be90b5d73b966ff176089ece7d5c719fb984072c2ff3202006eb1f7bbf"
+    }
+  }
+}

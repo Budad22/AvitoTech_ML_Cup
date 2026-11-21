@@ -1,5 +1,44 @@
 # Журнал гипотез и экспериментов
 
+## EXP-032 — завершение, компактный монитор и test-экспорт, 21 ноября 2026
+
+Завершение2026-11-21T08:46:30UTC, state completed/report.json присутствует,
+ledger61=48screen+13full, failed0, supervisor finished/restarts0. Реальное
+суммарное время state69447,032с; report перед последним event69439,532с.
+Worker/monitor stderr пуст. API current пуст, MLP-job completed.
+
+Лидер all_scalars_softmax/s43: full-source train3151208лент, actual90000шагов,
+epochs1,827870455, train6340,798с, early stopping; best78000шагов.
+Fast2000=0,3735531527, selection11534=0,3739454928,
+confirmation9534=0,3740277961. Checkpoint SHA256
+bc1531be90b5d73b966ff176089ece7d5c719fb984072c2ff3202006eb1f7bbf.
+Второй seed42 selection0,3729452287/confirmation0,3738419062.
+Cosine seed42/43 selection0,3726386596/0,3718815659;
+matched PLR seed42/43 selection0,3683189766/0,3702546584.
+Официальная полная val и сайт не оценены; не сравнивать эти числа напрямую
+с полным val других архитектур. Все13полных результатов: reports/EXP-032-summary.json.
+
+По замечанию владельца API-вывод сокращён с25технических строк до3:
+два лидера полного train и baseline, лучшие selection-seed, короткие подписи.
+Экспорт деталей сохранён, small screen исключён из компактного сравнения.
+Существующий dashboard/API и3TRF-job не менялись; применена новая публикация
+через изолированный export-code-001/scripts/research_monitor.py без переобучения.
+
+По прямой просьбе подготовлен manual-upload Parquet, не отправка на сайт.
+Exporter strict-load checkpoint, проверяет cache/data fingerprints, сохраняет
+raw float32 logits на всём test, затем проверяет шаблон до атомарного publish.
+2904806строк/28595лент; SHA256
+221f3facc742cd831dd8f277853b51d40e67ae3ff7e2cc173c06fcd2f11e4370.
+Время инференса/валидации56,813с на CUDA. Код83083c0, локальная регрессия
+101unittest OK за57,506с (4CUDA skipped);3отдельных exporter-теста OK.
+Подготовлены submission.parquet/submission.json в отдельном immutable output;
+веса и датасеты в Git не добавлялись, agent_upload_attempts0.
+Архив скачан в artifacts/submissions/EXP-032-all-scalars-s43.zip и распакован
+рядом. Повторная локальная проверка исходного sample_submission подтвердила
+типы, конечность, уникальность и точное покрытие; SHA256 совпал с сервером.
+Происхождение и оба аудита: reports/EXP-032-submission.json. Паркет32,7МБ
+готов для ручной отправки владельцем; автоматической отправки не было.
+
 ## EXP-032 — разрешённое продолжение и API, 21 ноября 2026
 
 Фактический resume подтверждён2026-11-21T08:30:50UTC: all_scalars_softmax/s43,
