@@ -165,7 +165,7 @@ class Pilot:
                 if result is None:
                     return
                 results[name] = result
-        labels = dict(position='С поправкой на позицию', control='Контроль')
+        labels = dict(position='NDCG · поправка на позицию', control='NDCG · контроль')
         scores = {labels[name]: row['history'][-1]['ndcg'] for name, row in results.items()}
         write_json(self.report, dict(experiment='EXP-HSTU-001', status='completed', ndcg=scores,
                    validation_feeds=len(self.selection), train_feeds=self.train.F,
@@ -185,7 +185,7 @@ class Pilot:
         from .nn_train import permutation_error
         error = permutation_error(model, self.device)
         report = dict(experiment=self.root.parent.name, status='completed',
-                      ndcg={'HSTU-lite · selection': state['val']}, best_step=state['step'],
+                      ndcg={'NDCG · selection': state['val']}, best_step=state['step'],
                       validation_feeds=len(self.selection), train_feeds=len(self.feeds),
                       steps=self.args.steps, seed=self.args.seed, batch_size=self.args.batch_size,
                       permutation_error=error, quality_gate=state['val'] > .342 and error < .001,
