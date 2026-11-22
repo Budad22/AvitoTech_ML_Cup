@@ -14,7 +14,7 @@ import torch
 from mlp_next.supervisor import guard_lock
 from mlp_research.training import save
 from mlp_trials.state import write_json
-from .common import Split, WORK, val_holdout_mask
+from .common import Split, WORK, feed_rows, ndcg_full, val_holdout_mask
 from .nn_train import (EMA, FeedData, Ranker, collate, cosine_lr, evaluate, feeds_with_pos,
                        lambda_loss, make_opt, softmax_loss, to_dev)
 
@@ -40,7 +40,7 @@ class Pilot:
         # Select whole feeds using only membership in the early timestamp partition.
         early = np.flatnonzero(~val_holdout_mask(validation))
         rng = np.random.default_rng(2026)
-        self.selection = (early if args.sol_smoke else
+        self.selection = (early if args.sol_smoke or args.sol_full else
                           np.sort(rng.choice(early, min(len(early), args.val_feeds), replace=False)))
         train_feeds = np.arange(self.train.F)
         if args.sol_smoke:
@@ -48,14 +48,19 @@ class Pilot:
         self.feeds = feeds_with_pos(self.train, train_feeds)
         if len(self.feeds) < args.batch_size:
             raise ValueError('Too few positive feeds for the pilot')
-        self.data = FeedData('train', np.arange(self.train.F), cmax=128, train=True)
-        self.steps_per_epoch = (len(self.feeds) // args.batch_size if args.sol_smoke else
+        self.data = FeedData('train', np.arange(self.train.F), cmax=128, train=True,
+                             emb_in_ram=args.sol_full)
+        self.steps_per_epoch = (len(self.feeds) // args.batch_size if args.sol_smoke or args.sol_full else
                                 math.ceil(len(self.feeds) / args.batch_size))
         if args.sol_smoke:
             args.steps = self.steps_per_epoch
-        self.smoke_names = ('warmup', 'ema', 'warmup_ema') if args.calibrate_smoke else ('position',)
+        if args.sol_full:
+            args.steps = 2 * self.steps_per_epoch
+        self.smoke_names = (('warmup', 'ema', 'warmup_ema') if args.calibrate_smoke
+                            else (args.smoke_preset,))
         plan = dict(seed=args.seed, batch_size=args.batch_size, device=args.device,
                     target=args.steps, sol_smoke=args.sol_smoke, selection_feeds=len(self.selection),
+                    sol_full=args.sol_full, seed_order=[0, 1, 2] if args.sol_full else [args.seed],
                     smoke_settings={n: list(SMOKE_SETTINGS[n][:2]) for n in self.smoke_names},
                     train_meta=self.train.meta, val_meta=validation.meta,
                     selection_hash=hashlib.sha256(self.selection.tobytes()).hexdigest(),
@@ -80,7 +85,12 @@ class Pilot:
         args = self.args
         torch.manual_seed(args.seed)
         model = Ranker().to(self.device)
-        warmup, decay = SMOKE_SETTINGS[name][:2] if args.sol_smoke else (min(50, args.steps // 4), .999)
+        if args.sol_smoke:
+            warmup, decay = SMOKE_SETTINGS[name][:2]
+        elif args.sol_full:
+            warmup, decay = SMOKE_SETTINGS['position'][:2]
+        else:
+            warmup, decay = min(50, args.steps // 4), .999
         ema = EMA(model, decay)
         opt = make_opt(model, 1e-3, .02)
         shadow = Ranker().to(self.device)
@@ -163,6 +173,9 @@ class Pilot:
         return dict(name=name, history=history, loss=last_loss, steps=step)
 
     def run(self):
+        if self.args.sol_full:
+            self.run_sol_full()
+            return
         if self.args.sol_smoke:
             self.run_sol_smoke()
             return
@@ -212,6 +225,49 @@ class Pilot:
         self.progress('completed', step=self.args.steps)
         print(json.dumps(report, ensure_ascii=False), flush=True)
 
+    def run_sol_full(self):
+        """Run the three NN-1 seeds from section 6.2 with independent checkpoints."""
+        from .nn_train import predict
+        targets = [*range(3000, self.args.steps, 3000), self.args.steps]
+        results = {}
+        for seed in (0, 1, 2):
+            self.args.seed = seed
+            name = f'nn1_s{seed}'
+            done = self.root / name / 'final.json'
+            if done.exists():
+                results[name] = json.loads(done.read_text(encoding='utf-8'))
+                continue
+            for target in targets:
+                result = self.case(name, True, target)
+                if result is None:
+                    return
+            state = torch.load(self.root / name / 'best.pt', map_location='cpu', weights_only=False)
+            model = Ranker(**state['cfg']).to(self.device)
+            model.load_state_dict(state['sd'])
+            save(self.root / f'{name}.pt', state)
+            self.progress('evaluate', step=self.args.steps, variant=name)
+            for split in ('val', 'test'):
+                data = Split(split)
+                score = predict(model, split, np.arange(data.F), self.device, workers=0)
+                if len(score) != data.N or not np.isfinite(score).all():
+                    raise ValueError(f'Incomplete {split} prediction for {name}')
+                temp = self.root / f'{name}_{split}.tmp.npy'
+                np.save(temp, score, allow_pickle=False)
+                os.replace(temp, self.root / f'{name}_{split}.npy')
+                if split == 'val':
+                    control = np.flatnonzero(val_holdout_mask(data))
+                    rows, sizes = feed_rows(data.c_off, control)
+                    full_val = ndcg_full(data.c_off, score, data.target)[0]
+                    holdout = ndcg_full(np.r_[0, sizes.cumsum()], score[rows], data.target[rows])[0]
+            results[name] = dict(seed=seed, best_step=state['step'], steps=self.args.steps,
+                                 selection_ndcg=state['val'], control_ndcg=holdout, full_val_ndcg=full_val)
+            write_json(done, results[name])
+        scores = {f'NDCG · полная val · seed {row["seed"]}': row['full_val_ndcg']
+                  for row in results.values()}
+        write_json(self.report, dict(experiment=self.root.parent.name, status='completed', ndcg=scores,
+                                    results=results, train_feeds=len(self.feeds)))
+        self.progress('completed', step=self.args.steps)
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -221,8 +277,11 @@ def main():
     parser.add_argument('--val-feeds', type=int, default=2000)
     parser.add_argument('--max-seconds', type=int, default=7200)
     parser.add_argument('--seed', type=int, default=99)
-    parser.add_argument('--sol-smoke', action='store_true')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--sol-smoke', action='store_true')
+    mode.add_argument('--sol-full', action='store_true')
     parser.add_argument('--calibrate-smoke', action='store_true')
+    parser.add_argument('--smoke-preset', choices=SMOKE_SETTINGS, default='position')
     args = parser.parse_args()
     if min(args.batch_size, args.steps, args.val_feeds, args.max_seconds) < 1:
         parser.error('Batch size, steps, validation size and time limit must be positive')

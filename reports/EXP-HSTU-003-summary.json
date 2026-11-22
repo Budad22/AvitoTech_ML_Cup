@@ -1,0 +1,105 @@
+{
+  "experiment": "EXP-HSTU-003",
+  "status": "completed",
+  "ndcg": {
+    "NDCG \u00b7 \u043a\u043e\u0440\u043e\u0442\u043a\u0438\u0439 warmup": 0.3215209446498767,
+    "NDCG \u00b7 EMA 0,99": 0.33200503505218204,
+    "NDCG \u00b7 warmup \u0438 EMA": 0.3365430287903245
+  },
+  "results": {
+    "warmup": {
+      "ndcg": 0.3215209446498767,
+      "best_step": 312,
+      "warmup": 32,
+      "ema": 0.999,
+      "permutation_error": 2.980232238769531e-07,
+      "quality_gate": false,
+      "history": [
+        {
+          "step": 100,
+          "ndcg": 0.2931919383922868
+        },
+        {
+          "step": 200,
+          "ndcg": 0.3116066751708892
+        },
+        {
+          "step": 300,
+          "ndcg": 0.3204444246132289
+        },
+        {
+          "step": 312,
+          "ndcg": 0.3215209446498767
+        }
+      ],
+      "last_loss": 5.508630752563477
+    },
+    "ema": {
+      "ndcg": 0.33200503505218204,
+      "best_step": 312,
+      "warmup": 1000,
+      "ema": 0.99,
+      "permutation_error": 3.5762786865234375e-07,
+      "quality_gate": false,
+      "history": [
+        {
+          "step": 100,
+          "ndcg": 0.2927875863632773
+        },
+        {
+          "step": 200,
+          "ndcg": 0.31993666936792536
+        },
+        {
+          "step": 300,
+          "ndcg": 0.33092974785865853
+        },
+        {
+          "step": 312,
+          "ndcg": 0.33200503505218204
+        }
+      ],
+      "last_loss": 5.461533546447754
+    },
+    "warmup_ema": {
+      "ndcg": 0.3365430287903245,
+      "best_step": 312,
+      "warmup": 32,
+      "ema": 0.99,
+      "permutation_error": 4.76837158203125e-07,
+      "quality_gate": false,
+      "history": [
+        {
+          "step": 100,
+          "ndcg": 0.3246020081572284
+        },
+        {
+          "step": 200,
+          "ndcg": 0.3350469966942338
+        },
+        {
+          "step": 300,
+          "ndcg": 0.3361865599439812
+        },
+        {
+          "step": 312,
+          "ndcg": 0.3365430287903245
+        }
+      ],
+      "last_loss": 5.496162414550781
+    }
+  },
+  "validation_feeds": 7542,
+  "train_feeds": 20000,
+  "steps": 312,
+  "seed": 99,
+  "batch_size": 64,
+  "quality_gate": false,
+  "selection_baselines": {
+    "feeds": 7542,
+    "cosine_ndcg": 0.34013955310908706,
+    "f1_ndcg": 0.32903827885745424
+  },
+  "completed_at": "2026-11-22T17:33:45.131164+00:00",
+  "source_commit": "eb4b79888639a6f37de5b927587daa6dca55e57d"
+}
