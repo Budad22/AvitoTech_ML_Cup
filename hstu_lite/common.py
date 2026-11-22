@@ -2,7 +2,7 @@ import os, json, numpy as np
 
 ROOT = os.environ.get("AVITO_ROOT", os.path.expanduser("~/avito"))
 RAW  = os.environ.get("AVITO_RAW", os.path.join(ROOT, "data", "competition"))   # train/ val/ test/ sample_submission.parquet
-PACK = os.path.join(ROOT, "packed")
+PACK = os.environ.get("AVITO_PACK", os.path.join(ROOT, "packed"))
 WORK = os.path.join(ROOT, "work")
 D_EMB, H_MAX = 128, 256
 

@@ -17,8 +17,11 @@ def main():
     parser.add_argument('--steps', type=int, default=800)
     parser.add_argument('--batch-size', type=int, default=16)
     parser.add_argument('--val-feeds', type=int, default=2000)
+    parser.add_argument('--packed', type=Path, help='Reuse immutable packed splits')
     parser.add_argument('--sol-smoke', action='store_true',
                         help='Run sol.md section 6.1 using the full packed source')
+    parser.add_argument('--calibrate-smoke', action='store_true')
+    parser.add_argument('--max-seconds', type=int, default=7200, help='Time limit per variant')
     args = parser.parse_args()
     project = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(project))
@@ -30,6 +33,8 @@ def main():
     work.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ, AVITO_ROOT=str(root), AVITO_RAW=str(args.data.resolve()),
                PYTHONIOENCODING='utf-8', PYTHONUNBUFFERED='1')
+    packed = args.packed.resolve() if args.packed else root / 'packed'
+    env['AVITO_PACK'] = str(packed)
     python = [sys.executable, '-X', 'utf8', '-u', '-m']
     with guard_lock(root / 'launcher.lock'):
         with (work / 'worker.log').open('a', encoding='utf-8') as log:
@@ -43,17 +48,21 @@ def main():
                 (work / 'stage.txt').write_text('prepare', encoding='utf-8')
                 splits = ('val', 'test', 'train') if args.sol_smoke else ('train', 'val')
                 for split in splits:
-                    if (root / 'packed' / split / 'meta.json').exists():
+                    if (packed / split / 'meta.json').exists():
                         continue
+                    if args.packed:
+                        raise FileNotFoundError(packed / split / 'meta.json')
                     cmd = [*python, 'hstu_lite.prep', '--split', split]
                     if split == 'train':
                         cmd.extend(['--train-shards', str(0 if args.sol_smoke else args.train_shards)])
                     subprocess.run(cmd, cwd=project, env=env, stdout=log, stderr=log, check=True)
                 cmd = [*python, 'hstu_lite.pilot', '--device', args.device,
                        '--steps', str(args.steps), '--batch-size', str(args.batch_size),
-                       '--val-feeds', str(args.val_feeds)]
+                       '--val-feeds', str(args.val_feeds), '--max-seconds', str(args.max_seconds)]
                 if args.sol_smoke:
                     cmd.append('--sol-smoke')
+                if args.calibrate_smoke:
+                    cmd.append('--calibrate-smoke')
                 subprocess.run(cmd, cwd=project, env=env, stdout=log, stderr=log, check=True)
             except Exception:
                 error = traceback.format_exc()

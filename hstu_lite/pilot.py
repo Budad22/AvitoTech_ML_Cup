@@ -21,6 +21,12 @@ from .nn_train import (EMA, FeedData, Ranker, collate, cosine_lr, evaluate, feed
 
 STAGES = (20, 200, 800)
 VARIANTS = (('position', True), ('control', False))
+SMOKE_SETTINGS = {
+    'position': (1000, .999, 'NDCG · selection'),
+    'warmup': (32, .999, 'NDCG · короткий warmup'),
+    'ema': (1000, .99, 'NDCG · EMA 0,99'),
+    'warmup_ema': (32, .99, 'NDCG · warmup и EMA'),
+}
 
 
 class Pilot:
@@ -47,9 +53,10 @@ class Pilot:
                                 math.ceil(len(self.feeds) / args.batch_size))
         if args.sol_smoke:
             args.steps = self.steps_per_epoch
-        self.warmup = 1000 if args.sol_smoke else min(50, args.steps // 4)
+        self.smoke_names = ('warmup', 'ema', 'warmup_ema') if args.calibrate_smoke else ('position',)
         plan = dict(seed=args.seed, batch_size=args.batch_size, device=args.device,
                     target=args.steps, sol_smoke=args.sol_smoke, selection_feeds=len(self.selection),
+                    smoke_settings={n: list(SMOKE_SETTINGS[n][:2]) for n in self.smoke_names},
                     train_meta=self.train.meta, val_meta=validation.meta,
                     selection_hash=hashlib.sha256(self.selection.tobytes()).hexdigest(),
                     train_feed_hash=hashlib.sha256(self.feeds.tobytes()).hexdigest())
@@ -73,7 +80,8 @@ class Pilot:
         args = self.args
         torch.manual_seed(args.seed)
         model = Ranker().to(self.device)
-        ema = EMA(model, .999)
+        warmup, decay = SMOKE_SETTINGS[name][:2] if args.sol_smoke else (min(50, args.steps // 4), .999)
+        ema = EMA(model, decay)
         opt = make_opt(model, 1e-3, .02)
         shadow = Ranker().to(self.device)
         directory = self.root / name
@@ -129,7 +137,7 @@ class Pilot:
             indexes = order[batch * args.batch_size:(batch + 1) * args.batch_size]
             values = to_dev(collate([self.data[int(i)] for i in indexes]), self.device)
             for group in opt.param_groups:
-                group['lr'] = cosine_lr(step, args.steps, self.warmup, .001)
+                group['lr'] = cosine_lr(step, args.steps, warmup, .001)
             opt.zero_grad(set_to_none=True)
             with torch.autocast('cuda', dtype=torch.bfloat16,
                                 enabled=self.device.type == 'cuda' and torch.cuda.is_bf16_supported()):
@@ -167,7 +175,7 @@ class Pilot:
                 results[name] = result
         labels = dict(position='NDCG · поправка на позицию', control='NDCG · контроль')
         scores = {labels[name]: row['history'][-1]['ndcg'] for name, row in results.items()}
-        write_json(self.report, dict(experiment='EXP-HSTU-001', status='completed', ndcg=scores,
+        write_json(self.report, dict(experiment=self.root.parent.name, status='completed', ndcg=scores,
                    validation_feeds=len(self.selection), train_feeds=self.train.F,
                    positive_train_feeds=len(self.feeds), seed=self.args.seed, results=results))
         self.progress('completed')
@@ -175,21 +183,31 @@ class Pilot:
     def run_sol_smoke(self):
         """Run section 6.1 on the newest 20k train feeds, then check the model."""
         targets = [*range(100, self.args.steps, 100), self.args.steps]
-        for target in targets:
-            result = self.case('position', True, target)
-            if result is None:
-                return
-        state = torch.load(self.root / 'position/best.pt', map_location='cpu', weights_only=False)
-        model = Ranker(**state['cfg']).to(self.device)
-        model.load_state_dict(state['sd'])
         from .nn_train import permutation_error
-        error = permutation_error(model, self.device)
+        results, scores = {}, {}
+        for name in self.smoke_names:
+            for target in targets:
+                result = self.case(name, True, target)
+                if result is None:
+                    return
+            checkpoint = self.root / name / 'best.pt'
+            state = torch.load(checkpoint, map_location='cpu', weights_only=False)
+            model = Ranker(**state['cfg']).to(self.device)
+            model.load_state_dict(state['sd'])
+            self.progress('evaluate', step=self.args.steps, variant=name)
+            error = permutation_error(model, self.device)
+            score = state['val']
+            warmup, decay, label = SMOKE_SETTINGS[name]
+            scores[label] = score
+            results[name] = dict(ndcg=score, best_step=state['step'], warmup=warmup, ema=decay,
+                                 permutation_error=error, quality_gate=score > .342 and error < .001,
+                                 history=result['history'], last_loss=result['loss'])
+            print(json.dumps(dict(variant=name, **results[name]), ensure_ascii=False), flush=True)
         report = dict(experiment=self.root.parent.name, status='completed',
-                      ndcg={'NDCG · selection': state['val']}, best_step=state['step'],
+                      ndcg=scores, results=results,
                       validation_feeds=len(self.selection), train_feeds=len(self.feeds),
                       steps=self.args.steps, seed=self.args.seed, batch_size=self.args.batch_size,
-                      permutation_error=error, quality_gate=state['val'] > .342 and error < .001,
-                      history=result['history'])
+                      quality_gate=any(row['quality_gate'] for row in results.values()))
         write_json(self.report, report)
         self.progress('completed', step=self.args.steps)
         print(json.dumps(report, ensure_ascii=False), flush=True)
@@ -204,9 +222,12 @@ def main():
     parser.add_argument('--max-seconds', type=int, default=7200)
     parser.add_argument('--seed', type=int, default=99)
     parser.add_argument('--sol-smoke', action='store_true')
+    parser.add_argument('--calibrate-smoke', action='store_true')
     args = parser.parse_args()
     if min(args.batch_size, args.steps, args.val_feeds, args.max_seconds) < 1:
         parser.error('Batch size, steps, validation size and time limit must be positive')
+    if args.calibrate_smoke and not args.sol_smoke:
+        parser.error('--calibrate-smoke requires --sol-smoke')
     torch.set_num_threads(4 if args.device == 'cuda' else 2)
     root = Path(WORK)
     root.mkdir(parents=True, exist_ok=True)
