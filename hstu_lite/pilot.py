@@ -34,14 +34,22 @@ class Pilot:
         # Select whole feeds using only membership in the early timestamp partition.
         early = np.flatnonzero(~val_holdout_mask(validation))
         rng = np.random.default_rng(2026)
-        self.selection = np.sort(rng.choice(early, min(len(early), args.val_feeds), replace=False))
-        self.feeds = feeds_with_pos(self.train, np.arange(self.train.F))
+        self.selection = (early if args.sol_smoke else
+                          np.sort(rng.choice(early, min(len(early), args.val_feeds), replace=False)))
+        train_feeds = np.arange(self.train.F)
+        if args.sol_smoke:
+            train_feeds = np.sort(np.argsort(self.train.ts, kind='stable')[-20_000:])
+        self.feeds = feeds_with_pos(self.train, train_feeds)
         if len(self.feeds) < args.batch_size:
             raise ValueError('Too few positive feeds for the pilot')
         self.data = FeedData('train', np.arange(self.train.F), cmax=128, train=True)
-        self.steps_per_epoch = math.ceil(len(self.feeds) / args.batch_size)
+        self.steps_per_epoch = (len(self.feeds) // args.batch_size if args.sol_smoke else
+                                math.ceil(len(self.feeds) / args.batch_size))
+        if args.sol_smoke:
+            args.steps = self.steps_per_epoch
+        self.warmup = 1000 if args.sol_smoke else min(50, args.steps // 4)
         plan = dict(seed=args.seed, batch_size=args.batch_size, device=args.device,
-                    target=args.steps, fast_feeds=args.val_feeds,
+                    target=args.steps, sol_smoke=args.sol_smoke, selection_feeds=len(self.selection),
                     train_meta=self.train.meta, val_meta=validation.meta,
                     selection_hash=hashlib.sha256(self.selection.tobytes()).hexdigest(),
                     train_feed_hash=hashlib.sha256(self.feeds.tobytes()).hexdigest())
@@ -121,7 +129,7 @@ class Pilot:
             indexes = order[batch * args.batch_size:(batch + 1) * args.batch_size]
             values = to_dev(collate([self.data[int(i)] for i in indexes]), self.device)
             for group in opt.param_groups:
-                group['lr'] = cosine_lr(step, args.steps, min(50, args.steps // 4), .001)
+                group['lr'] = cosine_lr(step, args.steps, self.warmup, .001)
             opt.zero_grad(set_to_none=True)
             with torch.autocast('cuda', dtype=torch.bfloat16,
                                 enabled=self.device.type == 'cuda' and torch.cuda.is_bf16_supported()):
@@ -147,6 +155,9 @@ class Pilot:
         return dict(name=name, history=history, loss=last_loss, steps=step)
 
     def run(self):
+        if self.args.sol_smoke:
+            self.run_sol_smoke()
+            return
         results = {}
         for target in sorted(set([s for s in STAGES if s < self.args.steps] + [self.args.steps])):
             for name, use_pos in VARIANTS:
@@ -161,6 +172,28 @@ class Pilot:
                    positive_train_feeds=len(self.feeds), seed=self.args.seed, results=results))
         self.progress('completed')
 
+    def run_sol_smoke(self):
+        """Run section 6.1 on the newest 20k train feeds, then check the model."""
+        targets = [*range(100, self.args.steps, 100), self.args.steps]
+        for target in targets:
+            result = self.case('position', True, target)
+            if result is None:
+                return
+        state = torch.load(self.root / 'position/best.pt', map_location='cpu', weights_only=False)
+        model = Ranker(**state['cfg']).to(self.device)
+        model.load_state_dict(state['sd'])
+        from .nn_train import permutation_error
+        error = permutation_error(model, self.device)
+        report = dict(experiment=self.root.parent.name, status='completed',
+                      ndcg={'HSTU-lite · selection': state['val']}, best_step=state['step'],
+                      validation_feeds=len(self.selection), train_feeds=len(self.feeds),
+                      steps=self.args.steps, seed=self.args.seed, batch_size=self.args.batch_size,
+                      permutation_error=error, quality_gate=state['val'] > .342 and error < .001,
+                      history=result['history'])
+        write_json(self.report, report)
+        self.progress('completed', step=self.args.steps)
+        print(json.dumps(report, ensure_ascii=False), flush=True)
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -170,6 +203,7 @@ def main():
     parser.add_argument('--val-feeds', type=int, default=2000)
     parser.add_argument('--max-seconds', type=int, default=7200)
     parser.add_argument('--seed', type=int, default=99)
+    parser.add_argument('--sol-smoke', action='store_true')
     args = parser.parse_args()
     if min(args.batch_size, args.steps, args.val_feeds, args.max_seconds) < 1:
         parser.error('Batch size, steps, validation size and time limit must be positive')

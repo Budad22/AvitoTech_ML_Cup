@@ -17,6 +17,8 @@ def main():
     parser.add_argument('--steps', type=int, default=800)
     parser.add_argument('--batch-size', type=int, default=16)
     parser.add_argument('--val-feeds', type=int, default=2000)
+    parser.add_argument('--sol-smoke', action='store_true',
+                        help='Run sol.md section 6.1 using the full packed source')
     args = parser.parse_args()
     project = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(project))
@@ -39,17 +41,20 @@ def main():
             (work / 'failure.log').unlink(missing_ok=True)
             try:
                 (work / 'stage.txt').write_text('prepare', encoding='utf-8')
-                for split in ('train', 'val'):
+                splits = ('val', 'test', 'train') if args.sol_smoke else ('train', 'val')
+                for split in splits:
                     if (root / 'packed' / split / 'meta.json').exists():
                         continue
                     cmd = [*python, 'hstu_lite.prep', '--split', split]
                     if split == 'train':
-                        cmd.extend(['--train-shards', str(args.train_shards)])
+                        cmd.extend(['--train-shards', str(0 if args.sol_smoke else args.train_shards)])
                     subprocess.run(cmd, cwd=project, env=env, stdout=log, stderr=log, check=True)
-                subprocess.run([*python, 'hstu_lite.pilot', '--device', args.device,
-                                '--steps', str(args.steps), '--batch-size', str(args.batch_size),
-                                '--val-feeds', str(args.val_feeds)], cwd=project, env=env,
-                               stdout=log, stderr=log, check=True)
+                cmd = [*python, 'hstu_lite.pilot', '--device', args.device,
+                       '--steps', str(args.steps), '--batch-size', str(args.batch_size),
+                       '--val-feeds', str(args.val_feeds)]
+                if args.sol_smoke:
+                    cmd.append('--sol-smoke')
+                subprocess.run(cmd, cwd=project, env=env, stdout=log, stderr=log, check=True)
             except Exception:
                 error = traceback.format_exc()
                 (work / 'failure.log').write_text(error, encoding='utf-8')

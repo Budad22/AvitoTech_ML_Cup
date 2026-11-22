@@ -372,21 +372,36 @@ def stage2(a, dev):
         np.save(os.path.join(WORK, f"nn2_s{a.seed}_test.npy"), (te / (folds.max() + 1)).astype(np.float32))
 
 
+@torch.inference_mode()
+def permutation_error(model, device, limit=64):
+    """Maximum aligned logit difference after permuting candidates."""
+    model.eval()
+    count = min(limit, Split('val').F)
+    dataset = FeedData('val', np.arange(count))
+    rng = np.random.default_rng(0)
+    errors = []
+    for start in range(0, count, 8):
+        items = [dataset[i] for i in range(start, min(count, start + 8))]
+        original = model(to_dev(collate(items), device))
+        orders = [rng.permutation(len(item['y'])) for item in items]
+        for item, order in zip(items, orders):
+            for key in ('ce', 'cp', 'ccat', 'citem', 'num', 'y', 'pos'):
+                item[key] = item[key][order]
+        permuted = model(to_dev(collate(items), device))
+        for row, order in enumerate(orders):
+            indices = torch.as_tensor(order, device=device)
+            errors.append((original[row, indices] - permuted[row, :len(order)]).abs().max().item())
+    return max(errors)
+
+
 def check_perm(a, dev):
-    """scores must not depend on candidate order (dropout off)"""
-    st = torch.load(os.path.join(WORK, f"nn1_s{a.seed}.pt"), map_location=dev)
-    m = Ranker(**st["cfg"]).to(dev); m.load_state_dict(st["sd"]); m.eval()
-    ds = FeedData("val", np.arange(64)); items = [ds[i] for i in range(64)]
-    with torch.inference_mode():
-        s1 = m(to_dev(collate(items), dev)).detach()
-    rng = np.random.default_rng(0); perms = []
-    for it in items:
-        p = rng.permutation(len(it["y"])); perms.append(p)
-        for k in ("ce", "cp", "ccat", "citem", "num", "y", "pos"): it[k] = it[k][p]
-    with torch.inference_mode():
-        s2 = m(to_dev(collate(items), dev)).detach()
-    err = max((s1[j, p] - s2[j, :len(p)]).abs().max().item() for j, p in enumerate(perms))
-    print("max |delta| after permutation:", err); assert err < 1e-3
+    state = torch.load(os.path.join(WORK, f"nn1_s{a.seed}.pt"), map_location='cpu', weights_only=False)
+    model = Ranker(**state['cfg']).to(dev)
+    model.load_state_dict(state['sd'])
+    error = permutation_error(model, dev)
+    print("max |delta| after permutation:", error)
+    if error >= .001:
+        raise ValueError(f'Candidate order changed scores by {error}')
 
 
 if __name__ == "__main__":

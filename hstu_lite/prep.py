@@ -83,7 +83,7 @@ def main():
                 max_hist=int(hl.max()), max_cands=int(cl.max()))
     (out / "meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     out.rename(destination)
-    print(json.dumps(meta), flush=True)
+    print(f"{a.split}: {meta['feeds']:,} feeds, {meta['cands']:,} candidates", flush=True)
 
 
 if __name__ == "__main__":
