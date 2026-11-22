@@ -44,5 +44,12 @@
     "checked_at": "2026-11-22T22:24:25.431397+00:00",
     "agent_upload_attempts": 0
   },
-  "upload_attempts": 0
+  "upload_attempts": 0,
+  "website_result": {
+    "ndcg": 0.3655112516538484,
+    "source": "owner_report",
+    "reported_on": "2026-11-23",
+    "leaderboard_partition": null,
+    "submission_id": null
+  }
 }
