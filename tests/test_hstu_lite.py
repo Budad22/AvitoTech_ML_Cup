@@ -1,0 +1,53 @@
+import unittest
+
+import numpy as np
+import torch
+
+from hstu_lite.common import average_ranks, ndcg_full
+from hstu_lite.nn_train import Ranker, collate, lambda_loss, softmax_loss
+from mlp.metrics import ndcg
+
+
+class HstuLiteContracts(unittest.TestCase):
+    def test_equal_ranks_and_full_ndcg_match_existing_evaluator(self):
+        np.testing.assert_array_equal(average_ranks(np.array([3, 1, 3, 2])), [2.5, 0, 2.5, 1])
+        scores = np.array([2., 2., 1., 0., 0.])
+        labels = np.array([1, 0, 1, 0, 0])
+        value, _ = ndcg_full(np.array([0, 3, 5]), scores, labels)
+        self.assertAlmostEqual(value, (ndcg(labels[:3], scores[:3]) + 1.) / 2)
+
+    def test_masked_ranking_trains_and_inference_ignores_position_and_candidate_order(self):
+        torch.set_num_threads(2)
+        rng = np.random.default_rng(99)
+        def feed(count, history):
+            return dict(f=0, ce=rng.integers(-16, 16, (count, 128), dtype=np.int8),
+                        cp=np.ones(count, dtype=bool), ccat=np.arange(count) + 2,
+                        citem=np.arange(count) + 10, num=rng.normal(size=(count, 19)).astype(np.float32),
+                        y=np.arange(count) == 0, pos=np.arange(count),
+                        he=np.zeros((history, 128), np.int8), hp=np.zeros(history, bool),
+                        hcat=np.arange(history) + 2, het=np.ones(history, int),
+                        hes=np.zeros(history, int), hitem=np.arange(history) + 10,
+                        u=np.ones(128, np.int8))
+        inputs = collate([feed(4, 2), feed(2, 0)])
+        model = Ranker(d=16, nh=4, n_hist=1, n_cross=1, n_list=1, drop=0)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=.01)
+        score = model(inputs, use_pos=True)
+        loss = softmax_loss(score, inputs['y'], inputs['cmask']) + lambda_loss(score, inputs['y'], inputs['cmask'])
+        self.assertTrue(torch.isfinite(loss))
+        before = model.head[-1].weight.detach().clone()
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1., error_if_nonfinite=True)
+        optimizer.step()
+        self.assertFalse(torch.equal(before, model.head[-1].weight))
+        self.assertGreater(model.pos_bias.weight.abs().sum().item(), 0)
+        model.eval()
+        order = torch.tensor([2, 0, 3, 1])
+        permuted = dict(inputs)
+        for key in ('ce', 'cp', 'ccat', 'citem', 'num', 'cmask'):
+            permuted[key] = inputs[key].clone()
+            permuted[key][0] = inputs[key][0, order]
+        permuted.pop('pos')
+        with torch.inference_mode():
+            original = model(inputs)
+            torch.testing.assert_close(model(inputs, use_pos=True), original)
+            torch.testing.assert_close(model(permuted)[0], original[0, order], atol=1e-5, rtol=1e-5)
