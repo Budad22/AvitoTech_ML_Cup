@@ -36,7 +36,7 @@ def main():
     project = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(project))
     from mlp_next.supervisor import guard_lock
-    from mlp_trials.state import write_json
+    from mlp_trials.state import write_json, write_text
 
     root = args.output.resolve()
     work = root / 'work'
@@ -51,11 +51,15 @@ def main():
             if (work / 'report.json').exists():
                 report = json.loads((work / 'report.json').read_text(encoding='utf-8'))
                 if report['status'] == 'completed':
-                    (work / 'stage.txt').write_text('completed', encoding='utf-8')
+                    write_text(work / 'stage.txt', 'completed')
                     return
             (work / 'failure.log').unlink(missing_ok=True)
             try:
-                (work / 'stage.txt').write_text('prepare', encoding='utf-8')
+                try:
+                    write_text(work / 'stage.txt', 'prepare')
+                except OSError as error:
+                    log.write(f'Monitor update deferred for prepare: {error}\n')
+                    log.flush()
                 use_full_source = args.sol_smoke or args.sol_full
                 splits = ('val', 'test', 'train') if use_full_source else ('train', 'val')
                 for split in splits:

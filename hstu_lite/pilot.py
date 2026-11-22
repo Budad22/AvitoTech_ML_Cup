@@ -3,6 +3,7 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import logging
 import math
 import os
 from pathlib import Path
@@ -13,7 +14,7 @@ import torch
 
 from mlp_next.supervisor import guard_lock
 from mlp_research.training import save
-from mlp_trials.state import write_json
+from mlp_trials.state import write_json, write_text
 from .common import Split, WORK, feed_rows, ndcg_full, val_holdout_mask
 from .nn_train import (EMA, FeedData, Ranker, collate, cosine_lr, evaluate, feeds_with_pos,
                        lambda_loss, make_opt, softmax_loss, to_dev)
@@ -21,6 +22,7 @@ from .nn_train import (EMA, FeedData, Ranker, collate, cosine_lr, evaluate, feed
 
 STAGES = (20, 200, 800)
 VARIANTS = (('position', True), ('control', False))
+LOG = logging.getLogger(__name__)
 SMOKE_SETTINGS = {
     'position': (1000, .999, 'NDCG · selection'),
     'warmup': (32, .999, 'NDCG · короткий warmup'),
@@ -34,6 +36,8 @@ class Pilot:
         self.args = args
         self.root = Path(WORK)
         self.report = self.root / 'report.json'
+        self.published_stage = None
+        self.next_monitor_warning = 0.
         self.device = torch.device(args.device)
         self.train = Split('train')
         validation = Split('val')
@@ -75,11 +79,20 @@ class Pilot:
         status = dict(step=fields.pop('step', 0), steps=self.args.steps,
                       elapsed_seconds=fields.pop('elapsed_seconds', None),
                       updated_at=datetime.now(timezone.utc).isoformat(), **fields)
-        # Standard files consumed by the shared read-only dashboard.
-        write_json(self.root / 'status.json', status)
-        temp = self.root / 'stage.tmp'
-        temp.write_text(stage, encoding='utf-8')
-        os.replace(temp, self.root / 'stage.txt')
+        try:
+            write_json(self.root / 'status.json', status)
+            if self.published_stage != stage:
+                write_text(self.root / 'stage.txt', stage)
+                self.published_stage = stage
+        except OSError as error:
+            # Training and checkpoint writes must survive monitor file contention.
+            # Terminal publication can be reconciled by rerunning the launcher.
+            if stage in ('completed', 'paused'):
+                raise
+            now = time.monotonic()
+            if now >= self.next_monitor_warning:
+                LOG.warning('Monitor update deferred at stage=%s step=%s: %s', stage, status['step'], error)
+                self.next_monitor_warning = now + 60.
 
     def case(self, name, use_pos, stop_at):
         args = self.args
