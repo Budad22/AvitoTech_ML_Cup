@@ -1,0 +1,48 @@
+{
+  "folder": "Q:\\AVITOCUP\\experiments\\EXP-HSTU-005\\exports\\manual-best-after-seed1",
+  "export_commit": "e12b32c954c26cd41a97f27e05d700a837f60dc1",
+  "metadata": {
+    "run_id": "EXP-HSTU-005",
+    "checkpoint_sha256": "a6848b2a6926ea8a4e783fc00f31b30e8fc282332647045cdd9aca3038848342",
+    "prediction_sha256": "9281adc5adfb47a2fc83b259c78cce656f1c28e999ce2145aa9dab4faf3163b2",
+    "metrics": {
+      "seed": 1,
+      "best_step": 96000,
+      "steps": 98474,
+      "selection_ndcg": 0.3724018342215112,
+      "control_ndcg": 0.36873684828776837,
+      "full_val_ndcg": 0.37065337557027306
+    },
+    "rows": 2904806,
+    "feeds": 28595,
+    "split": "test",
+    "checks": [
+      "schema",
+      "nonempty",
+      "nulls",
+      "finite_scores",
+      "unique_pairs",
+      "exact_template_coverage"
+    ]
+  },
+  "local_validation": {
+    "status": "ready_for_manual_submission",
+    "file": "C:\\Users\\Bl1tz2200\\Desktop\\W\\AVITOCUP\\AvitoTech_HSTU-lite\\artifacts\\submissions\\EXP-HSTU-005-seed1\\submission.parquet",
+    "template": "C:\\Users\\Bl1tz2200\\Desktop\\W\\AVITOCUP\\competition\\sample_submission.parquet",
+    "bytes": 18093170,
+    "rows": 2904806,
+    "feeds": 28595,
+    "sha256": "9281adc5adfb47a2fc83b259c78cce656f1c28e999ce2145aa9dab4faf3163b2",
+    "checks": [
+      "schema",
+      "nonempty",
+      "nulls",
+      "finite_scores",
+      "unique_pairs",
+      "exact_template_coverage"
+    ],
+    "checked_at": "2026-11-22T22:24:25.431397+00:00",
+    "agent_upload_attempts": 0
+  },
+  "upload_attempts": 0
+}
