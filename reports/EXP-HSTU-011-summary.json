@@ -1,0 +1,132 @@
+{
+  "experiment": "EXP-HSTU-011",
+  "status": "completed",
+  "ndcg": {
+    "NDCG · ансамбль · ранняя val": 0.3768733174647538,
+    "NDCG · ансамбль · поздняя OOF": 0.3790029462865344,
+    "NDCG · ансамбль · вся val": 0.37788933188080265
+  },
+  "trees": {
+    "gbdt_t": {
+      "position": 5.0,
+      "best_iteration": 117,
+      "late_position_tuning_ndcg": 0.36715600159473794,
+      "best_early_ndcg": 0.3676606938534808,
+      "full_val_ndcg": 0.36741991264066726
+    },
+    "meta": {
+      "objective": "lambdarank",
+      "iterations": 55,
+      "tuning_iterations": [
+        64,
+        207,
+        24,
+        43,
+        50
+      ],
+      "oof_ndcg": 0.37171119436202127
+    },
+    "meta_xe": {
+      "objective": "rank_xendcg",
+      "iterations": 108,
+      "tuning_iterations": [
+        36,
+        271,
+        144,
+        99,
+        98
+      ],
+      "oof_ndcg": 0.37553842333874743
+    }
+  },
+  "blend": {
+    "weights": {
+      "meta": 0.20000000298023224,
+      "meta_xe": 0.4000000059604645,
+      "gbdt_t": 0.0,
+      "nn1": 0.05000000074505806,
+      "nn2": 0.3499999940395355
+    },
+    "tiebreak": "meta_xe",
+    "component_val_ndcg": {
+      "meta": 0.37171119436202127,
+      "meta_xe": 0.37553842333874743,
+      "nn2_s0": 0.3728128366830235,
+      "nn2_s1": 0.37355187123885103,
+      "nn2_s2": 0.3723825570808747,
+      "nn1_s0": 0.3701590353057141,
+      "nn1_s1": 0.37065337557027306,
+      "nn1_s2": 0.37050225309517304,
+      "gbdt_t": 0.36741991264066726,
+      "nn1": 0.3729362917742702,
+      "nn2": 0.37495173919247515
+    },
+    "selection_ndcg": 0.3768733174647538,
+    "late_oof_ndcg": 0.3790029462865344,
+    "blended_val_ndcg": 0.37788933188080265,
+    "audit": null,
+    "scope": "OOF for NN-2/meta, val for NN-1/GBDT-T. NN-2 epochs and GBDT-T position use late feeds, and meta rounds use val folds. Ensemble weights and tiebreak reuse the reference.",
+    "reference": "Q:\\AVITOCUP\\experiments\\EXP-HSTU-008\\work",
+    "comparisons": {
+      "early": {
+        "reference_ndcg": 0.37848005156818726,
+        "candidate_ndcg": 0.3768733174647538,
+        "delta": -0.0016067341034334897,
+        "ci95": [
+          -0.003359637279158994,
+          0.0002367481264583649
+        ],
+        "feeds": 7542,
+        "users": 7196
+      },
+      "late": {
+        "reference_ndcg": 0.3783000158316371,
+        "candidate_ndcg": 0.3790029462865344,
+        "delta": 0.0007029304548974067,
+        "ci95": [
+          -0.0012976602544443163,
+          0.0027380061756073653
+        ],
+        "feeds": 6881,
+        "users": 6556
+      },
+      "full": {
+        "reference_ndcg": 0.37839415918080593,
+        "candidate_ndcg": 0.37788933188080265,
+        "delta": -0.0005048273000032118,
+        "ci95": [
+          -0.0018084231332410833,
+          0.0009408570544183272
+        ],
+        "feeds": 14423,
+        "users": 13741
+      }
+    },
+    "decision": "keep_reference"
+  },
+  "train_feeds": 300000,
+  "prepared_features": {
+    "train": {
+      "feeds": 300000,
+      "rows": 24309099
+    },
+    "val": {
+      "sha256": "3bc51d141be08633d076d5b518b874754cdd21e63453cc7af613c2a0aa02b955",
+      "reference": "EXP-HSTU-008"
+    },
+    "test": {
+      "sha256": "e907b27e7213eadb419f31eddd44da52255e2cf881cbe787cd2ca8af1fe51229",
+      "reference": "EXP-HSTU-008"
+    }
+  },
+  "source": {
+    "commit": "792fb25c34306ffc1eb87e286e7a1242af2765e5",
+    "source_sha256": "bdc3a7bf34cd316e0d1fb7406f69a2fdd10018a93dfc6a87dc62ab162e615847"
+  },
+  "configuration": {
+    "train_feeds": 300000,
+    "nn1": "Q:\\AVITOCUP\\experiments\\EXP-HSTU-005\\work",
+    "nn2": "Q:\\AVITOCUP\\experiments\\EXP-HSTU-007\\work",
+    "reference_blend": "Q:\\AVITOCUP\\experiments\\EXP-HSTU-008\\work"
+  }
+}
