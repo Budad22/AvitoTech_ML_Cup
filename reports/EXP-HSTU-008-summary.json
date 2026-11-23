@@ -1,0 +1,112 @@
+{
+  "experiment": "EXP-HSTU-008",
+  "status": "completed",
+  "ndcg": {
+    "NDCG · ансамбль · ранняя val": 0.37848005156818726,
+    "NDCG · ансамбль · поздняя OOF": 0.3783000158316371,
+    "NDCG · ансамбль · вся val": 0.37839415918080593
+  },
+  "trees": {
+    "gbdt_t": {
+      "position": 5.0,
+      "best_iteration": 156,
+      "late_position_tuning_ndcg": 0.36769651543159737,
+      "best_early_ndcg": 0.3686318602376161,
+      "full_val_ndcg": 0.36818562106336555
+    },
+    "meta": {
+      "objective": "lambdarank",
+      "iterations": 90,
+      "tuning_iterations": [
+        163,
+        41,
+        22,
+        83,
+        82
+      ],
+      "oof_ndcg": 0.3729332002990408
+    },
+    "meta_xe": {
+      "objective": "rank_xendcg",
+      "iterations": 122,
+      "tuning_iterations": [
+        90,
+        275,
+        205,
+        46,
+        111
+      ],
+      "oof_ndcg": 0.3760617534857558
+    }
+  },
+  "blend": {
+    "weights": {
+      "meta": 0.20000000298023224,
+      "meta_xe": 0.4000000059604645,
+      "gbdt_t": 0.0,
+      "nn1": 0.05000000074505806,
+      "nn2": 0.3499999940395355
+    },
+    "tiebreak": "meta_xe",
+    "component_val_ndcg": {
+      "meta": 0.3729332002990408,
+      "meta_xe": 0.3760617534857558,
+      "nn2_s0": 0.3728128366830235,
+      "nn2_s1": 0.37355187123885103,
+      "nn2_s2": 0.3723825570808747,
+      "nn1_s0": 0.3701590353057141,
+      "nn1_s1": 0.37065337557027306,
+      "nn1_s2": 0.37050225309517304,
+      "gbdt_t": 0.36818562106336555,
+      "nn1": 0.3729362917742702,
+      "nn2": 0.37495173919247515
+    },
+    "selection_ndcg": 0.37848005156818726,
+    "late_oof_ndcg": 0.3783000158316371,
+    "blended_val_ndcg": 0.37839415918080593,
+    "audit": {
+      "status": "ready_for_manual_submission",
+      "file": "Q:\\AVITOCUP\\experiments\\EXP-HSTU-008\\work\\submission.parquet",
+      "template": "Q:\\AVITOCUP\\competition\\sample_submission.parquet",
+      "bytes": 27161684,
+      "rows": 2904806,
+      "feeds": 28595,
+      "sha256": "5ddefcddabb404ecaa67001fe571ec36bf6205e7d3b48ce6346c3d529aaa1087",
+      "checks": [
+        "schema",
+        "nonempty",
+        "nulls",
+        "finite_scores",
+        "unique_pairs",
+        "exact_template_coverage"
+      ],
+      "checked_at": "2026-11-23T07:35:20.282269+00:00",
+      "agent_upload_attempts": 0
+    },
+    "scope": "OOF for NN-2/meta, val for NN-1/GBDT-T; early feeds fit blend weights. NN-2 epochs and GBDT-T position use late feeds, and meta rounds use val folds."
+  },
+  "source": {
+    "commit": "a224a39a1d4b8d0a8ccfd60ebfe65380ab984cea",
+    "source_sha256": "280305e6412b8cada9bfee9caea1d9aef5ea84891e2756caabf5ed821fa1a6ff",
+    "feature_preparation": {
+      "commit": "8e68ffa6f073714d500a33030441f4697a9ef4ae",
+      "source_sha256": "9a1a2a626458b687c4b372b931d4c1d9139d0774bdee60917859c8a69c71de30"
+    }
+  },
+  "local_verification": {
+    "rows": 2904806,
+    "feeds": 28595,
+    "sha256": "5ddefcddabb404ecaa67001fe571ec36bf6205e7d3b48ce6346c3d529aaa1087",
+    "bytes": 27161684,
+    "checks": [
+      "schema",
+      "nonempty",
+      "nulls",
+      "finite_scores",
+      "unique_pairs",
+      "exact_template_coverage"
+    ],
+    "checked_at": "2026-11-23T07:38:34.764017+00:00",
+    "agent_upload_attempts": 0
+  }
+}
