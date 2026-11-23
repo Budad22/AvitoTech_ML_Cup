@@ -3,6 +3,7 @@ import argparse
 import json
 from pathlib import Path
 import shutil
+import time
 import traceback
 
 import numba
@@ -48,6 +49,28 @@ def copy_inputs(work, nn1, nn2):
                 replace_atomic(temporary, destination)
 
 
+def training_progress(progress, variant):
+    started = time.monotonic()
+    next_update = started
+    progress.publish('train', variant=variant)
+
+    def report(env):
+        nonlocal next_update
+        now = time.monotonic()
+        if now < next_update:
+            return
+        next_update = now + 30
+        step = env.iteration + 1
+        metrics = {name: value for _, name, value, *_ in (env.evaluation_result_list or ())}
+        progress.publish('train', variant=variant, step=step, steps=env.end_iteration,
+                         elapsed_seconds=now - started, **metrics)
+        score = metrics.get('full_ndcg')
+        detail = '' if score is None else f', validation NDCG {score:.7f}'
+        print(f'{variant}: boosting round {step}/{env.end_iteration}{detail}', flush=True)
+
+    return [report]
+
+
 def run(work, nn1, nn2, progress):
     for root in (nn1, nn2):
         report = json.loads((root / 'report.json').read_bytes())
@@ -56,13 +79,16 @@ def run(work, nn1, nn2, progress):
     copy_inputs(work, nn1, nn2)
     generate_features(work, progress)
     results = {}
-    stages = [('gbdt_t', gbdt.run_t),
-              ('meta', gbdt.run_meta),
-              ('meta_xe', lambda: gbdt.run_meta('rank_xendcg', 'meta_xe'))]
-    for index, (name, train) in enumerate(stages):
+
+    def callbacks(variant):
+        return training_progress(progress, variant)
+
+    stages = [('gbdt_t', lambda: gbdt.run_t(callbacks)),
+              ('meta', lambda: gbdt.run_meta(progress_callbacks=callbacks)),
+              ('meta_xe', lambda: gbdt.run_meta('rank_xendcg', 'meta_xe', callbacks))]
+    for name, train in stages:
         path = work / f'{name}-result.json'
         if not path.exists():
-            progress.publish('train', step=index, steps=len(stages), variant=name)
             write_json(path, train())
         results[name] = json.loads(path.read_bytes())
     progress.publish('evaluate', variant='blend')

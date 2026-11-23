@@ -22,17 +22,20 @@ def main():
     M = load_models(); names = list(M)
     assert names, "no *_oof.npy in work/"
     R = {}
+    components = {}
     for k, (o, t) in M.items():
         assert not np.isnan(o).any() and not np.isnan(t).any(), k
         R[k] = (feed_rank_pct(Sv.c_off, o), feed_rank_pct(Ste.c_off, t))
-        print(f"{k:12s} OOF NDCG {ndcg_full(Sv.c_off, o, y)[0]:.5f}")
+        components[k] = ndcg_full(Sv.c_off, o, y)[0]
+        print(f"{k:12s} full val NDCG {components[k]:.7f}")
     for pre in ("nn1", "nn2"):                               # NN seeds -> one model (mean per-feed rank)
         nn = [k for k in names if k.startswith(pre + "_")]
         if len(nn) > 1:
             R[pre] = tuple(np.mean([R[k][i] for k in nn], 0) for i in (0, 1))
             M[pre] = R[pre]
             for k in nn: R.pop(k); M.pop(k)
-            print(f"{pre} (seeds avg) OOF NDCG {ndcg_full(Sv.c_off, R[pre][0], y)[0]:.5f}")
+            components[pre] = ndcg_full(Sv.c_off, R[pre][0], y)[0]
+            print(f"{pre} (seeds avg) full val NDCG {components[pre]:.7f}")
     names = list(R)
     feeds = np.flatnonzero(~val_holdout_mask(Sv))
     rows, sizes = feed_rows(Sv.c_off, feeds)
@@ -86,9 +89,11 @@ def main():
     early_value = ndcg_full(offsets, val_scores[rows], labels)[0]
     late_rows, late_sizes = feed_rows(Sv.c_off, np.flatnonzero(val_holdout_mask(Sv)))
     late_value = ndcg_full(np.r_[0, late_sizes.cumsum()], val_scores[late_rows], y[late_rows])[0]
-    result = dict(weights=dict(zip(names, w)), tiebreak=top, selection_ndcg=early_value,
+    result = dict(weights=dict(zip(names, w)), tiebreak=top, component_val_ndcg=components,
+                  selection_ndcg=early_value,
                   late_oof_ndcg=late_value, blended_val_ndcg=ndcg_full(Sv.c_off, val_scores, y)[0],
-                  audit=audit, scope='OOF for NN-2/meta, val for NN-1/GBDT-T; early feeds fit blend weights')
+                  audit=audit, scope=('OOF for NN-2/meta, val for NN-1/GBDT-T; early feeds fit blend weights. '
+                         'NN-2 epochs and GBDT-T position use late feeds, and meta rounds use val folds.'))
     write_json(Path(WORK, 'blend.json'), result)
     print("saved", path, out.shape, out.dtypes.to_dict())
     return result
