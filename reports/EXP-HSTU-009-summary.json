@@ -1,0 +1,91 @@
+{
+  "experiment": "EXP-HSTU-009",
+  "status": "completed",
+  "training": {
+    "experiment": "EXP-HSTU-009",
+    "status": "completed",
+    "mode": "cv",
+    "ndcg": {
+      "NDCG · OOF · seed 3": 0.37244398067697393,
+      "NDCG · OOF · seed 4": 0.3735396221920281
+    },
+    "epochs": 3,
+    "lr": 0.0001,
+    "mix_train": 0.25,
+    "seeds": [
+      [
+        3,
+        0
+      ],
+      [
+        4,
+        1
+      ]
+    ]
+  },
+  "decision": "keep_reference",
+  "selection": "early",
+  "weights": {
+    "meta": 0.20000000298023224,
+    "meta_xe": 0.4000000059604645,
+    "gbdt_t": 0.0,
+    "nn1": 0.05000000074505806,
+    "nn2": 0.3499999940395355
+  },
+  "tiebreak": "meta_xe",
+  "comparisons": {
+    "early": {
+      "reference_ndcg": 0.37848005156818726,
+      "candidate_ndcg": 0.37833944542137526,
+      "delta": -0.0001406061468119863,
+      "ci95": [
+        -0.0005682052399619083,
+        0.0002699627696295624
+      ],
+      "feeds": 7542,
+      "users": 7196
+    },
+    "late": {
+      "reference_ndcg": 0.3783000158316371,
+      "candidate_ndcg": 0.37826785624611103,
+      "delta": -3.215958552595678e-05,
+      "ci95": [
+        -0.0003747277602199636,
+        0.0002973478583063623
+      ],
+      "feeds": 6881,
+      "users": 6556
+    },
+    "full": {
+      "reference_ndcg": 0.37839415918080593,
+      "candidate_ndcg": 0.3783052912845804,
+      "delta": -8.886789622548079e-05,
+      "ci95": [
+        -0.00034930113232385743,
+        0.00014940016996956097
+      ],
+      "feeds": 14423,
+      "users": 13741
+    }
+  },
+  "nn2_full_val": {
+    "reference": 0.37495173919247515,
+    "candidate": 0.3752132124360515
+  },
+  "ndcg": {
+    "NDCG · reference blend · full val": 0.37839415918080593,
+    "NDCG · five NN-2 blend · full val": 0.3783052912845804
+  },
+  "original_source": {
+    "commit": "4b3b6a4aac9cd064747ba942fd8171e702d10a0b",
+    "source_sha256": "1e3f68221e358c55c5bae340de1e5cff2f686dcc20bf1b6e9237ad7a7cc8d07a"
+  },
+  "training_source": {
+    "commit": "8e25078ec4d0aa422a0d829a2296bba7f546b4d8",
+    "source_sha256": "f8e88a2bc477414a8985b94648418aa54c118215e7748eb8d3dc0df79f8b0ec0"
+  },
+  "comparison_source": {
+    "commit": "41fa8bf66b1e00eb40662b7dc795d12df59f1176",
+    "source_sha256": "2ab1cc26cef64edbd4dc9c5b142348dbf02294e20f815d19ca372296d822e6b9"
+  }
+}
