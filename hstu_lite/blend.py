@@ -17,6 +17,24 @@ def load_models():
         M['gbdt_t'] = (np.load(Path(WORK, 'gbdt_t_val.npy')), np.load(Path(WORK, 'gbdt_t_test.npy')))
     return M
 
+def write_submission(split, scores, path):
+    feed = np.repeat(np.asarray(split.feed_id), np.diff(split.c_off))
+    sub = pd.DataFrame({"feed_id": feed.astype(np.int32), "item_id": np.asarray(split.c_item).astype(np.int32),
+                        "score": scores.astype(np.float32)})
+    tmpl = pd.read_parquet(os.path.join(RAW, "sample_submission.parquet"), columns=["feed_id", "item_id"])
+    out = tmpl.merge(sub, on=["feed_id", "item_id"], how="left", validate="one_to_one")
+    assert len(out) == len(tmpl) == len(sub), (len(out), len(tmpl), len(sub))
+    assert out["score"].notna().all() and np.isfinite(out["score"]).all()
+    out["feed_id"] = out["feed_id"].astype(np.int32); out["item_id"] = out["item_id"].astype(np.int32)
+    out["score"] = out["score"].astype(np.float32)
+    temporary = path.with_suffix('.tmp.parquet')
+    out.to_parquet(temporary, index=False)
+    audit = validate(temporary, Path(RAW, 'sample_submission.parquet'))
+    replace_atomic(temporary, path)
+    audit['file'] = str(path.resolve())
+    return audit
+
+
 def main():
     Sv, Ste = Split("val"), Split("test"); y = np.asarray(Sv.target)
     M = load_models(); names = list(M)
@@ -70,21 +88,8 @@ def main():
     # tie-break with the strongest single model (tiny epsilon) so equal blended ranks never collapse
     top = max(names, key=lambda k: ndcg_full(offsets, R[k][0][rows], labels)[0])
     score = sum(wi * R[k][1] for wi, k in zip(w, names)) + 1e-4 * R[top][1]
-    feed = np.repeat(np.asarray(Ste.feed_id), np.diff(Ste.c_off))
-    sub = pd.DataFrame({"feed_id": feed.astype(np.int32), "item_id": np.asarray(Ste.c_item).astype(np.int32),
-                        "score": score.astype(np.float32)})
-    tmpl = pd.read_parquet(os.path.join(RAW, "sample_submission.parquet"), columns=["feed_id", "item_id"])
-    out = tmpl.merge(sub, on=["feed_id", "item_id"], how="left", validate="one_to_one")
-    assert len(out) == len(tmpl) == len(sub), (len(out), len(tmpl), len(sub))
-    assert out["score"].notna().all() and np.isfinite(out["score"]).all()
-    out["feed_id"] = out["feed_id"].astype(np.int32); out["item_id"] = out["item_id"].astype(np.int32)
-    out["score"] = out["score"].astype(np.float32)
     path = Path(WORK, 'submission.parquet')
-    temporary = path.with_suffix('.tmp.parquet')
-    out.to_parquet(temporary, index=False)
-    audit = validate(temporary, Path(RAW, 'sample_submission.parquet'))
-    replace_atomic(temporary, path)
-    audit['file'] = str(path.resolve())
+    audit = write_submission(Ste, score, path)
     val_scores = sum(wi * R[k][0] for wi, k in zip(w, names)) + 1e-4 * R[top][0]
     early_value = ndcg_full(offsets, val_scores[rows], labels)[0]
     late_rows, late_sizes = feed_rows(Sv.c_off, np.flatnonzero(val_holdout_mask(Sv)))
@@ -95,7 +100,7 @@ def main():
                   audit=audit, scope=('OOF for NN-2/meta, val for NN-1/GBDT-T; early feeds fit blend weights. '
                          'NN-2 epochs and GBDT-T position use late feeds, and meta rounds use val folds.'))
     write_json(Path(WORK, 'blend.json'), result)
-    print("saved", path, out.shape, out.dtypes.to_dict())
+    print("saved", path, audit["rows"], "rows")
     return result
 
 if __name__ == "__main__":
