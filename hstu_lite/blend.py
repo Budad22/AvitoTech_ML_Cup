@@ -41,10 +41,9 @@ def write_submission(split, scores, path):
     return audit
 
 
-def rank_models(work, val, test):
-    models = load_models(work)
+def rank_models(models, val, test):
     if not models:
-        raise ValueError(f'No model predictions in {work}')
+        raise ValueError('No model predictions')
     ranked, metrics = {}, {}
     for name, (before, after) in models.items():
         if before.shape != (val.N,) or after.shape != (test.N,) or not np.isfinite(after).all():
@@ -103,7 +102,7 @@ def mix(ranked, weights, tiebreak, index):
 
 def main(reference=None):
     val, test = Split('val'), Split('test')
-    ranked, components = rank_models(WORK, val, test)
+    ranked, components = rank_models(load_models(WORK), val, test)
     late = val_holdout_mask(val)
     scope = ('OOF for NN-2/meta, val for NN-1/GBDT-T. '
              'NN-2 epochs and GBDT-T position use late feeds, and meta rounds use val folds.')
@@ -114,7 +113,7 @@ def main(reference=None):
     else:
         baseline = json.loads((reference / 'blend.json').read_bytes())
         weights, top = baseline['weights'], baseline['tiebreak']
-        before, _ = rank_models(reference, val, test)
+        before, _ = rank_models(load_models(reference), val, test)
         before_ndcg, before_feeds = ndcg_full(val.c_off, mix(before, weights, top, 0), val.target)
         if not np.isclose(before_ndcg, baseline['blended_val_ndcg'], atol=1e-12, rtol=0):
             raise ValueError('Frozen weights do not reproduce the reference NDCG')
