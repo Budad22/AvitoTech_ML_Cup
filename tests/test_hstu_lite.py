@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 import tempfile
-from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -10,7 +9,7 @@ import torch
 
 from hstu_lite.common import average_ranks, ndcg_full
 from hstu_lite.nn_train import Ranker, collate, lambda_loss, softmax_loss
-from hstu_lite.pilot import Pilot
+from hstu_lite.monitor import Progress
 from mlp.metrics import ndcg
 
 
@@ -18,9 +17,7 @@ class HstuLiteContracts(unittest.TestCase):
     def test_monitor_recovers_from_windows_reader_lock_without_rewriting_stage(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            pilot = Pilot.__new__(Pilot)
-            pilot.root, pilot.args = root, SimpleNamespace(steps=100)
-            pilot.published_stage, pilot.next_monitor_warning = None, 0.
+            monitor = Progress(root)
             replace = os.replace
             stage_replacements = []
 
@@ -32,8 +29,8 @@ class HstuLiteContracts(unittest.TestCase):
                 replace(source, destination)
 
             with patch('mlp_trials.state.os.replace', side_effect=locked_once):
-                pilot.progress('train', step=1)
-                pilot.progress('train', step=2)
+                monitor.publish('train', step=1)
+                monitor.publish('train', step=2)
             self.assertEqual((root / 'stage.txt').read_text(), 'train')
             self.assertEqual(len(stage_replacements), 2)
 
@@ -41,16 +38,14 @@ class HstuLiteContracts(unittest.TestCase):
         import json
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            pilot = Pilot.__new__(Pilot)
-            pilot.root, pilot.args = root, SimpleNamespace(steps=100)
-            pilot.published_stage, pilot.next_monitor_warning = None, 0.
-            pilot.progress('train', step=1)
+            monitor = Progress(root)
+            monitor.publish('train', step=1)
             with patch('mlp_trials.state.os.replace', side_effect=PermissionError(13, 'WinError 5 simulated')), \
-                    patch('mlp_trials.state.time.sleep'), self.assertLogs('hstu_lite.pilot', 'WARNING'):
-                pilot.progress('train', step=2)
+                    patch('mlp_trials.state.time.sleep'), self.assertLogs('hstu_lite.monitor', 'WARNING'):
+                monitor.publish('train', step=2)
             status = root / 'status.json'
             self.assertEqual(json.loads(status.read_text())['step'], 1)
-            pilot.progress('train', step=3)
+            monitor.publish('train', step=3)
             self.assertEqual(json.loads(status.read_text())['step'], 3)
 
     def test_equal_ranks_and_full_ndcg_match_existing_evaluator(self):

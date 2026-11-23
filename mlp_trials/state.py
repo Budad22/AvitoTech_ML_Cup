@@ -12,6 +12,10 @@ def write_text(path, text):
     """Preserve the last complete snapshot until the replacement succeeds."""
     temporary = path.with_suffix(path.suffix + '.tmp')
     temporary.write_text(text, encoding='utf-8')
+    replace_atomic(temporary, path)
+
+
+def replace_atomic(temporary, path):
     for attempt in range(21):
         try:
             os.replace(temporary, path)

@@ -1,0 +1,48 @@
+{
+  "report": {
+    "experiment": "EXP-HSTU-005",
+    "status": "completed",
+    "ndcg": {
+      "NDCG \u00b7 \u043f\u043e\u043b\u043d\u0430\u044f val \u00b7 seed 0": 0.3701590353057141,
+      "NDCG \u00b7 \u043f\u043e\u043b\u043d\u0430\u044f val \u00b7 seed 1": 0.37065337557027306,
+      "NDCG \u00b7 \u043f\u043e\u043b\u043d\u0430\u044f val \u00b7 seed 2": 0.37050225309517304
+    },
+    "results": {
+      "nn1_s0": {
+        "seed": 0,
+        "best_step": 98474,
+        "steps": 98474,
+        "selection_ndcg": 0.37001304314533323,
+        "control_ndcg": 0.37031888490266296,
+        "full_val_ndcg": 0.3701590353057141
+      },
+      "nn1_s1": {
+        "seed": 1,
+        "best_step": 96000,
+        "steps": 98474,
+        "selection_ndcg": 0.3724018342215112,
+        "control_ndcg": 0.36873684828776837,
+        "full_val_ndcg": 0.37065337557027306
+      },
+      "nn1_s2": {
+        "seed": 2,
+        "best_step": 98474,
+        "steps": 98474,
+        "selection_ndcg": 0.37058320534708133,
+        "control_ndcg": 0.3704134294392257,
+        "full_val_ndcg": 0.37050225309517304
+      }
+    },
+    "train_feeds": 3151208
+  },
+  "completed_at": "2026-11-23T00:41:54.195620+00:00",
+  "predictions": {
+    "nn1_s0_test.npy": 11619352,
+    "nn1_s0_val.npy": 5560012,
+    "nn1_s1_test.npy": 11619352,
+    "nn1_s1_val.npy": 5560012,
+    "nn1_s2_test.npy": 11619352,
+    "nn1_s2_val.npy": 5560012
+  },
+  "failure": false
+}
