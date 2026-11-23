@@ -121,6 +121,22 @@ def val_holdout_mask(S):
     return day > day.min()
 
 
+def paired_result(users, before, after):
+    """Bootstrap users and average per feed, preserving repeated-user clusters."""
+    _, cluster = np.unique(users, return_inverse=True)
+    delta = after - before
+    sums = np.bincount(cluster, weights=delta)
+    counts = np.bincount(cluster)
+    rng = np.random.default_rng(20261123)
+    draws = np.empty(2000)
+    for index in range(len(draws)):
+        sample = rng.integers(len(sums), size=len(sums))
+        draws[index] = sums[sample].sum() / counts[sample].sum()
+    return dict(reference_ndcg=float(before.mean()), candidate_ndcg=float(after.mean()),
+                delta=float(delta.mean()), ci95=np.quantile(draws, [.025, .975]).tolist(),
+                feeds=len(before), users=len(sums))
+
+
 def feed_rows(c_off, feeds):
     """flat row indices of the given feeds (in order) and their sizes"""
     feeds = np.asarray(feeds)

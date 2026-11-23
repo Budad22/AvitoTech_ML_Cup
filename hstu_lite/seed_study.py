@@ -7,7 +7,7 @@ import numpy as np
 
 from mlp_trials.state import write_json
 from .blend import write_submission
-from .common import Split, feed_rank_pct, ndcg_full, val_holdout_mask
+from .common import Split, feed_rank_pct, ndcg_full, paired_result, val_holdout_mask
 
 
 def read_report(path):
@@ -54,22 +54,6 @@ def blended_scores(split, reference, extra, weights, tiebreak):
     original_nn2 = components['nn2']
     components['nn2'] = np.mean(original_ranks + extra_ranks, axis=0)
     return baseline, blend(), original_nn2, components['nn2']
-
-
-def paired_result(users, before, after):
-    """Bootstrap users and average per feed, preserving repeated-user clusters."""
-    _, cluster = np.unique(users, return_inverse=True)
-    delta = after - before
-    sums = np.bincount(cluster, weights=delta)
-    counts = np.bincount(cluster)
-    rng = np.random.default_rng(20261123)
-    draws = np.empty(2000)
-    for index in range(len(draws)):
-        sample = rng.integers(len(sums), size=len(sums))
-        draws[index] = sums[sample].sum() / counts[sample].sum()
-    return dict(reference_ndcg=float(before.mean()), candidate_ndcg=float(after.mean()),
-                delta=float(delta.mean()), ci95=np.quantile(draws, [.025, .975]).tolist(),
-                feeds=len(before), users=len(sums))
 
 
 def run(reference, extra, output):

@@ -1,0 +1,72 @@
+{
+  "reference": {
+    "model": {
+      "d": 128,
+      "nh": 4,
+      "n_hist": 2,
+      "n_cross": 2,
+      "n_list": 2,
+      "drop": 0.1
+    },
+    "step": 1200,
+    "permutation_error": 7.152557373046875e-07,
+    "sha256": "7edbc9fa94894f7b811e799e71f706ca8385a93bc6e36b9e9d3f5130a2e3b5ef"
+  },
+  "candidate": {
+    "model": {
+      "d": 192,
+      "nh": 6,
+      "n_hist": 2,
+      "n_cross": 3,
+      "n_list": 2,
+      "drop": 0.1
+    },
+    "step": 1250,
+    "permutation_error": 4.76837158203125e-07,
+    "sha256": "a4e73b89f48f3a439d4e5b1d672919806cf498ea157d05c04d39702b555e29d3"
+  },
+  "comparisons": {
+    "early": {
+      "reference_ndcg": 0.34307558460233734,
+      "candidate_ndcg": 0.34094187573563267,
+      "delta": -0.0021337088667047572,
+      "ci95": [
+        -0.0033801628328011574,
+        -0.0008625041666655022
+      ],
+      "feeds": 7542,
+      "users": 7196
+    },
+    "late": {
+      "reference_ndcg": 0.34427396995828424,
+      "candidate_ndcg": 0.3420923201662327,
+      "delta": -0.0021816497920515484,
+      "ci95": [
+        -0.0035760875338410915,
+        -0.0007725085434677376
+      ],
+      "feeds": 6881,
+      "users": 6556
+    },
+    "full": {
+      "reference_ndcg": 0.34364731653288383,
+      "candidate_ndcg": 0.3414907357596886,
+      "delta": -0.0021565807731951736,
+      "ci95": [
+        -0.00304772795093817,
+        -0.0012164510449656038
+      ],
+      "feeds": 14423,
+      "users": 13741
+    }
+  },
+  "decision": "keep_reference",
+  "selection_hash": "1746a5d7b2e2c25848a6e118ec6cf244e446fa4bf71034edb0df2f820d0dd6ae",
+  "train_feed_hash": "1478f224dd0d08076652333f55bd14be6db03526d767986752ad9255ff46c60c",
+  "source": {
+    "commit": "929479982e0409365da276ee9d9403a88cf9b86a",
+    "source_sha256": "ba527ccd8e2cbbd95495cf56adfc1fba06b9150f11513c4070cd5c2fe1fe418e"
+  },
+  "experiment": "EXP-HSTU-010",
+  "status": "completed"
+}

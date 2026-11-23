@@ -8,9 +8,9 @@ import numpy as np
 import torch
 
 from mlp_trials.state import write_json
-from .common import Split, ndcg_full, val_holdout_mask
+from .common import Split, ndcg_full, paired_result, val_holdout_mask
 from .nn_train import Ranker, predict
-from .seed_study import paired_result, read_report
+from .seed_study import read_report
 
 
 def evaluate_checkpoint(work, val, device):
