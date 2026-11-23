@@ -248,7 +248,7 @@ def main():
         Progress(root).publish('prepare')
         try:
             stage = Finetuning(args, root)
-            result = stage.holdout() if args.mode == 'holdout' else stage.cv()
+            result = stage.holdout() if args.mode == 'holdout' else stage.cv(seeds)
             write_json(report, dict(experiment=root.parent.name, status='completed', mode=args.mode, **result))
             stage.monitor.publish('completed')
         except Paused:

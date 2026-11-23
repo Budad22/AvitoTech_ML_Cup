@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 import tempfile
 import unittest
@@ -7,6 +8,7 @@ from unittest.mock import patch
 import numpy as np
 import torch
 
+from hstu_lite import finetune
 from hstu_lite.common import average_ranks, ndcg_full
 from hstu_lite.nn_train import Ranker, collate, lambda_loss, softmax_loss
 from hstu_lite.monitor import Progress
@@ -47,6 +49,19 @@ class HstuLiteContracts(unittest.TestCase):
             self.assertEqual(json.loads(status.read_text())['step'], 1)
             monitor.publish('train', step=3)
             self.assertEqual(json.loads(status.read_text())['step'], 3)
+
+    def test_cv_cli_dispatches_default_and_explicit_checkpoint_seeds(self):
+        base = ['finetune', '--mode', 'cv', '--nn1', '.', '--epochs', '3', '--device', 'cpu']
+        cases = [([], [[0, 0], [1, 1], [2, 2]]),
+                 (['--cv-seed', '3', '0', '--cv-seed', '4', '1'], [[3, 0], [4, 1]])]
+        for extra, expected in cases:
+            with self.subTest(seeds=expected), tempfile.TemporaryDirectory() as folder, \
+                    patch.object(sys, 'argv', base + extra), patch.object(finetune, 'WORK', folder), \
+                    patch.object(finetune, 'Finetuning') as trainer:
+                trainer.return_value.cv.return_value = {}
+                finetune.main()
+                trainer.return_value.cv.assert_called_once_with(expected)
+                self.assertTrue((Path(folder) / 'report.json').is_file())
 
     def test_equal_ranks_and_full_ndcg_match_existing_evaluator(self):
         np.testing.assert_array_equal(average_ranks(np.array([3, 1, 3, 2])), [2.5, 0, 2.5, 1])
