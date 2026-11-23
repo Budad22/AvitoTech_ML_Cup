@@ -1,7 +1,9 @@
 """Blend OOF predictions on val (per-feed rank), choose weights, write submission.  python blend.py"""
 import os, glob, itertools, numpy as np, pandas as pd
+from pathlib import Path
 from .common import Split, WORK, RAW, ndcg_full, feed_rank_pct, feed_rows, val_holdout_mask
 from scripts.validate_submission import validate
+from mlp_trials.state import replace_atomic, write_json
 
 def load_models():
     M = {}
@@ -11,6 +13,8 @@ def load_models():
         if os.path.exists(t): M[name] = (np.load(f), np.load(t))
     for f in sorted(glob.glob(os.path.join(WORK, "nn1_s*_val.npy"))):     # NN-1 never saw val labels -> honest "OOF"
         M[os.path.basename(f)[:-8]] = (np.load(f), np.load(f.replace("_val.npy", "_test.npy")))
+    if Path(WORK, 'gbdt_t_val.npy').exists() and Path(WORK, 'gbdt_t_test.npy').exists():
+        M['gbdt_t'] = (np.load(Path(WORK, 'gbdt_t_val.npy')), np.load(Path(WORK, 'gbdt_t_test.npy')))
     return M
 
 def main():
@@ -61,7 +65,7 @@ def main():
     best = (sc, w.tolist())
     sc, w = best; print("weights", dict(zip(names, w)), "blend selection NDCG (weights fitted on this partition)", round(sc, 5))
     # tie-break with the strongest single model (tiny epsilon) so equal blended ranks never collapse
-    top = max(names, key=lambda k: ndcg_full(Sv.c_off, M[k][0], y)[0])
+    top = max(names, key=lambda k: ndcg_full(offsets, R[k][0][rows], labels)[0])
     score = sum(wi * R[k][1] for wi, k in zip(w, names)) + 1e-4 * R[top][1]
     feed = np.repeat(np.asarray(Ste.feed_id), np.diff(Ste.c_off))
     sub = pd.DataFrame({"feed_id": feed.astype(np.int32), "item_id": np.asarray(Ste.c_item).astype(np.int32),
@@ -72,8 +76,22 @@ def main():
     assert out["score"].notna().all() and np.isfinite(out["score"]).all()
     out["feed_id"] = out["feed_id"].astype(np.int32); out["item_id"] = out["item_id"].astype(np.int32)
     out["score"] = out["score"].astype(np.float32)
-    path = os.path.join(WORK, "submission.parquet"); out.to_parquet(path, index=False)
+    path = Path(WORK, 'submission.parquet')
+    temporary = path.with_suffix('.tmp.parquet')
+    out.to_parquet(temporary, index=False)
+    audit = validate(temporary, Path(RAW, 'sample_submission.parquet'))
+    replace_atomic(temporary, path)
+    audit['file'] = str(path.resolve())
+    val_scores = sum(wi * R[k][0] for wi, k in zip(w, names)) + 1e-4 * R[top][0]
+    early_value = ndcg_full(offsets, val_scores[rows], labels)[0]
+    late_rows, late_sizes = feed_rows(Sv.c_off, np.flatnonzero(val_holdout_mask(Sv)))
+    late_value = ndcg_full(np.r_[0, late_sizes.cumsum()], val_scores[late_rows], y[late_rows])[0]
+    result = dict(weights=dict(zip(names, w)), tiebreak=top, selection_ndcg=early_value,
+                  late_oof_ndcg=late_value, blended_val_ndcg=ndcg_full(Sv.c_off, val_scores, y)[0],
+                  audit=audit, scope='OOF for NN-2/meta, val for NN-1/GBDT-T; early feeds fit blend weights')
+    write_json(Path(WORK, 'blend.json'), result)
     print("saved", path, out.shape, out.dtypes.to_dict())
+    return result
 
 if __name__ == "__main__":
     main()

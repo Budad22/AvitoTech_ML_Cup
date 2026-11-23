@@ -3,7 +3,9 @@
   python gbdt.py meta   -> meta-GBDT on randomized val, 5-fold user-grouped, uses NN-1 + GBDT-T scores as features
 """
 import os, sys, glob, json, numpy as np, pandas as pd, lightgbm as lgb
+from pathlib import Path
 from .common import Split, WORK, ndcg_full, feed_rank_pct, val_folds, val_holdout_mask, feed_rows
+from mlp_trials.state import replace_atomic
 
 BASE = dict(objective="lambdarank", metric="None", lambdarank_truncation_level=300,
             learning_rate=0.03, num_leaves=63, min_data_in_leaf=200, min_sum_hessian_in_leaf=1e-3,
@@ -24,6 +26,15 @@ def full_ndcg(prediction, dataset):
 def ds(df, cols):
     return lgb.Dataset(df[cols].to_numpy(np.float32), label=df["_y"].clip(lower=0).to_numpy(), group=groups(df),
                        feature_name=cols, categorical_feature=["cat"], free_raw_data=True)
+
+
+def save_scores(name, scores):
+    if not np.isfinite(scores).all():
+        raise ValueError(f'Incomplete predictions for {name}')
+    path = Path(WORK) / (name + '.npy')
+    tmp = path.with_suffix('.tmp.npy')
+    np.save(tmp, scores, allow_pickle=False)
+    replace_atomic(tmp, path)
 
 
 def nn1_feature(split, rows):
@@ -68,10 +79,15 @@ def run_t():
         print(f"pos={P}: selection NDCG {sc:.5f}")
         if best is None or sc > best[0]: best = (sc, P)
     sc, P = best; print("chosen pos", P, sc, "iters", m.best_iteration)
+    m.save_model(os.path.join(WORK, 'gbdt_t.txt'), num_iteration=m.best_iteration)
+    val_score = None
     for split, df in (("val", va), ("test", te)):
         df["pos"] = P; out = np.full(Split(split).N, np.nan, np.float32)
         out[df["_row"].to_numpy()] = m.predict(df[cols].to_numpy(np.float32), num_iteration=m.best_iteration)
-        np.save(os.path.join(WORK, f"gbdt_t_{split}.npy"), out)
+        save_scores(f'gbdt_t_{split}', out)
+        if split == 'val':
+            val_score = ndcg_full(Sv.c_off, out, Sv.target)[0]
+    return dict(position=P, best_iteration=m.best_iteration, selection_ndcg=sc, full_val_ndcg=val_score)
 
 
 def run_meta(obj="lambdarank", tag="meta"):
@@ -107,9 +123,12 @@ def run_meta(obj="lambdarank", tag="meta"):
         if k == 0:
             imp = pd.Series(m.feature_importance("gain"), cols).sort_values(ascending=False)
             print(imp.head(25).to_string())
-    print(f"{tag} OOF NDCG:", ndcg_full(Sv.c_off, oof, np.asarray(Sv.target))[0])
+    oof_score = ndcg_full(Sv.c_off, oof, np.asarray(Sv.target))[0]
+    print(f"{tag} OOF NDCG:", oof_score)
     out = np.full(Ste.N, np.nan, np.float32); out[te["_row"].to_numpy()] = tp
-    np.save(os.path.join(WORK, f"{tag}_oof.npy"), oof); np.save(os.path.join(WORK, f"{tag}_test.npy"), out)
+    save_scores(f'{tag}_oof', oof)
+    save_scores(f'{tag}_test', out)
+    return dict(objective=obj, iterations=n_iter, oof_ndcg=oof_score)
 
 
 if __name__ == "__main__":
