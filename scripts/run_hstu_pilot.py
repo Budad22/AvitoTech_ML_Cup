@@ -25,6 +25,7 @@ def main():
     parser.add_argument('--smoke-report', type=Path, help='Completed smoke report for section 6.2')
     parser.add_argument('--calibrate-smoke', action='store_true')
     parser.add_argument('--smoke-preset', default='position')
+    parser.add_argument('--wide', action='store_true', help='Use the wider HSTU-lite architecture from sol.md §9.2')
     parser.add_argument('--max-seconds', type=int, default=7200, help='Time limit per variant')
     args = parser.parse_args()
     if args.sol_full:
@@ -80,6 +81,8 @@ def main():
                     cmd.append('--sol-full')
                 if args.calibrate_smoke:
                     cmd.append('--calibrate-smoke')
+                if args.wide:
+                    cmd.append('--wide')
                 subprocess.run(cmd, cwd=project, env=env, stdout=log, stderr=log, check=True)
             except Exception:
                 error = traceback.format_exc()

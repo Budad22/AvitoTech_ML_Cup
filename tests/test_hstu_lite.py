@@ -13,6 +13,7 @@ from hstu_lite.common import average_ranks, ndcg_full
 from hstu_lite.nn_train import Ranker, collate, lambda_loss, softmax_loss
 from hstu_lite.monitor import Progress
 from mlp.metrics import ndcg
+from scripts import run_hstu_pilot
 
 
 class HstuLiteContracts(unittest.TestCase):
@@ -62,6 +63,23 @@ class HstuLiteContracts(unittest.TestCase):
                 finetune.main()
                 trainer.return_value.cv.assert_called_once_with(expected)
                 self.assertTrue((Path(folder) / 'report.json').is_file())
+
+    def test_wide_pilot_flag_reaches_the_training_command(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            packed = root / 'packed'
+            for split in ('train', 'val', 'test'):
+                path = packed / split
+                path.mkdir(parents=True)
+                (path / 'meta.json').touch()
+            argv = ['run_hstu_pilot', '--data', folder, '--output', str(root / 'output'),
+                    '--packed', str(packed), '--device', 'cpu', '--sol-smoke', '--wide']
+            with patch.object(sys, 'argv', argv), patch.object(run_hstu_pilot.subprocess, 'run') as launch:
+                run_hstu_pilot.main()
+                launch.assert_called_once()
+                command = launch.call_args.args[0]
+            self.assertEqual(command[command.index('-m') + 1], 'hstu_lite.pilot')
+            self.assertIn('--wide', command)
 
     def test_equal_ranks_and_full_ndcg_match_existing_evaluator(self):
         np.testing.assert_array_equal(average_ranks(np.array([3, 1, 3, 2])), [2.5, 0, 2.5, 1])

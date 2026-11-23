@@ -21,6 +21,7 @@ from .nn_train import (EMA, FeedData, Ranker, collate, cosine_lr, evaluate, feed
 
 STAGES = (20, 200, 800)
 VARIANTS = (('position', True), ('control', False))
+WIDE_MODEL = dict(d=192, nh=6, n_cross=3)
 SMOKE_SETTINGS = {
     'position': (1000, .999, 'NDCG · selection'),
     'warmup': (32, .999, 'NDCG · короткий warmup'),
@@ -36,6 +37,7 @@ class Pilot:
         self.report = self.root / 'report.json'
         self.monitor = Progress(self.root)
         self.device = torch.device(args.device)
+        self.model_parameters = WIDE_MODEL if args.wide else {}
         self.train = Split('train')
         validation = Split('val')
         # Select whole feeds using only membership in the early timestamp partition.
@@ -66,6 +68,8 @@ class Pilot:
                     train_meta=self.train.meta, val_meta=validation.meta,
                     selection_hash=hashlib.sha256(self.selection.tobytes()).hexdigest(),
                     train_feed_hash=hashlib.sha256(self.feeds.tobytes()).hexdigest())
+        if self.model_parameters:
+            plan['model_parameters'] = self.model_parameters
         self.identity = hashlib.sha256(json.dumps(plan, sort_keys=True).encode()).hexdigest()
         plan_path = self.root / 'plan.json'
         if plan_path.exists() and json.loads(plan_path.read_text(encoding='utf-8')) != plan:
@@ -78,7 +82,7 @@ class Pilot:
     def case(self, name, use_pos, stop_at):
         args = self.args
         torch.manual_seed(args.seed)
-        model = Ranker().to(self.device)
+        model = Ranker(**self.model_parameters).to(self.device)
         if args.sol_smoke:
             warmup, decay = SMOKE_SETTINGS[name][:2]
         elif args.sol_full:
@@ -87,7 +91,7 @@ class Pilot:
             warmup, decay = min(50, args.steps // 4), .999
         ema = EMA(model, decay)
         opt = make_opt(model, 1e-3, .02)
-        shadow = Ranker().to(self.device)
+        shadow = Ranker(**model.cfg).to(self.device)
         directory = self.root / name
         directory.mkdir(exist_ok=True)
         checkpoint = directory / 'last.pt'
@@ -208,7 +212,7 @@ class Pilot:
             scores[label] = score
             results[name] = dict(ndcg=score, best_step=state['step'], warmup=warmup, ema=decay,
                                  permutation_error=error, quality_gate=score > .342 and error < .001,
-                                 history=result['history'], last_loss=result['loss'])
+                                 history=result['history'], last_loss=result['loss'], model=state['cfg'])
             print(json.dumps(dict(variant=name, **results[name]), ensure_ascii=False), flush=True)
         report = dict(experiment=self.root.parent.name, status='completed',
                       ndcg=scores, results=results,
@@ -276,6 +280,7 @@ def main():
     mode.add_argument('--sol-full', action='store_true')
     parser.add_argument('--calibrate-smoke', action='store_true')
     parser.add_argument('--smoke-preset', choices=SMOKE_SETTINGS, default='position')
+    parser.add_argument('--wide', action='store_true', help='Use width 192, six heads and three cross-attention layers')
     args = parser.parse_args()
     if min(args.batch_size, args.steps, args.val_feeds, args.max_seconds) < 1:
         parser.error('Batch size, steps, validation size and time limit must be positive')
