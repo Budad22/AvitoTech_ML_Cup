@@ -108,5 +108,10 @@
     ],
     "checked_at": "2026-11-23T07:38:34.764017+00:00",
     "agent_upload_attempts": 0
+  },
+  "leaderboard": {
+    "ndcg": 0.3711829345,
+    "source": "user_report",
+    "artifact": "EXP-HSTU-008"
   }
 }

@@ -61,9 +61,10 @@ class Finetuning:
                                   emb_in_ram=self.device.type == 'cuda')
                          if self.mix_feeds is not None else None)
 
-    def fit(self, seed, tag, fitting, *, check=None):
+    def fit(self, seed, tag, fitting, *, check=None, initial_seed=None):
         args = self.args
-        path = args.nn1 / f'nn1_s{seed}.pt'
+        source_seed = seed if initial_seed is None else initial_seed
+        path = args.nn1 / f'nn1_s{source_seed}.pt'
         initial = torch.load(path, map_location='cpu', weights_only=False)
         torch.manual_seed(seed)
         model = Ranker(**initial['cfg']).to(self.device)
@@ -165,11 +166,11 @@ class Finetuning:
                     baseline=baseline, best_epochs=best['epoch'], best_ndcg=best['ndcg'],
                     tuning_feeds=len(tuning), history=history, lr=self.args.lr, mix_train=self.args.mix_train)
 
-    def cv(self):
+    def cv(self, seeds):
         folds = val_folds(self.val)
         test = Split('test')
         results = {}
-        for seed in (0, 1, 2):
+        for seed, initial_seed in seeds:
             oof = np.full(self.val.N, np.nan, dtype=np.float32)
             test_mean = np.zeros(test.N, dtype=np.float64)
             for fold in range(5):
@@ -183,7 +184,7 @@ class Finetuning:
                     held_rank = np.load(folder / 'val.npy', allow_pickle=False)
                     test_rank = np.load(folder / 'test.npy', allow_pickle=False)
                 else:
-                    model, _ = self.fit(seed, tag, fitted)
+                    model, _ = self.fit(seed, tag, fitted, initial_seed=initial_seed)
                     self.monitor.publish('evaluate', variant=tag)
                     scores = predict(model, 'val', hold, self.device, workers=0)
                     rows, sizes = feed_rows(self.val.c_off, hold)
@@ -200,13 +201,16 @@ class Finetuning:
             save_array(self.root / f'nn2_s{seed}_oof.npy', oof)
             save_array(self.root / f'nn2_s{seed}_test.npy', test_mean.astype('float32'))
             results[f'NDCG · OOF · seed {seed}'] = score
-        return dict(ndcg=results, epochs=self.args.epochs, lr=self.args.lr, mix_train=self.args.mix_train)
+        return dict(ndcg=results, epochs=self.args.epochs, lr=self.args.lr,
+                    mix_train=self.args.mix_train, seeds=seeds)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mode', choices=('holdout', 'cv'), required=True)
     parser.add_argument('--nn1', type=Path, required=True, help='NN-1 work directory')
+    parser.add_argument('--cv-seed', nargs=2, metavar=('SEED', 'NN1_SEED'), type=int, action='append',
+                        help='Train a CV seed from the specified NN-1 checkpoint. Repeat for more seeds.')
     parser.add_argument('--epochs', type=int, required=True)
     parser.add_argument('--lr', type=float, default=1e-4)
     parser.add_argument('--mix-train', type=float, default=.25)
@@ -214,10 +218,28 @@ def main():
     args = parser.parse_args()
     if args.epochs < 1 or args.lr <= 0 or args.mix_train < 0:
         parser.error('Invalid training configuration')
+    seeds = args.cv_seed or [[seed, seed] for seed in range(3)]
+    if args.cv_seed and args.mode != 'cv':
+        parser.error('--cv-seed requires --mode cv')
+    if any(not 0 <= value < 2 ** 32 for pair in seeds for value in pair):
+        parser.error('Seeds must be unsigned 32-bit integers')
+    if len({seed for seed, _ in seeds}) != len(seeds):
+        parser.error('CV training seeds must be unique')
     torch.set_num_threads(4 if args.device == 'cuda' else 2)
     root = Path(WORK)
     root.mkdir(parents=True, exist_ok=True)
     with guard_lock(root / 'nn2.lock'):
+        if args.mode == 'cv':
+            configuration = root / 'cv-config.json'
+            identity = dict(seeds=seeds, epochs=args.epochs, lr=args.lr, mix_train=args.mix_train,
+                            nn1=str(args.nn1.resolve()), device=args.device)
+            if configuration.exists():
+                if json.loads(configuration.read_bytes()) != identity:
+                    raise ValueError('CV configuration changed. Use a new experiment directory.')
+            else:
+                if args.cv_seed and any(root.glob('seed*-fold*')):
+                    raise ValueError('Custom CV seeds require a fresh experiment directory')
+                write_json(configuration, identity)
         report = root / 'report.json'
         if report.exists():
             write_text(root / 'stage.txt', 'completed')
