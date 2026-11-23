@@ -1,0 +1,169 @@
+{
+  "report": {
+    "experiment": "EXP-HSTU-007",
+    "status": "completed",
+    "mode": "cv",
+    "ndcg": {
+      "NDCG · OOF · seed 0": 0.3728128366830235,
+      "NDCG · OOF · seed 1": 0.37355187123885103,
+      "NDCG · OOF · seed 2": 0.3723825570808747
+    },
+    "epochs": 3,
+    "lr": 0.0001,
+    "mix_train": 0.25
+  },
+  "folds": [
+    {
+      "seed": 0,
+      "fold": 0,
+      "heldout_feeds": 3354
+    },
+    {
+      "seed": 0,
+      "fold": 1,
+      "heldout_feeds": 2807
+    },
+    {
+      "seed": 0,
+      "fold": 2,
+      "heldout_feeds": 2761
+    },
+    {
+      "seed": 0,
+      "fold": 3,
+      "heldout_feeds": 2744
+    },
+    {
+      "seed": 0,
+      "fold": 4,
+      "heldout_feeds": 2757
+    },
+    {
+      "seed": 1,
+      "fold": 0,
+      "heldout_feeds": 3354
+    },
+    {
+      "seed": 1,
+      "fold": 1,
+      "heldout_feeds": 2807
+    },
+    {
+      "seed": 1,
+      "fold": 2,
+      "heldout_feeds": 2761
+    },
+    {
+      "seed": 1,
+      "fold": 3,
+      "heldout_feeds": 2744
+    },
+    {
+      "seed": 1,
+      "fold": 4,
+      "heldout_feeds": 2757
+    },
+    {
+      "seed": 2,
+      "fold": 0,
+      "heldout_feeds": 3354
+    },
+    {
+      "seed": 2,
+      "fold": 1,
+      "heldout_feeds": 2807
+    },
+    {
+      "seed": 2,
+      "fold": 2,
+      "heldout_feeds": 2761
+    },
+    {
+      "seed": 2,
+      "fold": 3,
+      "heldout_feeds": 2744
+    },
+    {
+      "seed": 2,
+      "fold": 4,
+      "heldout_feeds": 2757
+    }
+  ],
+  "results": {
+    "nn1_s0": {
+      "full_val_ndcg": 0.3701590353057141,
+      "early_ndcg": 0.3700131953326825,
+      "late_ndcg": 0.37031888490266296
+    },
+    "nn1_s1": {
+      "full_val_ndcg": 0.37065337557027306,
+      "early_ndcg": 0.37240193354308054,
+      "late_ndcg": 0.36873684828776837
+    },
+    "nn1_s2": {
+      "full_val_ndcg": 0.37050225309517304,
+      "early_ndcg": 0.37058329202073303,
+      "late_ndcg": 0.3704134294392257
+    },
+    "nn1": {
+      "full_val_ndcg": 0.3729362917742702,
+      "early_ndcg": 0.3731455706567638,
+      "late_ndcg": 0.37270690922351196
+    },
+    "nn2_s0": {
+      "full_val_ndcg": 0.3728128366830235,
+      "early_ndcg": 0.37216808596370965,
+      "late_ndcg": 0.37351952320025433
+    },
+    "nn2_s1": {
+      "full_val_ndcg": 0.37355187123885103,
+      "early_ndcg": 0.3738622429173822,
+      "late_ndcg": 0.3732116847544037
+    },
+    "nn2_s2": {
+      "full_val_ndcg": 0.3723825570808747,
+      "early_ndcg": 0.37191423117038797,
+      "late_ndcg": 0.37289587113651934
+    },
+    "nn2": {
+      "full_val_ndcg": 0.37495173919247515,
+      "early_ndcg": 0.3745379817239801,
+      "late_ndcg": 0.3754052428732467
+    }
+  },
+  "output": {
+    "nn2_s0_oof.npy": {
+      "rows": 1389971,
+      "sha256": "bda68a81a6361de58dc3d77c360d1f3b609b354e25062cb091179b280f4d5f81"
+    },
+    "nn2_s0_test.npy": {
+      "rows": 2904806,
+      "sha256": "8ddb5a6d4f9d54180ca29ea2a6ca01f6b287272007eb1ae3ecd313c17538a955"
+    },
+    "nn2_s1_oof.npy": {
+      "rows": 1389971,
+      "sha256": "fd8f1ac9e70af142a76b04940ee29e9c2d67b3da34cbcfbad6f0d1339ff019c4"
+    },
+    "nn2_s1_test.npy": {
+      "rows": 2904806,
+      "sha256": "c2a7476772bf16d6d79a9c633cc2c679cc0e98c522116ce18b27e2722a2febbf"
+    },
+    "nn2_s2_oof.npy": {
+      "rows": 1389971,
+      "sha256": "3589bcdaeb677bf1bbd4a53e1e1cc78a535b9193745f133e08fb3f316242f84a"
+    },
+    "nn2_s2_test.npy": {
+      "rows": 2904806,
+      "sha256": "54e4fd67e98a01f333f5bf53a8531d8c1d29b231c14fd516310fda72df6aad69"
+    }
+  },
+  "val_feeds": 14423,
+  "val_rows": 1389971,
+  "test_feeds": 28595,
+  "test_rows": 2904806,
+  "snapshot": {
+    "commit": "7b2464e7e68a3cdaf4f5693fe355a2968a4f10ab",
+    "source_sha256": "9ce8c30566020b7fae492b7c724565d92a6fe44c5ac237035d74683b59456539"
+  },
+  "evaluation": "NN-1 val only. NN-2 per-user OOF with epoch count selected on late val."
+}

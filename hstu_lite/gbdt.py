@@ -106,7 +106,7 @@ def run_meta(obj="lambdarank", tag="meta", progress_callbacks=lambda _: []):
         check = folds == k
         model = lgb.train(params, ds(va[learn], cols), 5000, valid_sets=[ds(va[check], cols)],
                           feval=full_ndcg, callbacks=[lgb.early_stopping(200, verbose=False)]
-                          + progress_callbacks(f"{tag} ? tune fold {k + 1}/5"))
+                          + progress_callbacks(f"{tag} tune fold {k + 1}/5"))
         iters.append(model.best_iteration)
         print(f"{tag} tuning fold {k + 1}/5: best iteration {model.best_iteration}, "
               f"NDCG {model.best_score['valid_0']['full_ndcg']:.7f}", flush=True)
@@ -116,7 +116,7 @@ def run_meta(obj="lambdarank", tag="meta", progress_callbacks=lambda _: []):
     oof = np.full(Sv.N, np.nan, np.float32); tp = np.zeros(len(te))
     for k in range(5):
         m = lgb.train(params, ds(va[folds != k], cols), n_iter,
-                      callbacks=progress_callbacks(f"{tag} ? OOF fold {k + 1}/5"))
+                      callbacks=progress_callbacks(f"{tag} OOF fold {k + 1}/5"))
         idx = folds == k
         local_off = np.r_[0, np.cumsum(groups(va.loc[idx]))]
         oof[va["_row"].to_numpy()[idx]] = feed_rank_pct(local_off, m.predict(va.loc[idx, cols].to_numpy(np.float32)))
