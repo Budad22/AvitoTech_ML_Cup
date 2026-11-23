@@ -21,13 +21,17 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument('--sol-smoke', action='store_true',
                       help='Run sol.md section 6.1 using the full packed source')
-    mode.add_argument('--sol-full', action='store_true', help='Run the three NN-1 seeds in section 6.2')
+    mode.add_argument('--sol-full', action='store_true', help='Run NN-1 training from section 6.2')
+    parser.add_argument('--full-seed', type=int, action='append', help='NN-1 seed. Repeat to set the order.')
+    parser.add_argument('--train-feeds', type=int, help='Limit NN-1 to this many of the newest feeds')
     parser.add_argument('--smoke-report', type=Path, help='Completed smoke report for section 6.2')
     parser.add_argument('--calibrate-smoke', action='store_true')
     parser.add_argument('--smoke-preset', default='position')
     parser.add_argument('--wide', action='store_true', help='Use the wider HSTU-lite architecture from sol.md §9.2')
     parser.add_argument('--max-seconds', type=int, default=7200, help='Time limit per variant')
     args = parser.parse_args()
+    if (args.full_seed or args.train_feeds is not None) and not args.sol_full:
+        parser.error('--full-seed and --train-feeds require --sol-full')
     if args.sol_full:
         if not args.smoke_report:
             parser.error('--sol-full requires a passing --smoke-report')
@@ -79,6 +83,10 @@ def main():
                     cmd.extend(['--sol-smoke', '--smoke-preset', args.smoke_preset])
                 if args.sol_full:
                     cmd.append('--sol-full')
+                    for seed in args.full_seed or ():
+                        cmd.extend(['--full-seed', str(seed)])
+                    if args.train_feeds is not None:
+                        cmd.extend(['--train-feeds', str(args.train_feeds)])
                 if args.calibrate_smoke:
                     cmd.append('--calibrate-smoke')
                 if args.wide:

@@ -12,7 +12,7 @@ import torch
 
 from mlp_next.supervisor import guard_lock
 from mlp_research.training import save
-from mlp_trials.state import write_json
+from mlp_trials.state import replace_atomic, write_json
 from .monitor import Progress
 from .common import Split, WORK, feed_rows, ndcg_full, val_holdout_mask
 from .nn_train import (EMA, FeedData, Ranker, collate, cosine_lr, evaluate, feeds_with_pos,
@@ -38,6 +38,7 @@ class Pilot:
         self.monitor = Progress(self.root)
         self.device = torch.device(args.device)
         self.model_parameters = WIDE_MODEL if args.wide else {}
+        self.full_seeds = args.full_seed or [0, 1, 2]
         self.train = Split('train')
         validation = Split('val')
         # Select whole feeds using only membership in the early timestamp partition.
@@ -48,6 +49,10 @@ class Pilot:
         train_feeds = np.arange(self.train.F)
         if args.sol_smoke:
             train_feeds = np.sort(np.argsort(self.train.ts, kind='stable')[-20_000:])
+        if args.train_feeds is not None:
+            if args.train_feeds > self.train.F:
+                raise ValueError('Requested train size exceeds available feeds')
+            train_feeds = np.sort(np.argsort(self.train.ts, kind='stable')[-args.train_feeds:])
         self.feeds = feeds_with_pos(self.train, train_feeds)
         if len(self.feeds) < args.batch_size:
             raise ValueError('Too few positive feeds for the pilot')
@@ -63,13 +68,15 @@ class Pilot:
                             else (args.smoke_preset,))
         plan = dict(seed=args.seed, batch_size=args.batch_size, device=args.device,
                     target=args.steps, sol_smoke=args.sol_smoke, selection_feeds=len(self.selection),
-                    sol_full=args.sol_full, seed_order=[0, 1, 2] if args.sol_full else [args.seed],
+                    sol_full=args.sol_full, seed_order=self.full_seeds if args.sol_full else [args.seed],
                     smoke_settings={n: list(SMOKE_SETTINGS[n][:2]) for n in self.smoke_names},
                     train_meta=self.train.meta, val_meta=validation.meta,
                     selection_hash=hashlib.sha256(self.selection.tobytes()).hexdigest(),
                     train_feed_hash=hashlib.sha256(self.feeds.tobytes()).hexdigest())
         if self.model_parameters:
             plan['model_parameters'] = self.model_parameters
+        if args.train_feeds is not None:
+            plan['train_feeds'] = args.train_feeds
         self.identity = hashlib.sha256(json.dumps(plan, sort_keys=True).encode()).hexdigest()
         plan_path = self.root / 'plan.json'
         if plan_path.exists() and json.loads(plan_path.read_text(encoding='utf-8')) != plan:
@@ -224,11 +231,11 @@ class Pilot:
         print(json.dumps(report, ensure_ascii=False), flush=True)
 
     def run_sol_full(self):
-        """Run the three NN-1 seeds from section 6.2 with independent checkpoints."""
-        from .nn_train import predict
+        """Train independent NN-1 seeds and export their predictions."""
+        from .nn_train import permutation_error, predict
         targets = [*range(3000, self.args.steps, 3000), self.args.steps]
         results = {}
-        for seed in (0, 1, 2):
+        for seed in self.full_seeds:
             self.args.seed = seed
             name = f'nn1_s{seed}'
             done = self.root / name / 'final.json'
@@ -242,6 +249,9 @@ class Pilot:
             state = torch.load(self.root / name / 'best.pt', map_location='cpu', weights_only=False)
             model = Ranker(**state['cfg']).to(self.device)
             model.load_state_dict(state['sd'])
+            error = permutation_error(model, self.device)
+            if error >= 1e-3:
+                raise ValueError(f'Candidate permutation check failed for {name}: {error:g}')
             save(self.root / f'{name}.pt', state)
             self.progress('evaluate', step=self.args.steps, variant=name)
             for split in ('val', 'test'):
@@ -251,14 +261,15 @@ class Pilot:
                     raise ValueError(f'Incomplete {split} prediction for {name}')
                 temp = self.root / f'{name}_{split}.tmp.npy'
                 np.save(temp, score, allow_pickle=False)
-                os.replace(temp, self.root / f'{name}_{split}.npy')
+                replace_atomic(temp, self.root / f'{name}_{split}.npy')
                 if split == 'val':
                     control = np.flatnonzero(val_holdout_mask(data))
                     rows, sizes = feed_rows(data.c_off, control)
                     full_val = ndcg_full(data.c_off, score, data.target)[0]
                     holdout = ndcg_full(np.r_[0, sizes.cumsum()], score[rows], data.target[rows])[0]
             results[name] = dict(seed=seed, best_step=state['step'], steps=self.args.steps,
-                                 selection_ndcg=state['val'], control_ndcg=holdout, full_val_ndcg=full_val)
+                                 selection_ndcg=state['val'], control_ndcg=holdout,
+                                 full_val_ndcg=full_val, permutation_error=error)
             write_json(done, results[name])
         scores = {f'NDCG · полная val · seed {row["seed"]}': row['full_val_ndcg']
                   for row in results.values()}
@@ -278,6 +289,8 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument('--sol-smoke', action='store_true')
     mode.add_argument('--sol-full', action='store_true')
+    parser.add_argument('--full-seed', type=int, action='append', help='NN-1 seed for --sol-full. Repeat to set the order.')
+    parser.add_argument('--train-feeds', type=int, help='Limit --sol-full to this many of the newest feeds')
     parser.add_argument('--calibrate-smoke', action='store_true')
     parser.add_argument('--smoke-preset', choices=SMOKE_SETTINGS, default='position')
     parser.add_argument('--wide', action='store_true', help='Use width 192, six heads and three cross-attention layers')
@@ -286,6 +299,13 @@ def main():
         parser.error('Batch size, steps, validation size and time limit must be positive')
     if args.calibrate_smoke and not args.sol_smoke:
         parser.error('--calibrate-smoke requires --sol-smoke')
+    if (args.full_seed or args.train_feeds is not None) and not args.sol_full:
+        parser.error('--full-seed and --train-feeds require --sol-full')
+    if args.train_feeds is not None and args.train_feeds < 1:
+        parser.error('--train-feeds must be positive')
+    if args.full_seed and (any(not 0 <= seed < 2 ** 32 for seed in args.full_seed)
+                           or len(set(args.full_seed)) != len(args.full_seed)):
+        parser.error('--full-seed values must be unique unsigned 32-bit integers')
     torch.set_num_threads(4 if args.device == 'cuda' else 2)
     root = Path(WORK)
     root.mkdir(parents=True, exist_ok=True)

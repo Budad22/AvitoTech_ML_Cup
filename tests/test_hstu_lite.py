@@ -81,6 +81,25 @@ class HstuLiteContracts(unittest.TestCase):
             self.assertEqual(command[command.index('-m') + 1], 'hstu_lite.pilot')
             self.assertIn('--wide', command)
 
+    def test_full_launcher_forwards_seed_order_and_recent_feed_limit(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            prepared = root / 'packed'
+            for split in ('train', 'val', 'test'):
+                path = prepared / split
+                path.mkdir(parents=True)
+                (path / 'meta.json').touch()
+            smoke = root / 'smoke.json'
+            smoke.write_text('{"status":"completed","quality_gate":true}', encoding='utf-8')
+            args = ['run_hstu_pilot', '--data', folder, '--output', str(root / 'output'),
+                    '--packed', str(prepared), '--sol-full', '--smoke-report', str(smoke),
+                    '--full-seed', '3', '--full-seed', '4', '--train-feeds', '2000000']
+            with patch.object(sys, 'argv', args), patch.object(run_hstu_pilot.subprocess, 'run') as launch:
+                run_hstu_pilot.main()
+                launch.assert_called_once()
+            self.assertEqual(launch.call_args.args[0][-7:],
+                             ['--sol-full', '--full-seed', '3', '--full-seed', '4', '--train-feeds', '2000000'])
+
     def test_equal_ranks_and_full_ndcg_match_existing_evaluator(self):
         np.testing.assert_array_equal(average_ranks(np.array([3, 1, 3, 2])), [2.5, 0, 2.5, 1])
         scores = np.array([2., 2., 1., 0., 0.])
